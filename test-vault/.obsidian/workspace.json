@@ -1,0 +1,181 @@
+{
+  "main": {
+    "id": "b8e578748379ee41",
+    "type": "split",
+    "children": [
+      {
+        "id": "0309fc3701f90aa5",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "d213da251302e530",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "note.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "a34532c2cf568df9",
+    "type": "split",
+    "children": [
+      {
+        "id": "df6e7bb0c8c3468c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "ed29f0a2ef611e32",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "ad89d1ea1e665c96",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "9dc3a0e9216745f8",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "3dcbc427dbd1c9e8",
+    "type": "split",
+    "children": [
+      {
+        "id": "f4a937a2b61f0530",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9f5e6b4e185094a9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "note.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "4791cada72071e00",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "note.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "3ed732eef544b32e",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "f73e317a09f51270",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "note.md"
+              }
+            }
+          }
+        ],
+        "currentTab": 3
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "obsidian-custom-frames:Activate view": false
+    }
+  },
+  "active": "f73e317a09f51270",
+  "lastOpenFiles": [
+    "note.md",
+    "错题库/ct2023111071114.md",
+    "错题库/ct2023-10-29-10-39-38.md",
+    "错题库/ct2023-11-6-08-04-37.md",
+    "错题库/ct2023462104651.md",
+    "错题库/ct2023483094847.md",
+    "错题库/ct2023114091107.md",
+    "错题库/ct2023-11-5-05-40-48.md",
+    "错题库/ct2023-11-5-05-50-01.md",
+    "错题库/ct2023322103244.md",
+    "错题库/ct2023051090557.md",
+    "错题库/ct2023024090255.md",
+    "错题库/ct2023-11-9-09-00-19.md",
+    "错题库/ct2023001090028.md",
+    "错题库/ct2023-10-29-09-25-50.md",
+    "错题库/ct2023-11-6-08-41-02.md",
+    "错题库/ct2023-11-9-09-09-15.md",
+    "错题库/ct2023140081439.md",
+    "错题库/ct2023-11-9-09-28-50.md",
+    "错题库/ct2023114081144.md",
+    "错题库/ct2023-10-29-10-44-09.md",
+    "错题库/ct2023332093332.md",
+    "错题库/ct2023-10-29-11-31-55.md",
+    "错题库/ct2023530085310.md",
+    "错题库/ct2023362033657.md",
+    "错题库/ct2023-11-2-10-50-20.md",
+    "错题库",
+    "Untitled.canvas"
+  ]
+}
