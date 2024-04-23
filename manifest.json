@@ -1,7 +1,7 @@
 {
 	"id": "BrushTee",
 	"name": "BrushTee",
-	"version": "1.0.0",
+	"version": "0.0.0",
 	"minAppVersion": "0.15.0",
 	"description": "个人题库管理插件",
 	"author": "wjc",
