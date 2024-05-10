@@ -1,8 +1,13 @@
-import { Notice, Plugin, ItemView, WorkspaceLeaf } from "obsidian";
+import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events} from "obsidian";
 import {ExampleView, VIEW_TYPE_EXAMPLE} from "./randomtest";
+import { testdb } from "base";
+import { log } from "console";
 
 export default class brushtee extends Plugin {
   async onload() {
+    const test1 = new testdb(app,this.manifest)
+    alert(test1.testfile)
+
     this.registerView(
       VIEW_TYPE_EXAMPLE,
       (leaf) => new ExampleView(leaf)
@@ -13,6 +18,8 @@ export default class brushtee extends Plugin {
       this.activateView();
     });
   }
+
+
 
   async activateView() {
     const { workspace } = this.app;

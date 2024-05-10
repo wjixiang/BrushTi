@@ -12,7 +12,7 @@ export class ExampleView extends ItemView {
   }
 
   getDisplayText() {
-    return "brushTee";
+    return "随机抽题";
   }
 
   async onOpen() {
