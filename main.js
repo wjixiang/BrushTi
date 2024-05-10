@@ -24,15 +24,56 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // main.ts
 var main_exports = {};
 __export(main_exports, {
-  default: () => ExamplePlugin
+  default: () => brushtee
 });
 module.exports = __toCommonJS(main_exports);
+var import_obsidian2 = require("obsidian");
+
+// panel.ts
 var import_obsidian = require("obsidian");
-var ExamplePlugin = class extends import_obsidian.Plugin {
-  async onload() {
-    this.addRibbonIcon("circle", "Greet", () => {
-      new import_obsidian.Notice("Hello, world!");
-    });
+var VIEW_TYPE_EXAMPLE = "test-view";
+var ExampleView = class extends import_obsidian.ItemView {
+  constructor(leaf) {
+    super(leaf);
+  }
+  getViewType() {
+    return VIEW_TYPE_EXAMPLE;
+  }
+  getDisplayText() {
+    return "brushTee";
+  }
+  async onOpen() {
+    const container = this.containerEl.children[1];
+    container.empty();
+    container.createEl("h4", { text: "main panel" });
+  }
+  async onClose() {
   }
 };
-//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsibWFpbi50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHsgTm90aWNlLCBQbHVnaW4sIEl0ZW1WaWV3LCBXb3Jrc3BhY2VMZWFmIH0gZnJvbSBcIm9ic2lkaWFuXCI7XG5cbmV4cG9ydCBkZWZhdWx0IGNsYXNzIEV4YW1wbGVQbHVnaW4gZXh0ZW5kcyBQbHVnaW4ge1xuICBhc3luYyBvbmxvYWQoKSB7XG4gICAgdGhpcy5hZGRSaWJib25JY29uKCdjaXJjbGUnLCAnR3JlZXQnLCAoKSA9PiB7XG4gICAgICBuZXcgTm90aWNlKCdIZWxsbywgd29ybGQhJyk7XG4gICAgfSk7XG4gIH1cbn1cbiJdLAogICJtYXBwaW5ncyI6ICI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxzQkFBd0Q7QUFFeEQsSUFBcUIsZ0JBQXJCLGNBQTJDLHVCQUFPO0FBQUEsRUFDaEQsTUFBTSxTQUFTO0FBQ2IsU0FBSyxjQUFjLFVBQVUsU0FBUyxNQUFNO0FBQzFDLFVBQUksdUJBQU8sZUFBZTtBQUFBLElBQzVCLENBQUM7QUFBQSxFQUNIO0FBQ0Y7IiwKICAibmFtZXMiOiBbXQp9Cg==
+
+// main.ts
+var brushtee = class extends import_obsidian2.Plugin {
+  async onload() {
+    this.registerView(
+      VIEW_TYPE_EXAMPLE,
+      (leaf) => new ExampleView(leaf)
+    );
+    this.addRibbonIcon("circle", "active panel", () => {
+      new import_obsidian2.Notice("active panel");
+      this.activateView();
+    });
+  }
+  async activateView() {
+    const { workspace } = this.app;
+    let leaf = null;
+    const leaves = workspace.getLeavesOfType(VIEW_TYPE_EXAMPLE);
+    if (leaves.length > 0) {
+      leaf = leaves[0];
+    } else {
+      leaf = workspace.getRightLeaf(false);
+      await leaf.setViewState({ type: VIEW_TYPE_EXAMPLE, active: true });
+    }
+    workspace.revealLeaf(leaf);
+  }
+};
+//# sourceMappingURL=data:application/json;base64,ewogICJ2ZXJzaW9uIjogMywKICAic291cmNlcyI6IFsibWFpbi50cyIsICJwYW5lbC50cyJdLAogICJzb3VyY2VzQ29udGVudCI6IFsiaW1wb3J0IHsgTm90aWNlLCBQbHVnaW4sIEl0ZW1WaWV3LCBXb3Jrc3BhY2VMZWFmIH0gZnJvbSBcIm9ic2lkaWFuXCI7XG5pbXBvcnQge0V4YW1wbGVWaWV3LCBWSUVXX1RZUEVfRVhBTVBMRX0gZnJvbSBcIi4vcGFuZWxcIjtcblxuZXhwb3J0IGRlZmF1bHQgY2xhc3MgYnJ1c2h0ZWUgZXh0ZW5kcyBQbHVnaW4ge1xuICBhc3luYyBvbmxvYWQoKSB7XG4gICAgdGhpcy5yZWdpc3RlclZpZXcoXG4gICAgICBWSUVXX1RZUEVfRVhBTVBMRSxcbiAgICAgIChsZWFmKSA9PiBuZXcgRXhhbXBsZVZpZXcobGVhZilcbiAgICApO1xuXG4gICAgdGhpcy5hZGRSaWJib25JY29uKCdjaXJjbGUnLCAnYWN0aXZlIHBhbmVsJywgKCkgPT4ge1xuICAgICAgbmV3IE5vdGljZSgnYWN0aXZlIHBhbmVsJyk7XG4gICAgICB0aGlzLmFjdGl2YXRlVmlldygpO1xuICAgIH0pO1xuICB9XG5cbiAgYXN5bmMgYWN0aXZhdGVWaWV3KCkge1xuICAgIGNvbnN0IHsgd29ya3NwYWNlIH0gPSB0aGlzLmFwcDtcblxuICAgIGxldCBsZWFmOiBXb3Jrc3BhY2VMZWFmIHwgbnVsbCA9IG51bGw7XG4gICAgY29uc3QgbGVhdmVzID0gd29ya3NwYWNlLmdldExlYXZlc09mVHlwZShWSUVXX1RZUEVfRVhBTVBMRSk7XG5cbiAgICBpZiAobGVhdmVzLmxlbmd0aCA+IDApIHtcbiAgICAgIC8vIEEgbGVhZiB3aXRoIG91ciB2aWV3IGFscmVhZHkgZXhpc3RzLCB1c2UgdGhhdFxuICAgICAgbGVhZiA9IGxlYXZlc1swXTtcbiAgICB9IGVsc2Uge1xuICAgICAgLy8gT3VyIHZpZXcgY291bGQgbm90IGJlIGZvdW5kIGluIHRoZSB3b3Jrc3BhY2UsIGNyZWF0ZSBhIG5ldyBsZWFmXG4gICAgICAvLyBpbiB0aGUgcmlnaHQgc2lkZWJhciBmb3IgaXRcbiAgICAgIGxlYWYgPSB3b3Jrc3BhY2UuZ2V0UmlnaHRMZWFmKGZhbHNlKTtcbiAgICAgIGF3YWl0IGxlYWYuc2V0Vmlld1N0YXRlKHsgdHlwZTogVklFV19UWVBFX0VYQU1QTEUsIGFjdGl2ZTogdHJ1ZSB9KTtcbiAgICB9XG5cbiAgICAvLyBcIlJldmVhbFwiIHRoZSBsZWFmIGluIGNhc2UgaXQgaXMgaW4gYSBjb2xsYXBzZWQgc2lkZWJhclxuICAgIHdvcmtzcGFjZS5yZXZlYWxMZWFmKGxlYWYpO1xuICB9XG59XG4iLCAiaW1wb3J0IHsgSXRlbVZpZXcsIFdvcmtzcGFjZUxlYWYgfSBmcm9tIFwib2JzaWRpYW5cIjtcblxuZXhwb3J0IGNvbnN0IFZJRVdfVFlQRV9FWEFNUExFID0gXCJ0ZXN0LXZpZXdcIjtcblxuZXhwb3J0IGNsYXNzIEV4YW1wbGVWaWV3IGV4dGVuZHMgSXRlbVZpZXcge1xuICBjb25zdHJ1Y3RvcihsZWFmOiBXb3Jrc3BhY2VMZWFmKSB7XG4gICAgc3VwZXIobGVhZik7XG4gIH1cblxuICBnZXRWaWV3VHlwZSgpIHtcbiAgICByZXR1cm4gVklFV19UWVBFX0VYQU1QTEU7XG4gIH1cblxuICBnZXREaXNwbGF5VGV4dCgpIHtcbiAgICByZXR1cm4gXCJicnVzaFRlZVwiO1xuICB9XG5cbiAgYXN5bmMgb25PcGVuKCkge1xuICAgIGNvbnN0IGNvbnRhaW5lciA9IHRoaXMuY29udGFpbmVyRWwuY2hpbGRyZW5bMV07XG4gICAgY29udGFpbmVyLmVtcHR5KCk7XG4gICAgY29udGFpbmVyLmNyZWF0ZUVsKFwiaDRcIiwgeyB0ZXh0OiBcIm1haW4gcGFuZWxcIiB9KTtcbiAgfVxuXG4gIGFzeW5jIG9uQ2xvc2UoKSB7XG4gICAgLy8gTm90aGluZyB0byBjbGVhbiB1cC5cbiAgfVxufSJdLAogICJtYXBwaW5ncyI6ICI7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7Ozs7OztBQUFBO0FBQUE7QUFBQTtBQUFBO0FBQUE7QUFBQSxJQUFBQSxtQkFBd0Q7OztBQ0F4RCxzQkFBd0M7QUFFakMsSUFBTSxvQkFBb0I7QUFFMUIsSUFBTSxjQUFOLGNBQTBCLHlCQUFTO0FBQUEsRUFDeEMsWUFBWSxNQUFxQjtBQUMvQixVQUFNLElBQUk7QUFBQSxFQUNaO0FBQUEsRUFFQSxjQUFjO0FBQ1osV0FBTztBQUFBLEVBQ1Q7QUFBQSxFQUVBLGlCQUFpQjtBQUNmLFdBQU87QUFBQSxFQUNUO0FBQUEsRUFFQSxNQUFNLFNBQVM7QUFDYixVQUFNLFlBQVksS0FBSyxZQUFZLFNBQVMsQ0FBQztBQUM3QyxjQUFVLE1BQU07QUFDaEIsY0FBVSxTQUFTLE1BQU0sRUFBRSxNQUFNLGFBQWEsQ0FBQztBQUFBLEVBQ2pEO0FBQUEsRUFFQSxNQUFNLFVBQVU7QUFBQSxFQUVoQjtBQUNGOzs7QUR2QkEsSUFBcUIsV0FBckIsY0FBc0Msd0JBQU87QUFBQSxFQUMzQyxNQUFNLFNBQVM7QUFDYixTQUFLO0FBQUEsTUFDSDtBQUFBLE1BQ0EsQ0FBQyxTQUFTLElBQUksWUFBWSxJQUFJO0FBQUEsSUFDaEM7QUFFQSxTQUFLLGNBQWMsVUFBVSxnQkFBZ0IsTUFBTTtBQUNqRCxVQUFJLHdCQUFPLGNBQWM7QUFDekIsV0FBSyxhQUFhO0FBQUEsSUFDcEIsQ0FBQztBQUFBLEVBQ0g7QUFBQSxFQUVBLE1BQU0sZUFBZTtBQUNuQixVQUFNLEVBQUUsVUFBVSxJQUFJLEtBQUs7QUFFM0IsUUFBSSxPQUE2QjtBQUNqQyxVQUFNLFNBQVMsVUFBVSxnQkFBZ0IsaUJBQWlCO0FBRTFELFFBQUksT0FBTyxTQUFTLEdBQUc7QUFFckIsYUFBTyxPQUFPLENBQUM7QUFBQSxJQUNqQixPQUFPO0FBR0wsYUFBTyxVQUFVLGFBQWEsS0FBSztBQUNuQyxZQUFNLEtBQUssYUFBYSxFQUFFLE1BQU0sbUJBQW1CLFFBQVEsS0FBSyxDQUFDO0FBQUEsSUFDbkU7QUFHQSxjQUFVLFdBQVcsSUFBSTtBQUFBLEVBQzNCO0FBQ0Y7IiwKICAibmFtZXMiOiBbImltcG9ydF9vYnNpZGlhbiJdCn0K
