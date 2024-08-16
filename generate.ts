@@ -1,14 +1,14 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
 
-export const VIEW_TYPE_EXAMPLE = "test-view";
+export const test_generate = "test-view";
 
-export class ExampleView extends ItemView {
+export class test_gnerate_view extends ItemView {
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
   }
 
   getViewType() {
-    return VIEW_TYPE_EXAMPLE;
+    return test_generate;
   }
 
   getDisplayText() {
