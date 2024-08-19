@@ -1,12 +1,13 @@
-import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events} from "obsidian";
+import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile} from "obsidian";
 import {test_gnerate_view, test_generate} from "generate";
 import { testdb } from "base";
 import { log } from "console";
+import {parseYamlMetadata,processFile} from "metadata_solve"
 
 export default class brushtee extends Plugin {
   async onload() {
     const test1 = new testdb(app,this.manifest)
-    alert(test1.testfile.length)
+    //alert(test1.testfile.length)
 
     this.registerView(
       test_generate,
@@ -14,12 +15,16 @@ export default class brushtee extends Plugin {
     );
 
     this.addRibbonIcon('circle', 'active panel', () => {
-      new Notice('active panel');
+      new Notice('active setting panel');
       this.activateView();
     });
+
+    this.addCommand({  
+      id: 'get-attribute-value',  
+      name: 'Get Document Attribute Value',  
+      callback: () => this.getAttributeValuesFromFolder(),  
+    });  
   }
-
-
 
   async activateView() {
     const { workspace } = this.app;
@@ -39,5 +44,28 @@ export default class brushtee extends Plugin {
 
     // "Reveal" the leaf in case it is in a collapsed sidebar
     workspace.revealLeaf(leaf);
+
   }
+
+  async getAttributeValuesFromFolder(folderPath = 'test_bank') {  
+    let class_list = []
+    // 获取文件夹下的所有文件  
+    const folder = this.app.vault.getAbstractFileByPath(folderPath); 
+    if (folder && folder.children) {  
+      for (const file of folder.children) {  
+        if (file instanceof TFile) {  
+          let metadata = await processFile(file)
+          if (metadata.hasOwnProperty('class') && metadata.class != null){
+            //console.log(metadata['class'])
+            class_list.push(metadata.class)
+          }
+        }  
+      }  
+    }  
+    let uniqueArray = class_list.filter((value, index) => {  
+      return class_list.indexOf(value) === index;  
+    });  
+    console.log(uniqueArray)
+  }   
+
 }
