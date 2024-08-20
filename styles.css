@@ -11,7 +11,7 @@ If your plugin does not need CSS, delete this file.
     display: flex; /* 使用 Flexbox 布局 */  
     justify-content: space-between; /* 在主要轴上分配空间，左右对齐 */  
     align-items: center; /* 在交叉轴上居中对齐 */  
-    padding: 10px; /* 添加一些内边距 */   
+    padding: 2.5px; /* 添加一些内边距 */   
 }
 
 .brushti_table_div {  
@@ -31,5 +31,11 @@ If your plugin does not need CSS, delete this file.
 }  
 
 .my-table th {  
-    background-color: #f4f4f4;  
+    background-color: grey;  
+}
+
+.buttonDiv{
+    display: flex;
+    align-items: center; 
+    width: 100%; 
 }

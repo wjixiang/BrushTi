@@ -102,34 +102,46 @@ export class test_gnerate_view extends ItemView {
 
     //create table_view
 
+    const numberDiv = container.createDiv({cls:"setting_div"});
+    numberDiv.createEl("p",{text:"题数"})
+
+    const numberInputBox = numberDiv.createEl("input", {  
+      type: "number", // 设置输入类型为数字  
+      cls: "test-number-input",  
+      value:1
+  }); 
+
+  const buttonDiv = container.createDiv({ cls: "button_div" });  
+  const button = buttonDiv.createEl("button", {  
+      text: "新建题目", // 按钮文本  
+      cls: "add_button",  
+  });  
+
+  // 添加按钮点击事件  
+  button.addEventListener("click", () => {  
+      const numberValue = numberInputBox.value;  
+      console.log("输入的数字:", numberValue);  
+      // 在此处添加你的处理逻辑，比如将输入的数字发送到某个函数  
+      new Notice(`您输入的数字是: ${numberValue}`); // 使用 Obsidian 的通知显示输入  
+      const row = tbody.createEl("tr")
+      row.createEl("td", { text: selectBox.value });  
+      row.createEl("td", { text: mode_select_Box.value });  
+      row.createEl("td", { text: numberValue }); 
+  });  
+
     const tableDiv = container.createDiv({cls:"brushti_table_div"});
     const table = tableDiv.createEl("table", { cls: "my-table" });  
     
     // 添加表头  
     const thead = table.createEl("thead");  
     const headerRow = thead.createEl("tr");  
-    headerRow.createEl("th", { text: "列 1" }); // 第一列的标题  
-    headerRow.createEl("th", { text: "列 2" }); // 第二列的标题  
-    headerRow.createEl("th", { text: "列 3" }); // 第三列的标题  
+    headerRow.createEl("th", { text: "科目" }); // 第一列的标题  
+    headerRow.createEl("th", { text: "题型" }); // 第二列的标题  
+    headerRow.createEl("th", { text: "题数" }); // 第三列的标题  
 
     // 添加表格主体  
     const tbody = table.createEl("tbody");  
-    
-    // 示例数据，你可以替换为实际数据  
-    const exampleData = [  
-        { col1: "数据 1-1", col2: "数据 1-2", col3: "数据 1-3" },  
-        { col1: "数据 2-1", col2: "数据 2-2", col3: "数据 2-3" },  
-        { col1: "数据 3-1", col2: "数据 3-2", col3: "数据 3-3" },  
-    ];  
-
-    // 填充表格主体  
-    exampleData.forEach(rowData => {  
-        const row = tbody.createEl("tr");  
-        row.createEl("td", { text: rowData.col1 });  
-        row.createEl("td", { text: rowData.col2 });  
-        row.createEl("td", { text: rowData.col3 });  
-    });  
-
+  
   }
 
   async set_mode_list(suject: string,folderPath:string){
