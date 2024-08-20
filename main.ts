@@ -1,16 +1,20 @@
-import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile} from "obsidian";
+import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile, App} from "obsidian";
 import {test_gnerate_view, test_generate} from "generate";
 import { testdb } from "base";
 import { log } from "console";
 import {parseYamlMetadata,processFile} from "metadata_solve"
 
 export default class brushtee extends Plugin {
+  folderpath: string;
+
   async onload() {
+    this.folderpath = 'test_bank'
+
     const test1 = new testdb(app,this.manifest)
     //alert(test1.testfile.length)
 
     this.registerView(
-      test_generate,
+      test_generate, 
       (leaf) => new test_gnerate_view(leaf)
     );
 
