@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events } from "obsidian";
+import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice } from "obsidian";
 import {parseYamlMetadata,processFile} from "metadata_solve"
 import { string } from "yaml/dist/schema/common/string";
 
@@ -32,9 +32,11 @@ async function getAttributeValuesFromFolder(folderPath = 'test_bank') {
 
 export class test_gnerate_view extends ItemView {
   path: string;
+  test_list: never[];
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
     this.path = 'test_bank'
+    this.test_list = []
   }
 
   getViewType() {
@@ -112,22 +114,27 @@ export class test_gnerate_view extends ItemView {
   }); 
 
   const buttonDiv = container.createDiv({ cls: "button_div" });  
-  const button = buttonDiv.createEl("button", {  
+  const button_add = buttonDiv.createEl("button", {  
       text: "新建题目", // 按钮文本  
       cls: "add_button",  
   });  
 
+  const button_generate = buttonDiv.createEl("button", {  
+    text: "生成试卷", // 按钮文本  
+    cls: "add_button",  
+}); 
+
   // 添加按钮点击事件  
-  button.addEventListener("click", () => {  
+  button_add.addEventListener("click", () => {  
       const numberValue = numberInputBox.value;  
-      console.log("输入的数字:", numberValue);  
-      // 在此处添加你的处理逻辑，比如将输入的数字发送到某个函数  
-      new Notice(`您输入的数字是: ${numberValue}`); // 使用 Obsidian 的通知显示输入  
-      const row = tbody.createEl("tr")
-      row.createEl("td", { text: selectBox.value });  
-      row.createEl("td", { text: mode_select_Box.value });  
-      row.createEl("td", { text: numberValue }); 
+      this.test_list.push([selectBox.value,mode_select_Box.value,numberValue])
+      console.log(this.test_list)
+      this.parse_table(tbody,this.test_list)
   });  
+
+  button_generate.addEventListener("click", () => {  
+    this.fetch_test()
+}); 
 
     const tableDiv = container.createDiv({cls:"brushti_table_div"});
     const table = tableDiv.createEl("table", { cls: "my-table" });  
@@ -141,7 +148,33 @@ export class test_gnerate_view extends ItemView {
 
     // 添加表格主体  
     const tbody = table.createEl("tbody");  
+
+    const button_reset = buttonDiv.createEl("button", {  
+      text: "重置预设", // 按钮文本  
+      cls: "add_button",  
+  });  
+
+  button_reset.addEventListener("click", () => {  
+    new Notice("重置题目预设",1000)
+    this.reset_table(tbody)
+    this.test_list = []
+});  
   
+  }
+
+  async parse_table(tbody,table_data: any[][]){
+    this.reset_table(tbody)
+    table_data.forEach((data: any[])=>{
+      const row = tbody.createEl("tr");  
+      row.createEl("td", { text: data[0] });  
+      row.createEl("td", { text: data[1] });  
+      row.createEl("td", { text: data[2]});  
+    });
+
+  }
+
+  async reset_table(tbody:HTMLTableElement){
+    tbody.innerHTML = ''
   }
 
   async set_mode_list(suject: string,folderPath:string){
@@ -168,6 +201,51 @@ export class test_gnerate_view extends ItemView {
       console.log(typeof(uniqueArray))
       return uniqueArray
   }}
+
+  async fetch_test(){
+    const folder = this.app.vault.getAbstractFileByPath(this.path); 
+    this.test_list.forEach(async req =>{
+      //调取指定科目的所有题目、题型
+      let suject_req = []
+      for (const file of folder.children) {  
+        if (file instanceof TFile) {  
+          let metadata = this.app.metadataCache.getFileCache(file);
+          let front_matter = metadata.frontmatter
+          if ((front_matter['class'] == req[0]) && (front_matter['mode'] == req[1])){
+            //console.log(metadata['class'])
+            suject_req.push(file.name)
+          }
+        }  
+      } 
+
+      //抽题
+      let selet_test_list = await this.getRandomElements(suject_req,req[2])
+      req[3] = selet_test_list
+      // console.log(selet_test_list)
+    });
+    console.log(this.test_list)
+  }
+
+  async getRandomElements(arr, count) {  
+    // 确保 count 不超过数组的长度  
+    if (count > arr.length) {  
+      new Notice("请求的数量超过数组长度", 1000)
+      throw new Error("请求的数量超过数组长度");  
+    }  
+
+    // 创建一个 Set 用于存储随机选择的索引  
+    const resultSet = new Set();  
+
+    // 随机选择索引，直到选择的数量达到 count  
+    while (resultSet.size < count) {  
+        const randomIndex = Math.floor(Math.random() * arr.length);  
+        resultSet.add(randomIndex);  
+    }  
+
+    // 根据随机选择的索引获取相应的元素  
+    const result = Array.from(resultSet).map(index => arr[index]);  
+    return result;  
+  } 
 
   async onClose() {
     // Nothing to clean up.
