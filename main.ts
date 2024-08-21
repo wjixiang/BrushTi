@@ -3,6 +3,7 @@ import {test_gnerate_view, test_generate} from "generate";
 import { testdb } from "base";
 import { log } from "console";
 import {parseYamlMetadata,processFile} from "metadata_solve"
+import {quiz_view,new_test} from "quiz"
 
 export default class brushtee extends Plugin {
   folderpath: string;
@@ -16,6 +17,11 @@ export default class brushtee extends Plugin {
     this.registerView(
       test_generate, 
       (leaf) => new test_gnerate_view(leaf)
+    );
+
+    this.registerView(
+      new_test, 
+      (leaf) => new quiz_view(leaf)
     );
 
     this.addRibbonIcon('circle', 'active panel', () => {
@@ -42,7 +48,7 @@ export default class brushtee extends Plugin {
     } else {
       // Our view could not be found in the workspace, create a new leaf
       // in the right sidebar for it
-      leaf = workspace.getRightLeaf(false);
+      leaf = workspace.getRightLeaf(false); // 修改这一行  
       await leaf.setViewState({ type: test_generate, active: true });
     }
 

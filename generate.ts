@@ -1,6 +1,5 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice } from "obsidian";
-import {parseYamlMetadata,processFile} from "metadata_solve"
-import { string } from "yaml/dist/schema/common/string";
+import {quiz_view,new_test} from "quiz"
 
 export const test_generate = "test-view";
 
@@ -33,10 +32,12 @@ async function getAttributeValuesFromFolder(folderPath = 'test_bank') {
 export class test_gnerate_view extends ItemView {
   path: string;
   test_list: never[];
+  tbody: any;
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
     this.path = 'test_bank'
     this.test_list = []
+    this.tbody
   }
 
   getViewType() {
@@ -44,14 +45,14 @@ export class test_gnerate_view extends ItemView {
   }
 
   getDisplayText() {
-    return "examination setting";
+    return "随机抽题";
   }
  
   async onOpen() {
     let class_list = await getAttributeValuesFromFolder()
     const container = this.containerEl.children[1];
     container.empty();
-    container.createEl("h4", { text: "main panel" });
+    container.createEl("h4", { text: "随机抽题" });
 
     // Create a div for the dropdown  
     const dropdownDiv = container.createDiv({cls:"setting_div"});  
@@ -90,20 +91,6 @@ export class test_gnerate_view extends ItemView {
       cls: "brushti_mode_select", // Optional: Add a custom class for styling  
     }); 
 
-    // Create an input box  
-    // const inputBox = mode_select_div.createEl("input", {  
-    //   type: "text",  
-    //   placeholder: "Enter your text here...",  
-    //   cls: "my-custom-input", // Optional: Add a custom class for styling  
-    // });  
-
-    // // Optionally, you can add an event listener to the input  
-    // inputBox.addEventListener("input", (event) => {  
-    //   console.log("Input value:", (event.target as HTMLInputElement).value);  
-    // });  
-
-    //create table_view
-
     const numberDiv = container.createDiv({cls:"setting_div"});
     numberDiv.createEl("p",{text:"题数"})
 
@@ -120,20 +107,25 @@ export class test_gnerate_view extends ItemView {
   });  
 
   const button_generate = buttonDiv.createEl("button", {  
-    text: "生成试卷", // 按钮文本  
+    text: "刷新试题", // 按钮文本  
     cls: "add_button",  
 }); 
 
   // 添加按钮点击事件  
-  button_add.addEventListener("click", () => {  
+  button_add.addEventListener("click", async () => {  
       const numberValue = numberInputBox.value;  
-      this.test_list.push([selectBox.value,mode_select_Box.value,numberValue])
+      let req = [selectBox.value,mode_select_Box.value,numberValue]
+      let req_test = await this.fetch(req)
+      let selet_test_list = await this.getRandomElements(req_test,req[2])
+      console.log(req_test)
+      this.test_list.push([selectBox.value,mode_select_Box.value,numberValue,selet_test_list])
       console.log(this.test_list)
-      this.parse_table(tbody,this.test_list)
+      this.parse_table(this.tbody,this.test_list)
   });  
 
-  button_generate.addEventListener("click", () => {  
-    this.fetch_test()
+  button_generate.addEventListener("click", async () => {  
+    await this.fetch_test()
+    await this.parse_table(this.tbody,this.test_list)
 }); 
 
     const tableDiv = container.createDiv({cls:"brushti_table_div"});
@@ -145,9 +137,9 @@ export class test_gnerate_view extends ItemView {
     headerRow.createEl("th", { text: "科目" }); // 第一列的标题  
     headerRow.createEl("th", { text: "题型" }); // 第二列的标题  
     headerRow.createEl("th", { text: "题数" }); // 第三列的标题  
-
+    headerRow.createEl("th", { text: "题目" });
     // 添加表格主体  
-    const tbody = table.createEl("tbody");  
+    this.tbody = table.createEl("tbody");  
 
     const button_reset = buttonDiv.createEl("button", {  
       text: "重置预设", // 按钮文本  
@@ -156,25 +148,43 @@ export class test_gnerate_view extends ItemView {
 
   button_reset.addEventListener("click", () => {  
     new Notice("重置题目预设",1000)
-    this.reset_table(tbody)
+    this.reset_table(this.tbody)
     this.test_list = []
 });  
-  
+  const create_test_div = container.createDiv({cls:"setting_div"});  
+  const create_test_button = create_test_div.createEl("button",{
+    text:"生成试卷"
+  });  
+
+  create_test_button.addEventListener("click", () => {  
+    this.create_test_view()
+});  
+
   }
 
-  async parse_table(tbody,table_data: any[][]){
+
+
+  async parse_table(tbody: HTMLTableElement | HTMLTableSectionElement,table_data: any[][]){
     this.reset_table(tbody)
     table_data.forEach((data: any[])=>{
       const row = tbody.createEl("tr");  
       row.createEl("td", { text: data[0] });  
       row.createEl("td", { text: data[1] });  
       row.createEl("td", { text: data[2]});  
+      const c3 = row.createEl("td");
+      const u3 = c3.createEl("ul")
+      let r3 = '';
+      data[3].forEach((s: any) => {
+        let link_name = s.replace(/\.md$/, "");
+        // link_name = "[["+link_name+"]]"
+        u3.createEl("li",{text:link_name})
+      });
     });
 
   }
 
   async reset_table(tbody:HTMLTableElement){
-    tbody.innerHTML = ''
+    this.tbody.innerHTML = ''
   }
 
   async set_mode_list(suject: string,folderPath:string){
@@ -198,9 +208,28 @@ export class test_gnerate_view extends ItemView {
       let uniqueArray = mode_list.filter((value, index) => {  
         return mode_list.indexOf(value) === index;  
       });  
-      console.log(typeof(uniqueArray))
       return uniqueArray
   }}
+
+  async create_test_page(){
+
+  }
+
+  async fetch(req){
+    const folder = this.app.vault.getAbstractFileByPath(this.path); 
+    let suject_req = []
+    for (const file of folder.children) {  
+      if (file instanceof TFile) {  
+        let metadata = this.app.metadataCache.getFileCache(file);
+        let front_matter = metadata.frontmatter
+        if ((front_matter['class'] == req[0]) && (front_matter['mode'] == req[1])){
+          //console.log(metadata['class'])
+          suject_req.push(file.name)
+        }
+      }  
+    } 
+    return(suject_req)
+  }
 
   async fetch_test(){
     const folder = this.app.vault.getAbstractFileByPath(this.path); 
@@ -223,10 +252,10 @@ export class test_gnerate_view extends ItemView {
       req[3] = selet_test_list
       // console.log(selet_test_list)
     });
-    console.log(this.test_list)
-  }
+    // console.log(this.test_list)
+  } 
 
-  async getRandomElements(arr, count) {  
+  async getRandomElements(arr: string | any[], count: number) {  
     // 确保 count 不超过数组的长度  
     if (count > arr.length) {  
       new Notice("请求的数量超过数组长度", 1000)
@@ -246,6 +275,27 @@ export class test_gnerate_view extends ItemView {
     const result = Array.from(resultSet).map(index => arr[index]);  
     return result;  
   } 
+
+  async create_test_view() {
+    const { workspace } = this.app;
+
+    let leaf: WorkspaceLeaf | null = null;
+    const leaves = workspace.getLeavesOfType(new_test);
+
+    if (leaves.length > 0) {
+      // A leaf with our view already exists, use that
+      leaf = leaves[0];
+    } else {
+      // Our view could not be found in the workspace, create a new leaf
+      // in the right sidebar for it
+      leaf = workspace.getLeaf(false);  
+      await leaf.setViewState({ type: new_test, active: true });
+    }
+
+    // "Reveal" the leaf in case it is in a collapsed sidebar
+    workspace.revealLeaf(leaf);
+
+  }
 
   async onClose() {
     // Nothing to clean up.
