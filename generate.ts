@@ -3,6 +3,13 @@ import {quiz_view,new_test} from "quiz"
 
 export const test_generate = "test-view";
 
+function read_property(filepath,property){
+  const tf = this.app.vault.getFileByPath(filepath)
+  let metadata = this.app.metadataCache.getFileCache(tf);
+  let front_matter = metadata.frontmatter
+  return(front_matter[property])
+}
+
 async function getAttributeValuesFromFolder(folderPath = 'test_bank') {  
   let class_list = []
   // 获取文件夹下的所有文件  
@@ -117,9 +124,7 @@ export class test_gnerate_view extends ItemView {
       let req = [selectBox.value,mode_select_Box.value,numberValue]
       let req_test = await this.fetch(req)
       let selet_test_list = await this.getRandomElements(req_test,req[2])
-      console.log(req_test)
       this.test_list.push([selectBox.value,mode_select_Box.value,numberValue,selet_test_list])
-      console.log(this.test_list)
       this.parse_table(this.tbody,this.test_list)
   });  
 
@@ -157,6 +162,7 @@ export class test_gnerate_view extends ItemView {
   });  
 
   create_test_button.addEventListener("click", () => {  
+    this.create_test_page()
     this.create_test_view()
 });  
 
@@ -212,7 +218,28 @@ export class test_gnerate_view extends ItemView {
   }}
 
   async create_test_page(){
+    let test_concat = [];
+    const tl = [];
+    this.test_list.forEach(e=>{
+      test_concat = test_concat.concat(e[3])
+    });
+    console.log(test_concat);
 
+    test_concat.forEach(async ts=>{
+      const test = {id:ts,
+        tf: this.app.vault.getFileByPath(this.path+"/"+ts),
+        cls: read_property(this.path+"/"+ts,"class"),
+        mode: read_property(this.path+"/"+ts,"mode")}
+
+       tl.push(test)
+    });
+
+
+
+    tl.forEach(async t=>{
+      console.log(t)
+      await this.test_parse(t.tf)
+    })
   }
 
   async fetch(req){
@@ -295,6 +322,11 @@ export class test_gnerate_view extends ItemView {
     // "Reveal" the leaf in case it is in a collapsed sidebar
     workspace.revealLeaf(leaf);
 
+  }
+
+  async test_parse(tf:TFile){
+    let plain_text = await this.app.vault.read(tf)
+    console.log(plain_text)
   }
 
   async onClose() {
