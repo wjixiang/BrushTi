@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice } from "obsidian";
+import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin} from "obsidian";
 import {quiz_view,new_test} from "quiz"
 
 export const test_generate = "test-view";
@@ -162,9 +162,10 @@ export class test_gnerate_view extends ItemView {
   });  
 
   create_test_button.addEventListener("click", () => {  
-    this.create_test_page()
-    this.create_test_view()
+    this.create_test_page(quiz_div)
 });  
+
+  const quiz_div = container.createDiv({cls:"quiz_div"});  
 
   }
 
@@ -217,30 +218,79 @@ export class test_gnerate_view extends ItemView {
       return uniqueArray
   }}
 
-  async create_test_page(){
+  async create_test_page(quiz_div){
     let test_concat = [];
     const tl = [];
     this.test_list.forEach(e=>{
       test_concat = test_concat.concat(e[3])
     });
-    console.log(test_concat);
+    // console.log(test_concat);
 
     test_concat.forEach(async ts=>{
       const test = {id:ts,
         tf: this.app.vault.getFileByPath(this.path+"/"+ts),
         cls: read_property(this.path+"/"+ts,"class"),
-        mode: read_property(this.path+"/"+ts,"mode")}
+        mode: read_property(this.path+"/"+ts,"mode"),
+        q:"",
+        a:"",
+        div:HTMLElement
+      }
 
        tl.push(test)
     });
 
-
-
     tl.forEach(async t=>{
-      console.log(t)
-      await this.test_parse(t.tf)
+      // console.log(t)
+      let text =  await this.test_parse(t.tf)
+      t.q = text["Q"]
+      t.a = text["A"]
+      t.div = quiz_div.createDiv({
+        cls:"quiz",
+        id:t.id
+      })
+      t.div.createEl("p",{text:t.q})
     })
+
+    console.log(tl)
+
   }
+
+  parseMarkdownHeadings(mdString) {  
+    // Split the string into lines  
+    const lines = mdString.split('\n');  
+    // Initialize an object to hold the markdown sections  
+    let sections = {};  
+    // Temporary variable to hold the current section heading  
+    let currentHeading = '';  
+    // Temporary variable to hold the current section content  
+    let currentContent = [];  
+
+    lines.forEach(line => {  
+        // Check if line is a H1 heading  
+        if (line.startsWith('# ')) {  
+            // If a current section exists, save it before starting a new one  
+            if (currentHeading) {  
+                sections[currentHeading] = currentContent.join('\n').trim();  
+            }  
+            // Update the current heading  
+            currentHeading = line.substring(2).trim();  
+            // Reset current content  
+            currentContent = [];  
+        } else {  
+            // If not a heading, add line to current section content  
+            if (currentHeading) {  
+                currentContent.push(line);  
+            }  
+        }  
+    });  
+
+    // Add the last section to the sections object  
+    if (currentHeading) {  
+        sections[currentHeading] = currentContent.join('\n').trim();  
+    }  
+
+    return sections;  
+}  
 
   async fetch(req){
     const folder = this.app.vault.getAbstractFileByPath(this.path); 
@@ -303,30 +353,39 @@ export class test_gnerate_view extends ItemView {
     return result;  
   } 
 
-  async create_test_view() {
-    const { workspace } = this.app;
-
-    let leaf: WorkspaceLeaf | null = null;
-    const leaves = workspace.getLeavesOfType(new_test);
-
-    if (leaves.length > 0) {
-      // A leaf with our view already exists, use that
-      leaf = leaves[0];
-    } else {
-      // Our view could not be found in the workspace, create a new leaf
-      // in the right sidebar for it
-      leaf = workspace.getLeaf(false);  
-      await leaf.setViewState({ type: new_test, active: true });
-    }
-
-    // "Reveal" the leaf in case it is in a collapsed sidebar
-    workspace.revealLeaf(leaf);
-
-  }
 
   async test_parse(tf:TFile){
     let plain_text = await this.app.vault.read(tf)
-    console.log(plain_text)
+    // const test = {q:"",a:""}
+
+    let md_parse = this.parseMarkdownHeadings(plain_text)
+    // console.log(md_parse)
+
+    // //console.log(plain_text)
+    // const regex_1 = /Q\s*==\s*([\s\S]*?)\s*A\s*==/;  
+
+    // const matches_1 = plain_text.match(regex_1);  
+
+    // if (matches_1 && matches_1[1]) {  
+    //     const content = matches_1[1].trim();  
+    //     console.log("Q:\n",content); // 输出提取的内容  
+    //     test.q = content
+    // } else {  
+    //     console.log('未找到问题');  
+    // } 
+
+    // const regex_2 =/A\s*==\n([\s\S]*?)\n(?=[A-Z] ==|$)/;  
+
+    // const matches_2 = plain_text.match(regex_2);  
+
+    // if (matches_2 && matches_2[1]) {  
+    //     const content = matches_2[1].trim();  
+    //     console.log("A:\n",content); // 输出提取的内容  
+    //     test.a = content
+    // } else {  
+    //     console.log('未找到答案');  
+    // } 
+    return(md_parse)
   }
 
   async onClose() {

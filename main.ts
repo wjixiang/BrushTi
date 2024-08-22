@@ -18,12 +18,7 @@ export default class brushtee extends Plugin {
       test_generate, 
       (leaf) => new test_gnerate_view(leaf)
     );
-
-    this.registerView(
-      new_test, 
-      (leaf) => new quiz_view(leaf)
-    );
-
+    
     this.addRibbonIcon('circle', 'active panel', () => {
       new Notice('active setting panel');
       this.activateView();
