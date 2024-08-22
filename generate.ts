@@ -248,10 +248,64 @@ export class test_gnerate_view extends ItemView {
         cls:"quiz",
         id:t.id
       })
-      t.div.createEl("p",{text:t.q})
+      //
+
+      t.des_div = t.div.createDiv({
+        cls:"q_des"
+      })
+
+      t.des_div.createEl('p',{
+        text:t.cls+" · "+t.mode,
+        cls:"des_text"
+      })
+
+      //
+      t.q_div = t.div.createDiv({
+        cls:"q_div"
+      })
+      let pt = t.q.split("\n")
+      pt.forEach(p=>{
+        t.q_div.createEl("p",{text:p})
+        t.q_div.createEl('br')
+      })
+
+      //
+      t.answer_select_div = t.div.createDiv({
+        cls:'answer_select'
+      })
+
+      if (t.mode=='A1'||t.mode =='A2'){
+        const options = [  
+          { value: 'A', label: 'A' },  
+          { value: 'B', label: 'B' },  
+          { value: 'C', label: 'C' },
+          { value: 'D', label: 'D' },
+          { value: 'E', label: 'E' } 
+      ];  
+      options.forEach(option => {  
+        // 创建一个单选框元素  
+        t.answer_bow = t.answer_select_div.createEl('input');  
+        t.answer_bow.type = 'radio';  
+        t.answer_bow.name = t.id; // 同组单选框名称  
+        t.answer_bow.value = option.value; // 设置单选框的值  
+
+        // 创建标签元素  
+        const radioLabel = t.answer_select_div.createEl('label');  
+        radioLabel.textContent = option.label; // 设置标签文本  
+   });
+      t.toggle_input = t.answer_select_div.createEl('button',{
+        text:"切换为手动输入"
+      })
+      t.toggle_input.addEventListener("click", () => {  
+        t.answer_select_div.innerHTML = ''
+        t.answer_input = t.answer_select_div.createEl('input',{
+          text:"输入选项",
+          value:0
+        })
+    });  
+      }
     })
 
-    console.log(tl)
 
   }
 

@@ -44,3 +44,13 @@ If your plugin does not need CSS, delete this file.
 .add_button{
     margin-right: 20px
 }
+
+.quiz {  
+    border: 3px dashed blue; /* 边框宽度为3px，虚线，颜色为蓝色 */  
+    padding: 10px;  
+    margin: 10px;  
+}  
+
+.des_text{
+    color:burlywood
+}
