@@ -54,3 +54,45 @@ If your plugin does not need CSS, delete this file.
 .des_text{
     color:burlywood
 }
+
+.toggle-button-div {  
+    display: flex;  
+    align-items: center;  
+    margin-top: 10px;  
+}  
+
+.toggle-button {  
+    position: relative;  
+    width: 100px;  
+    height: 25px;  
+    background-color: #ccc;  
+    border-radius: 25px;  
+    cursor: pointer;  
+    transition: background-color 0.3s;  
+}  
+
+.toggle-button::before {  
+    content: "";  
+    position: absolute;  
+    width: 21px;  
+    height: 21px;  
+    background-color: white;  
+    border-radius: 50%;  
+    top: 2px;  
+    left: 2px;  
+    transition: transform 0.3s;  
+}  
+
+.toggle-button.active {  
+    background-color: #6200ea;  
+}  
+
+.toggle-button.active::before {  
+    transform: translateX(79px);  
+}  
+
+.toggle-state {  
+    margin-left: 15px;  
+    font-size: 16px;  
+    color: #333;  
+}

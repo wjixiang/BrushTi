@@ -162,6 +162,7 @@ export class test_gnerate_view extends ItemView {
   });  
 
   create_test_button.addEventListener("click", () => {  
+    quiz_div.empty()
     this.create_test_page(quiz_div)
 });  
 
@@ -293,15 +294,56 @@ export class test_gnerate_view extends ItemView {
         const radioLabel = t.answer_select_div.createEl('label');  
         radioLabel.textContent = option.label; // 设置标签文本  
    });
-      t.toggle_input = t.answer_select_div.createEl('button',{
-        text:"切换为手动输入"
+      t.quiz_control_div = t.div.createDiv({
+        cls:"control_div"
       })
+
+      t.toggle_button_div = t.quiz_control_div.createDiv({
+        cls:"toggle-button-div"
+      })
+
+      t.toggle_input = t.toggle_button_div.createEl('button',{
+        text:"选择模式",
+        cls:"toggle-button"
+      })
+    //   t.input_from_state = t.quiz_control_div.createEl("span", {  
+    //     text: "选择模式", // 初始状态  
+    //     cls: "toggle-state"  
+    // }); 
+
       t.toggle_input.addEventListener("click", () => {  
-        t.answer_select_div.innerHTML = ''
-        t.answer_input = t.answer_select_div.createEl('input',{
-          text:"输入选项",
-          value:0
-        })
+        t.toggle_input.classList.toggle("active");  
+        const isActive = t.toggle_input.innerText === "选择模式";  
+        t.toggle_input.setText(isActive ? "输入模式" : "选择模式");  
+        // t.input_from_state.setText(`状态: ${isActive ? "选择模式" : "输入模式"}`);  
+
+        if(isActive){
+          t.answer_select_div.empty()
+          t.answer_input = t.answer_select_div.createEl('input',{
+            text:"输入选项",
+            value:0
+          });
+        }else{
+          t.answer_select_div.empty()
+          const options = [  
+            { value: 'A', label: 'A' },  
+            { value: 'B', label: 'B' },  
+            { value: 'C', label: 'C' },
+            { value: 'D', label: 'D' },
+            { value: 'E', label: 'E' } 
+        ];  
+        options.forEach(option => {  
+          // 创建一个单选框元素  
+          t.answer_bow = t.answer_select_div.createEl('input');  
+          t.answer_bow.type = 'radio';  
+          t.answer_bow.name = t.id; // 同组单选框名称  
+          t.answer_bow.value = option.value; // 设置单选框的值  
+  
+          // 创建标签元素  
+          const radioLabel = t.answer_select_div.createEl('label');  
+          radioLabel.textContent = option.label; // 设置标签文本  
+     });
+        }
     });  
       }
     })
