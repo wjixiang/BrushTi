@@ -62,6 +62,7 @@ If your plugin does not need CSS, delete this file.
 }  
 
 .toggle-button {  
+    justify-content: center;
     position: relative;  
     width: 100px;  
     height: 25px;  
@@ -96,3 +97,16 @@ If your plugin does not need CSS, delete this file.
     font-size: 16px;  
     color: #333;  
 }
+
+.control_div{
+    display: flex;
+}
+
+.control_div > div{
+    /*flex: 1;  让子 div 均分容器宽度 */
+    margin: 10px; /* 添加间距 */
+}
+
+.red-border {  
+    border-color: red;  
+} 

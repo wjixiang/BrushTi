@@ -18,7 +18,7 @@ export default class brushtee extends Plugin {
       test_generate, 
       (leaf) => new test_gnerate_view(leaf)
     );
-    
+
     this.addRibbonIcon('circle', 'active panel', () => {
       new Notice('active setting panel');
       this.activateView();
@@ -43,7 +43,7 @@ export default class brushtee extends Plugin {
     } else {
       // Our view could not be found in the workspace, create a new leaf
       // in the right sidebar for it
-      leaf = workspace.getRightLeaf(false); // 修改这一行  
+      leaf = workspace.getLeaf(true); // 修改这一行  
       await leaf.setViewState({ type: test_generate, active: true });
     }
 

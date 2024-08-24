@@ -156,8 +156,8 @@ export class test_gnerate_view extends ItemView {
     this.reset_table(this.tbody)
     this.test_list = []
 });  
-  const create_test_div = container.createDiv({cls:"setting_div"});  
-  const create_test_button = create_test_div.createEl("button",{
+  // const create_test_div = container.createDiv({cls:"setting_div"});  
+  const create_test_button = buttonDiv.createEl("button",{
     text:"生成试卷"
   });  
 
@@ -245,6 +245,8 @@ export class test_gnerate_view extends ItemView {
       let text =  await this.test_parse(t.tf)
       t.q = text["Q"]
       t.a = text["A"]
+      t.state = 0 //0:未提交；1：回答正确；2：回答错误
+      t.answer = null
       t.div = quiz_div.createDiv({
         cls:"quiz",
         id:t.id
@@ -283,12 +285,20 @@ export class test_gnerate_view extends ItemView {
           { value: 'D', label: 'D' },
           { value: 'E', label: 'E' } 
       ];  
+
+      t.answer_bow = {
+        A:0,
+        B:0,
+        C:0,
+        D:0,
+        E:0
+      }
       options.forEach(option => {  
         // 创建一个单选框元素  
-        t.answer_bow = t.answer_select_div.createEl('input');  
-        t.answer_bow.type = 'radio';  
-        t.answer_bow.name = t.id; // 同组单选框名称  
-        t.answer_bow.value = option.value; // 设置单选框的值  
+        t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
+        t.answer_bow[option.value].type = 'radio';  
+        t.answer_bow[option.value].name = t.id; // 同组单选框名称  
+        t.answer_bow[option.value].value = option.value; // 设置单选框的值  
 
         // 创建标签元素  
         const radioLabel = t.answer_select_div.createEl('label');  
@@ -300,6 +310,59 @@ export class test_gnerate_view extends ItemView {
 
       t.toggle_button_div = t.quiz_control_div.createDiv({
         cls:"toggle-button-div"
+      })
+
+      t.reveal_button_div = t.quiz_control_div.createDiv({
+        cls:"reveal-button-div"
+      })
+
+      t.reveal_button = t.reveal_button_div.createEl('button',{
+        text:"提交",
+        cls:"reveal-button"
+      })
+
+      t.reveal_button.addEventListener("click",() =>{
+        if(t.state==0){
+          //get input method
+          if(t.toggle_input.innerText=="选择模式"){
+            // console.log(t.answer_bow)
+            for(const opt in t.answer_bow){
+              // console.log(opt)
+              if(t.answer_bow[opt].checked){
+                console.log(t.answer_bow[opt].value)
+                t.answer = t.answer_bow[opt].value
+              }                
+            }
+            if(t.answer==null){
+              new Notice("未作答",1000)
+            }else{
+               const standard_answer = t.a.replace(" ","")
+               if(standard_answer == t.answer){
+                new Notice("回答正确",1000)
+                t.state = 1
+                 //change color
+                t.div.setAttribute('style', 'border-color: green;');
+               }else{
+                new Notice("回答错误",1000)
+                t.state = 2
+                 //change color
+                 t.div.setAttribute('style', 'border-color: red;');
+               }
+                //lock option
+                for(const opt in t.answer_bow){
+                  t.answer_bow[opt].disabled = true
+                }
+                t.toggle_input.disabled = true
+
+     
+            }
+            
+          }else{
+
+          }
+        }else{
+          new Notice("已提交",1000);
+        }
       })
 
       t.toggle_input = t.toggle_button_div.createEl('button',{
@@ -332,12 +395,20 @@ export class test_gnerate_view extends ItemView {
             { value: 'D', label: 'D' },
             { value: 'E', label: 'E' } 
         ];  
+  
+        t.answer_bow = {
+          A:0,
+          B:0,
+          C:0,
+          D:0,
+          E:0
+        }
         options.forEach(option => {  
           // 创建一个单选框元素  
-          t.answer_bow = t.answer_select_div.createEl('input');  
-          t.answer_bow.type = 'radio';  
-          t.answer_bow.name = t.id; // 同组单选框名称  
-          t.answer_bow.value = option.value; // 设置单选框的值  
+          t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
+          t.answer_bow[option.value].type = 'radio';  
+          t.answer_bow[option.value].name = t.id; // 同组单选框名称  
+          t.answer_bow[option.value].value = option.value; // 设置单选框的值  
   
           // 创建标签元素  
           const radioLabel = t.answer_select_div.createEl('label');  
