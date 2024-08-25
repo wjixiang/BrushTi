@@ -351,7 +351,7 @@ export class test_gnerate_view extends ItemView {
             const answer = t.answer_input.value.replace(" ","")
             console.log("input answer:",answer)
             //judge answer
-            if(answer == t.a.replace(" ","")){
+            if(answer.toUpperCase() == t.a.replace(" ","").toUpperCase()){
               this.right_change(t)
             }else{
               this.wrong_change(t)
