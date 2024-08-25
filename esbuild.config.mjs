@@ -37,7 +37,7 @@ const context = await esbuild.context({
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
-	outfile: "main.js",
+	outdir:"./obsidian_test_vault/.obsidian/plugins/BrushTi",
 });
 
 if (prod) {

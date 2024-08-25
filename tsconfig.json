@@ -10,6 +10,8 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
+    "outDir": "./obsidian_test_vault/.obsidian/plugins/BrushTi", // 设置编译结果的位置  
+    "rootDir": "./src", // 设置源文件的位置   
 	"strictNullChecks": true,
     "lib": [
       "DOM",
@@ -20,5 +22,6 @@
   },
   "include": [
     "**/*.ts"
-  ]
+  ],
+  
 }

@@ -15,8 +15,8 @@ export default class brushtee extends Plugin {
     //alert(test1.testfile.length)
 
     this.registerView(
-      test_generate, 
-      (leaf) => new test_gnerate_view(leaf)
+      test_generate,
+      (leaf) => new test_gnerate_view(leaf) 
     );
 
     this.addRibbonIcon('circle', 'active panel', () => {
@@ -45,12 +45,13 @@ export default class brushtee extends Plugin {
       // in the right sidebar for it
       leaf = workspace.getLeaf(true); // 修改这一行  
       await leaf.setViewState({ type: test_generate, active: true });
-    }
+    } 
 
     // "Reveal" the leaf in case it is in a collapsed sidebar
     workspace.revealLeaf(leaf);
+    console.log("123")
 
-  }
+  }   
 
   async getAttributeValuesFromFolder(folderPath = 'test_bank') {  
     let class_list = []
