@@ -61,8 +61,9 @@ export class test_gnerate_view extends ItemView {
     container.empty();
     container.createEl("h4", { text: "随机抽题" });
 
+    const config_div = container.createDiv({cls:"config-div"})
     // Create a div for the dropdown  
-    const dropdownDiv = container.createDiv({cls:"setting_div"});  
+    const dropdownDiv = config_div.createDiv({cls:"setting_div"});  
 
     // Create a dropdown select box  
     dropdownDiv.createEl("p",{text:"科目"})
@@ -90,7 +91,7 @@ export class test_gnerate_view extends ItemView {
     }); 
   
     // Create a div for the input box  
-    const mode_select_div = container.createDiv({cls:"setting_div"});  
+    const mode_select_div = config_div.createDiv({cls:"setting_div"});  
 
     mode_select_div.createEl("p",{text:"题型"})
 
@@ -98,7 +99,7 @@ export class test_gnerate_view extends ItemView {
       cls: "brushti_mode_select", // Optional: Add a custom class for styling  
     }); 
 
-    const numberDiv = container.createDiv({cls:"setting_div"});
+    const numberDiv = config_div.createDiv({cls:"setting_div"});
     numberDiv.createEl("p",{text:"题数"})
 
     const numberInputBox = numberDiv.createEl("input", {  
@@ -107,7 +108,7 @@ export class test_gnerate_view extends ItemView {
       value:1
   }); 
 
-  const buttonDiv = container.createDiv({ cls: "button_div" });  
+  const buttonDiv = config_div.createDiv({ cls: "button_div" });  
   const button_add = buttonDiv.createEl("button", {  
       text: "新建题目", // 按钮文本  
       cls: "add_button",  
