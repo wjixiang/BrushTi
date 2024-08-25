@@ -338,26 +338,25 @@ export class test_gnerate_view extends ItemView {
             }else{
                const standard_answer = t.a.replace(" ","")
                if(standard_answer == t.answer){
-                new Notice("回答正确",1000)
-                t.state = 1
-                 //change color
-                t.div.setAttribute('style', 'border-color: green;');
+                this.right_change(t)
                }else{
-                new Notice("回答错误",1000)
-                t.state = 2
-                 //change color
-                 t.div.setAttribute('style', 'border-color: red;');
+                this.wrong_change(t)
                }
                 //lock option
-                for(const opt in t.answer_bow){
-                  t.answer_bow[opt].disabled = true
-                }
-                t.toggle_input.disabled = true
-
+               this.lock_option(t)
      
             }
             
           }else{
+            const answer = t.answer_input.value.replace(" ","")
+            console.log("input answer:",answer)
+            //judge answer
+            if(answer == t.a.replace(" ","")){
+              this.right_change(t)
+            }else{
+              this.wrong_change(t)
+            }
+            this.lock_option(t)
 
           }
         }else{
@@ -383,8 +382,7 @@ export class test_gnerate_view extends ItemView {
         if(isActive){
           t.answer_select_div.empty()
           t.answer_input = t.answer_select_div.createEl('input',{
-            text:"输入选项",
-            value:0
+            text:"输入选项"
           });
         }else{
           t.answer_select_div.empty()
@@ -417,6 +415,7 @@ export class test_gnerate_view extends ItemView {
         }
     });  
       }
+
     })
 
 
@@ -553,6 +552,28 @@ export class test_gnerate_view extends ItemView {
     //     console.log('未找到答案');  
     // } 
     return(md_parse)
+  }
+
+  async right_change(t){
+    new Notice("回答正确",1000)
+    t.state = 1
+      //change color
+    t.div.setAttribute('style', 'border-color: green;');
+  }
+
+  async wrong_change(t){
+    new Notice("回答错误",1000)
+    t.state = 2
+     //change color
+    t.div.setAttribute('style', 'border-color: red;');
+  }
+
+  async lock_option(t){
+    for(const opt in t.answer_bow){
+      t.answer_bow[opt].disabled = true
+    }
+    t.toggle_input.disabled = true
+    t.answer_input.disabled = true
   }
 
   async onClose() {

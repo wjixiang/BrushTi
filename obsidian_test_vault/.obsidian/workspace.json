@@ -21,7 +21,7 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "test_bank/ct2023-10-29-01-52-53.md",
+                "file": "test_bank/ct2024-8-15-05-43-49.md",
                 "mode": "source",
                 "source": false
               }
@@ -56,7 +56,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "",
+                "query": "X 真题",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -73,7 +73,8 @@
               "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "horizontal",
@@ -93,7 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "test_bank/ct2023-10-29-01-52-53.md",
+                "file": "test_bank/ct2024-8-15-05-43-49.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -110,7 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "test_bank/ct2023-10-29-01-52-53.md",
+                "file": "test_bank/ct2024-8-15-05-43-49.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -133,7 +134,7 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "test_bank/ct2023-10-29-01-52-53.md"
+                "file": "test_bank/ct2024-8-15-05-43-49.md"
               }
             }
           }
@@ -156,13 +157,14 @@
       "BrushTee:active panel": false
     }
   },
-  "active": "9b6c985b832fdf52",
+  "active": "c9436a51755b42c9",
   "lastOpenFiles": [
+    "test_bank/ct2023-10-29-01-52-53.md",
+    "test_bank/ct2024-8-15-05-43-49.md",
     "test_bank/ct2023-10-29-09-25-50.md",
     "test_bank/ct2023-10-29-10-24-50.md",
     "test_bank/ct2023-10-29-10-44-09.md",
     "test_bank/ct2023-10-29-03-05-33.md",
-    "test_bank/ct2023-10-29-01-52-53.md",
     "test_bank/ct2023-10-27-11-06-41.md",
     "test_bank/ct2023-10-27-10-32-21.md",
     "test_bank/ct2023-10-29-02-35-10.md",
@@ -182,7 +184,6 @@
     "test_bank/ct2023-11-14-11-43-23.md",
     "test_bank/ct2023-11-9-09-28-50.md",
     "test_bank/ct2023-11-9-09-26-17.md",
-    "test_bank/ct2023-11-9-09-20-44.md",
-    "test_bank/ct2023-11-9-09-09-15.md"
+    "test_bank/ct2023-11-9-09-20-44.md"
   ]
 }
