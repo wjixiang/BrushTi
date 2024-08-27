@@ -1,5 +1,6 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin} from "obsidian";
 import {quiz_view,new_test} from "quiz"
+import { text } from "stream/consumers";
 
 export const test_generate = "test-view";
 
@@ -278,143 +279,12 @@ export class test_gnerate_view extends ItemView {
         cls:'answer_select'
       })
 
+      //input control zone
+
       if (t.mode=='A1'||t.mode =='A2'){
-        const options = [  
-          { value: 'A', label: 'A' },  
-          { value: 'B', label: 'B' },  
-          { value: 'C', label: 'C' },
-          { value: 'D', label: 'D' },
-          { value: 'E', label: 'E' } 
-      ];  
-
-      t.answer_bow = {
-        A:0,
-        B:0,
-        C:0,
-        D:0,
-        E:0
-      }
-      options.forEach(option => {  
-        // 创建一个单选框元素  
-        t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
-        t.answer_bow[option.value].type = 'radio';  
-        t.answer_bow[option.value].name = t.id; // 同组单选框名称  
-        t.answer_bow[option.value].value = option.value; // 设置单选框的值  
-
-        // 创建标签元素  
-        const radioLabel = t.answer_select_div.createEl('label');  
-        radioLabel.textContent = option.label; // 设置标签文本  
-   });
-      t.quiz_control_div = t.div.createDiv({
-        cls:"control_div"
-      })
-
-      t.toggle_button_div = t.quiz_control_div.createDiv({
-        cls:"toggle-button-div"
-      })
-
-      t.reveal_button_div = t.quiz_control_div.createDiv({
-        cls:"reveal-button-div"
-      })
-
-      t.reveal_button = t.reveal_button_div.createEl('button',{
-        text:"提交",
-        cls:"reveal-button"
-      })
-
-      t.reveal_button.addEventListener("click",() =>{
-        if(t.state==0){
-          //get input method
-          if(t.toggle_input.innerText=="选择模式"){
-            // console.log(t.answer_bow)
-            for(const opt in t.answer_bow){
-              // console.log(opt)
-              if(t.answer_bow[opt].checked){
-                console.log(t.answer_bow[opt].value)
-                t.answer = t.answer_bow[opt].value
-              }                
-            }
-            if(t.answer==null){
-              new Notice("未作答",1000)
-            }else{
-               const standard_answer = t.a.replace(" ","")
-               if(standard_answer == t.answer){
-                this.right_change(t)
-               }else{
-                this.wrong_change(t)
-               }
-                //lock option
-               this.lock_option(t)
-     
-            }
-            
-          }else{
-            const answer = t.answer_input.value.replace(" ","")
-            console.log("input answer:",answer)
-            //judge answer
-            if(answer.toUpperCase() == t.a.replace(" ","").toUpperCase()){
-              this.right_change(t)
-            }else{
-              this.wrong_change(t)
-            }
-            this.lock_option(t)
-
-          }
-        }else{
-          new Notice("已提交",1000);
-        }
-      })
-
-      t.toggle_input = t.toggle_button_div.createEl('button',{
-        text:"选择模式",
-        cls:"toggle-button"
-      })
-    //   t.input_from_state = t.quiz_control_div.createEl("span", {  
-    //     text: "选择模式", // 初始状态  
-    //     cls: "toggle-state"  
-    // }); 
-
-      t.toggle_input.addEventListener("click", () => {  
-        t.toggle_input.classList.toggle("active");  
-        const isActive = t.toggle_input.innerText === "选择模式";  
-        t.toggle_input.setText(isActive ? "输入模式" : "选择模式");  
-        // t.input_from_state.setText(`状态: ${isActive ? "选择模式" : "输入模式"}`);  
-
-        if(isActive){
-          t.answer_select_div.empty()
-          t.answer_input = t.answer_select_div.createEl('input',{
-            text:"输入选项"
-          });
-        }else{
-          t.answer_select_div.empty()
-          const options = [  
-            { value: 'A', label: 'A' },  
-            { value: 'B', label: 'B' },  
-            { value: 'C', label: 'C' },
-            { value: 'D', label: 'D' },
-            { value: 'E', label: 'E' } 
-        ];  
-  
-        t.answer_bow = {
-          A:0,
-          B:0,
-          C:0,
-          D:0,
-          E:0
-        }
-        options.forEach(option => {  
-          // 创建一个单选框元素  
-          t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
-          t.answer_bow[option.value].type = 'radio';  
-          t.answer_bow[option.value].name = t.id; // 同组单选框名称  
-          t.answer_bow[option.value].value = option.value; // 设置单选框的值  
-  
-          // 创建标签元素  
-          const radioLabel = t.answer_select_div.createEl('label');  
-          radioLabel.textContent = option.label; // 设置标签文本  
-     });
-        }
-    });  
+        this.A1_control(t)
+      }else if(t.mode == "X"){
+        this.X_control(t)
       }
 
     })
@@ -569,7 +439,21 @@ export class test_gnerate_view extends ItemView {
     t.div.setAttribute('style', 'border-color: red;');
   }
 
+  async color_change(t:any){
+    if(t.state==1){
+      t.div.setAttribute('style', 'border-color: green;');
+    }
+    if(t.state==2){
+      t.div.setAttribute('style', 'border-color: red;');
+    }
+  }
+
   async lock_option(t){
+    t.answer_select_div.disabled = true
+    const checkboxes = t.answer_select_div.querySelectorAll('input[type="checkbox"]'); 
+    checkboxes.forEach(box=>{
+      box.disabled = true
+    })
     for(const opt in t.answer_bow){
       t.answer_bow[opt].disabled = true
     }
@@ -580,4 +464,254 @@ export class test_gnerate_view extends ItemView {
   async onClose() {
     // Nothing to clean up.
   }
+
+  async reveal_answer(t){
+    t.div.createEl("hr")
+    t.div.createEl("p",{
+      cls:"standard-answer",
+      text:t.standard_answer
+    })
+  }
+
+  async A1_control(t:any){
+    //转化标准答案
+      t.standard_answer = t.a.replace(" ","")
+
+    //创建单选栏
+    this.create_single_select(t)
+    //创建控制栏
+    t.quiz_control_div = t.div.createDiv({
+      cls:"control_div"
+    })
+
+    t.toggle_button_div = t.quiz_control_div.createDiv({
+      cls:"toggle-button-div"
+    })
+
+    this.create_reveal_button(t)
+
+    t.reveal_button.addEventListener("click",() =>{
+      if(t.state==0){
+        //get input method
+        if(t.toggle_input.innerText=="选择模式"){
+          // console.log(t.answer_bow)
+          for(const opt in t.answer_bow){
+            // console.log(opt)
+            if(t.answer_bow[opt].checked){
+              console.log(t.answer_bow[opt].value)
+              t.answer = t.answer_bow[opt].value
+            }                
+          }
+          if(t.answer==null){
+            new Notice("未作答",1000)
+          }else{
+             const standard_answer = t.a.replace(" ","")
+             if(standard_answer == t.answer){
+              this.right_change(t)
+             }else{
+              this.wrong_change(t)
+             }
+              //lock option
+             this.lock_option(t)
+             this.reveal_answer(t)
+   
+          }
+          
+        }else{
+          const answer = t.answer_input.value.replace(" ","")
+          console.log("input answer:",answer)
+          //judge answer
+          if(answer.toUpperCase() == t.a.replace(" ","").toUpperCase()){
+            this.right_change(t)
+          }else{
+            this.wrong_change(t)
+          }
+          this.lock_option(t)
+          this.reveal_answer(t)
+        }
+      }else{
+        new Notice("已提交",1000);
+      }
+    })
+
+    t.toggle_input = t.toggle_button_div.createEl('button',{
+      text:"选择模式",
+      cls:"toggle-button"
+    })
+  //   t.input_from_state = t.quiz_control_div.createEl("span", {  
+  //     text: "选择模式", // 初始状态  
+  //     cls: "toggle-state"  
+  // }); 
+
+    t.toggle_input.addEventListener("click", () => {  
+      t.toggle_input.classList.toggle("active");  
+      const isActive = t.toggle_input.innerText === "选择模式";  
+      t.toggle_input.setText(isActive ? "输入模式" : "选择模式");  
+      // t.input_from_state.setText(`状态: ${isActive ? "选择模式" : "输入模式"}`);  
+
+      if(isActive){
+        t.answer_select_div.empty()
+        t.answer_input = t.answer_select_div.createEl('input',{
+          text:"输入选项"
+        });
+      }else{
+        t.answer_select_div.empty()
+        const options = [  
+          { value: 'A', label: 'A' },  
+          { value: 'B', label: 'B' },  
+          { value: 'C', label: 'C' },
+          { value: 'D', label: 'D' },
+          { value: 'E', label: 'E' } 
+      ];  
+
+      t.answer_bow = {
+        A:0,
+        B:0,
+        C:0,
+        D:0,
+        E:0
+      }
+      options.forEach(option => {  
+        // 创建一个单选框元素  
+        t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
+        t.answer_bow[option.value].type = 'radio';  
+        t.answer_bow[option.value].name = t.id; // 同组单选框名称  
+        t.answer_bow[option.value].value = option.value; // 设置单选框的值  
+
+        // 创建标签元素  
+        const radioLabel = t.answer_select_div.createEl('label');  
+        radioLabel.textContent = option.label; // 设置标签文本  
+   });
+      }
+  });  
+  }
+  
+  async X_control(t:any){
+    t.standard_answer = t.a.replace(" ","")
+    t.state = 0
+    this.create_multi_select(t)
+    t.quiz_control_div = t.div.createDiv({
+      cls:"control_div"
+    })
+    this.create_reveal_button(t)
+
+    t.reveal_button.addEventListener("click",()=>{
+      if(t.state==0){
+        t.answer = this.getSelectedCheckboxValues(t)
+        console.log(t.answer)
+        if(this.areLettersInString(t.standard_answer,t.answer)){
+          new Notice("回答正确",1000)
+          t.state =  1
+        }else{
+          new Notice("回答错误",1000)
+          t.state =  2
+        }
+        this.color_change(t)
+        this.lock_option(t)
+        this.reveal_answer(t)
+
+      }else{
+        new Notice("已提交",1000)
+      }
+    })
+  }
+
+  async B_control(t:any){
+
+  }
+
+  async create_single_select(t:any){
+    const options = [  
+      { value: 'A', label: 'A' },  
+      { value: 'B', label: 'B' },  
+      { value: 'C', label: 'C' },
+      { value: 'D', label: 'D' },
+      { value: 'E', label: 'E' } 
+  ];  
+
+  t.answer_bow = {
+    A:0,
+    B:0,
+    C:0,
+    D:0,
+    E:0
+  }
+  t.answer_select_div.empty()
+
+  options.forEach(option => {  
+    // 创建一个单选框元素  
+    t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
+    t.answer_bow[option.value].type = 'radio';  
+    t.answer_bow[option.value].name = t.id; // 同组单选框名称  
+    t.answer_bow[option.value].value = option.value; // 设置单选框的值  
+
+    // 创建标签元素  
+    const radioLabel = t.answer_select_div.createEl('label');  
+    radioLabel.textContent = option.label; // 设置标签文本  
+});
+  }
+
+  async create_multi_select(t:any){
+    t.answer_select_div.empty()
+    t.answer_select_div.style.display = 'flex';  
+    t.answer_select_div.style.flexDirection = 'row';  
+    t.answer_select_div.style.alignItems = 'center'; // 垂直居中对齐  
+    t.answer_select_div.style.gap = '10px';
+
+    const options = ['A', 'B', 'C', 'D', 'E'];  
+
+    options.forEach(option => {  
+        const checkboxContainer = document.createElement('div');  
+        checkboxContainer.className = 'flex items-center';  
+
+        const checkbox = document.createElement('input');  
+        checkbox.type = 'checkbox';  
+        checkbox.id = t.id;  
+        checkbox.value = option;  
+
+        const label = document.createElement('label');  
+        label.htmlFor = option;  
+        label.innerText = option;  
+        label.className = 'ml-2';  
+
+        checkboxContainer.appendChild(checkbox);  
+        checkboxContainer.appendChild(label);  
+        t.answer_select_div.appendChild(checkboxContainer);  
+    });  
+  }
+
+  getSelectedCheckboxValues(t:any) {  
+    const checkboxes = t.answer_select_div.querySelectorAll('input[type="checkbox"]:checked');  
+    const selectedValues = Array.from(checkboxes).map(checkbox => checkbox.value);  
+    return selectedValues;  
+}  
+
+  create_reveal_button(t:any){
+    t.reveal_button_div = t.quiz_control_div.createDiv({
+      cls:"reveal-button-div"
+    })
+
+    t.reveal_button = t.reveal_button_div.createEl('button',{
+      text:"提交",
+      cls:"reveal-button"
+    })
+  }
+
+  areLettersInString(str:string, letters:any) {  
+    // 将字符串转换为小写并分割成数组  
+    const lowerStr = str.toLowerCase();  
+    const strArray = lowerStr.split('');  
+
+    // 将字母列表转换为小写  
+    const lowerLetters = letters.map(letter => letter.toLowerCase());  
+
+    // 检查字母个数是否相等  
+    if (lowerLetters.length !== strArray.length) {  
+        return false;  
+    }  
+
+    // 检查每个字母是否存在于字符串中  
+    return lowerLetters.every(letter => strArray.includes(letter));  
+}  
+
 }
