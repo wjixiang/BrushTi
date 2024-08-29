@@ -1,6 +1,6 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin} from "obsidian";
-import {quiz_view,new_test} from "quiz"
 import { text } from "stream/consumers";
+import { string } from "yaml/dist/schema/common/string";
 
 export const test_generate = "test-view";
 
@@ -285,6 +285,8 @@ export class test_gnerate_view extends ItemView {
         this.A1_control(t)
       }else if(t.mode == "X"){
         this.X_control(t)
+      }else if(t.mode =="B"||t.mode == "A3"){
+        this.B_control(t)
       }
 
     })
@@ -617,7 +619,15 @@ export class test_gnerate_view extends ItemView {
   }
 
   async B_control(t:any){
-
+    t.standard_answer = t.a.replace(/[^a-zA-Z]/g,"")
+    t.standard_answer = t.standard_answer.split("")
+    console.log(t.standard_answer)
+    t.state = 0  
+    t.dx_option = []
+    //创建选择区
+    for(let i=1;i<=t.standard_answer.length;i++){
+      t.dx_option.push(this.single_select(t.answer_select_div,i))
+    }
   }
 
   async create_single_select(t:any){
@@ -649,6 +659,39 @@ export class test_gnerate_view extends ItemView {
     const radioLabel = t.answer_select_div.createEl('label');  
     radioLabel.textContent = option.label; // 设置标签文本  
 });
+  }
+
+  async single_select(ssdiv:any,id){
+    const options = [  
+      { value: 'A', label: 'A' },  
+      { value: 'B', label: 'B' },  
+      { value: 'C', label: 'C' },
+      { value: 'D', label: 'D' },
+      { value: 'E', label: 'E' } 
+  ]; 
+    let answer_bow = {
+      A:0,
+      B:0,
+      C:0,
+      D:0,
+      E:0
+    }
+    const dx_div = ssdiv.createDiv({cls:"dx-div"})
+    const dx_div_p = dx_div.createDiv()
+    dx_div_p.createEl("p",{
+      text:id+". "
+    })
+    const dx_div_s = dx_div.createDiv({cls:"dx-s"})
+    options.forEach(option=>{
+     answer_bow[option.value] = dx_div_s.createEl('input',{
+        type:'radio',
+        value:option.value
+      });
+      answer_bow[option.value].name = id
+      const radioLabel = dx_div_s.createEl('label');  
+      radioLabel.textContent = option.label; // 设置标签文本  
+    })
+    return(answer_bow)
   }
 
   async create_multi_select(t:any){

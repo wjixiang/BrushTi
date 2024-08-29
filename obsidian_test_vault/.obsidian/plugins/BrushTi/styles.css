@@ -110,3 +110,7 @@ If your plugin does not need CSS, delete this file.
 .red-border {  
     border-color: red;  
 } 
+
+.dx-div{
+    display: flex;
+}

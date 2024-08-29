@@ -110,3 +110,12 @@ If your plugin does not need CSS, delete this file.
 .red-border {  
     border-color: red;  
 } 
+
+.dx-div{
+    display: flex;
+}
+
+.dx-s{
+    display: flex;
+    align-items: center; /* 同时水平和垂直居中 */   
+}
