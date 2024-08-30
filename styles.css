@@ -119,3 +119,17 @@ If your plugin does not need CSS, delete this file.
     display: flex;
     align-items: center; /* 同时水平和垂直居中 */   
 }
+
+.answer_select{
+    position: relative
+}
+
+.locker{
+    position: absolute;   
+    top: 0;  
+    left: 0;  
+    width: 100%;  
+    height: 100%;  
+    background-color: rgba(255, 255, 255, 0); /* 半透明背景 */  
+    pointer-events: auto; /* 允许事件 */  
+}  

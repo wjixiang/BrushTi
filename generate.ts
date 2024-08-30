@@ -428,14 +428,14 @@ export class test_gnerate_view extends ItemView {
   }
 
   async right_change(t){
-    new Notice("回答正确",1000)
+    // new Notice("回答正确",1000)
     t.state = 1
       //change color
     t.div.setAttribute('style', 'border-color: green;');
   }
 
   async wrong_change(t){
-    new Notice("回答错误",1000)
+    // new Notice("回答错误",1000)
     t.state = 2
      //change color
     t.div.setAttribute('style', 'border-color: red;');
@@ -451,7 +451,9 @@ export class test_gnerate_view extends ItemView {
   }
 
   async lock_option(t){
-    t.answer_select_div.disabled = true
+    t.answer_select_div.createDiv({
+      cls:"locker"
+    })
     const checkboxes = t.answer_select_div.querySelectorAll('input[type="checkbox"]'); 
     checkboxes.forEach(box=>{
       box.disabled = true
@@ -509,14 +511,11 @@ export class test_gnerate_view extends ItemView {
           }else{
              const standard_answer = t.a.replace(" ","")
              if(standard_answer == t.answer){
-              this.right_change(t)
+              this.right(t)
              }else{
-              this.wrong_change(t)
+              this.wrong(t)
              }
               //lock option
-             this.lock_option(t)
-             this.reveal_answer(t)
-   
           }
           
         }else{
@@ -624,10 +623,44 @@ export class test_gnerate_view extends ItemView {
     console.log(t.standard_answer)
     t.state = 0  
     t.dx_option = []
+    t.answer = []
+
     //创建选择区
     for(let i=1;i<=t.standard_answer.length;i++){
       t.dx_option.push(this.single_select(t.answer_select_div,i))
     }
+    //创建提交按钮
+    t.quiz_control_div = t.div.createDiv({
+      cls:"control_div"
+    })
+    this.create_reveal_button(t)
+
+    t.reveal_button.addEventListener("click",()=>{
+      if(t.state == 0){
+      t.answer=[]
+      t.dx_option.forEach(sgroup=>{
+        t.answer.push(this.get_single_select_answer(sgroup))
+      })
+      console.log(t.answer)
+
+      if(t.answer.includes(0)){
+        new Notice("当前题目未完成",1000)
+      }else{
+        console.log(t.answer)
+        //判断正误
+        if(t.answer == t.standard_answer){
+          this.right(t)
+        }else{
+          this.wrong(t)
+        }
+      }
+    }else{
+      new Notice("已作答",1000)
+    }
+      
+
+    })
+
   }
 
   async create_single_select(t:any){
@@ -661,7 +694,7 @@ export class test_gnerate_view extends ItemView {
 });
   }
 
-  async single_select(ssdiv:any,id){
+  single_select(ssdiv:any,id){
     const options = [  
       { value: 'A', label: 'A' },  
       { value: 'B', label: 'B' },  
@@ -692,6 +725,17 @@ export class test_gnerate_view extends ItemView {
       radioLabel.textContent = option.label; // 设置标签文本  
     })
     return(answer_bow)
+  }
+
+  get_single_select_answer(answer_bow){
+    console.log(answer_bow)
+    for(const opt in answer_bow){
+      if(answer_bow[opt].checked){
+        // console.log(answer_bow[opt])
+        return(answer_bow[opt].value)
+      }
+    }
+    return(0)
   }
 
   async create_multi_select(t:any){
@@ -738,6 +782,22 @@ export class test_gnerate_view extends ItemView {
       text:"提交",
       cls:"reveal-button"
     })
+  }
+
+  async right(t){
+    new Notice("回答正确✅",1000)
+    this.reveal_answer(t)
+    this.lock_option(t)
+    this.right_change(t)
+    t.state = 1
+  }
+
+  async wrong(t){
+    new Notice("回答错误❌",1000)
+    this.reveal_answer(t)
+    this.lock_option(t)
+    this.wrong_change(t)
+    t.state = 2
   }
 
   areLettersInString(str:string, letters:any) {  
