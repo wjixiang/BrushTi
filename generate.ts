@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin} from "obsidian";
+import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App} from "obsidian";
 import { text } from "stream/consumers";
 import { string } from "yaml/dist/schema/common/string";
 
@@ -187,7 +187,15 @@ export class test_gnerate_view extends ItemView {
       data[3].forEach((s: any) => {
         let link_name = s.replace(/\.md$/, "");
         // link_name = "[["+link_name+"]]"
-        u3.createEl("li",{text:link_name})
+        let li = u3.createEl("li")
+        let a = li.createEl("a",{
+          text:link_name,
+          cls:"internal-link",
+          href:"#",
+        })
+        a.addEventListener("click",()=>{
+          this.openFileInNewLeaf(app,this.path+"/"+s)
+        })
       });
     });
 
@@ -523,12 +531,10 @@ export class test_gnerate_view extends ItemView {
           console.log("input answer:",answer)
           //judge answer
           if(answer.toUpperCase() == t.a.replace(" ","").toUpperCase()){
-            this.right_change(t)
+            this.right(t)
           }else{
-            this.wrong_change(t)
+            this.wrong(t)
           }
-          this.lock_option(t)
-          this.reveal_answer(t)
         }
       }else{
         new Notice("已提交",1000);
@@ -603,13 +609,12 @@ export class test_gnerate_view extends ItemView {
         if(this.areLettersInString(t.standard_answer,t.answer)){
           new Notice("回答正确",1000)
           t.state =  1
+          this.right(t)
         }else{
           new Notice("回答错误",1000)
           t.state =  2
+          this.wrong(t)
         }
-        this.color_change(t)
-        this.lock_option(t)
-        this.reveal_answer(t)
 
       }else{
         new Notice("已提交",1000)
@@ -790,6 +795,7 @@ export class test_gnerate_view extends ItemView {
     this.lock_option(t)
     this.right_change(t)
     t.state = 1
+    this.append_record(t)
   }
 
   async wrong(t){
@@ -798,6 +804,33 @@ export class test_gnerate_view extends ItemView {
     this.lock_option(t)
     this.wrong_change(t)
     t.state = 2
+    this.append_record(t)
+  }
+
+   async append_record(t){
+    // console.log(this.path+"/"+t.id)
+    // const content = this.app.vault.getAbstractFileByPath(this.path+"/"+t.id);
+    // console.log(content)
+    this.app.fileManager.processFrontMatter(t.tf,(frontmatter)=>{
+      let record = read_property(this.path+"/"+t.id,"record")
+      const timestamps = this.getFormattedTimestamp()
+      let score = 1
+      if(t.state==1){
+        score = 0
+      }else{
+        score = 1
+      }
+      if(record==null){
+        frontmatter['record'] = [{
+          timestamps:timestamps,
+          score:score}]
+      }else{
+        record.push([{
+          timestamps:timestamps,
+          score:score}])
+        frontmatter['record'] = record
+      }
+    })
   }
 
   areLettersInString(str:string, letters:any) {  
@@ -815,6 +848,28 @@ export class test_gnerate_view extends ItemView {
 
     // 检查每个字母是否存在于字符串中  
     return lowerLetters.every(letter => strArray.includes(letter));  
+  
+} 
+
+getFormattedTimestamp() {  
+  const now = new Date();  
+  const year = now.getFullYear();  
+  const month = String(now.getMonth() + 1).padStart(2, '0'); // 月份从0开始  
+  const day = String(now.getDate()).padStart(2, '0');  
+  const hours = String(now.getHours()).padStart(2, '0');  
+  const minutes = String(now.getMinutes()).padStart(2, '0');  
+  const seconds = String(now.getSeconds()).padStart(2, '0');  
+
+  return `${year}-${month}-${day}-${hours}:${minutes}:${seconds}`;  
+}    
+
+openFileInNewLeaf(app: App, filePath: string) {  
+  const file = app.vault.getAbstractFileByPath(filePath);  
+  if (file instanceof TFile) {  
+      app.workspace.openLinkText(file.basename, file.path, false);  
+  } else {  
+      console.error("File not found: ", filePath);  
+  }  
 }  
 
 }
