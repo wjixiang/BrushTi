@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App} from "obsidian";
+import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App, getAllTags} from "obsidian";
 import { text } from "stream/consumers";
 import { string } from "yaml/dist/schema/common/string";
 
@@ -63,11 +63,13 @@ export class test_gnerate_view extends ItemView {
     container.createEl("h4", { text: "随机抽题" });
 
     const config_div = container.createDiv({cls:"config-div"})
+    const setting = config_div.createDiv({cls:"setting-set"})
     // Create a div for the dropdown  
-    const dropdownDiv = config_div.createDiv({cls:"setting_div"});  
+    const dropdownDiv = setting.createDiv({cls:"setting_div"});  
 
     // Create a dropdown select box  
     dropdownDiv.createEl("p",{text:"科目"})
+    setting.createEl("hr")
     const selectBox = dropdownDiv.createEl("select", {  
       cls: "brushti_suject_select", // Optional: Add a custom class for styling  
     });  
@@ -92,7 +94,8 @@ export class test_gnerate_view extends ItemView {
     }); 
   
     // Create a div for the input box  
-    const mode_select_div = config_div.createDiv({cls:"setting_div"});  
+    const mode_select_div = setting.createDiv({cls:"setting_div"});  
+    setting.createEl("hr")
 
     mode_select_div.createEl("p",{text:"题型"})
 
@@ -100,7 +103,64 @@ export class test_gnerate_view extends ItemView {
       cls: "brushti_mode_select", // Optional: Add a custom class for styling  
     }); 
 
-    const numberDiv = config_div.createDiv({cls:"setting_div"});
+    const tagDiv = setting.createDiv({cls:"setting_div"});
+    setting.createEl("hr")
+    tagDiv.createEl("p",{text:"标签"})
+    const tag_rule_div = tagDiv.createDiv({cls:"tag-rule"})
+    const tag_set_div = tag_rule_div.createDiv()
+    const tag_input_div = tag_set_div.createDiv()
+    const tag_input = tag_input_div.createEl('input',{
+      
+    })
+    const tag_suggest = tag_input_div.createDiv()
+    const tag_in = tag_set_div.createEl('button',{
+      text:"包含"
+    })
+    const tag_out = tag_set_div.createEl('button',{
+      text:"排除"
+    })
+
+    const tag_display_div = tag_rule_div.createDiv()
+    const tag_in_display_div = tag_display_div.createDiv()
+    tag_display_div.createEl("hr")
+    const tag_out_display_div = tag_display_div.createDiv()
+
+    tag_in_display_div.createEl("p",{
+      text:"包含"
+    })
+
+    tag_out_display_div.createEl("p",{
+      text:"排除"
+    })
+
+    const suggestions = this.getalltags();  
+    const input = document.getElementById('autocomplete-input');  
+    const suggestionsBox = document.getElementById('suggestions');  
+    const maxSuggestions = 5
+
+    // const all_tag_list = this.getalltags()
+
+    tag_input.addEventListener('input', function() {  
+      const value = this.value.toLowerCase();  
+      tag_suggest.innerHTML = '';  
+      if (value) {  
+          const filteredSuggestions = suggestions.filter(suggestion => suggestion.toLowerCase().startsWith(value)); 
+          const limitedSuggestions = filteredSuggestions.slice(0, maxSuggestions);
+          limitedSuggestions.forEach(suggestion => {  
+              const div = document.createElement('div');  
+              div.classList.add('suggestion');  
+              div.textContent = suggestion;  
+              div.addEventListener('click', function() {  
+                tag_input.value = suggestion;  
+                tag_suggest.empty();  
+              });  
+              tag_suggest.appendChild(div);  
+          });  
+      }  
+  }); 
+
+
+    const numberDiv = setting.createDiv({cls:"setting_div"});
     numberDiv.createEl("p",{text:"题数"})
 
     const numberInputBox = numberDiv.createEl("input", {  
@@ -831,8 +891,7 @@ export class test_gnerate_view extends ItemView {
         frontmatter['record'] = record
       }
     })
-  }
-
+  } 
   areLettersInString(str:string, letters:any) {  
     // 将字符串转换为小写并分割成数组  
     const lowerStr = str.toLowerCase();  
@@ -872,4 +931,27 @@ openFileInNewLeaf(app: App, filePath: string) {
   }  
 }  
 
+getalltags(){
+  const filelist = this.app.vault.getAbstractFileByPath(this.path); 
+  console.log(filelist)
+  let all_tag_list = []
+  filelist.children.forEach(tf=>{
+    console.log(tf.name)
+    let metadata = this.app.metadataCache.getFileCache(tf);
+    // console.log(tf.name)
+    if(metadata?.frontmatter==null){
+      // console.log(tf.name)
+    }else{ 
+    let front_matter = metadata.frontmatter
+    if(front_matter.hasOwnProperty("tags") && front_matter.tags != null){
+      front_matter.tags.forEach(tag =>{
+        if(!all_tag_list.includes(tag)){
+          all_tag_list.push(tag)
+        }
+      })
+    }
+  }})
+  console.log(all_tag_list)
+  return(all_tag_list)
+}
 }

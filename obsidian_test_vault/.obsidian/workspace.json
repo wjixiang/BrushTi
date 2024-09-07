@@ -73,8 +73,7 @@
               "state": {}
             }
           }
-        ],
-        "currentTab": 1
+        ]
       }
     ],
     "direction": "horizontal",
@@ -156,7 +155,7 @@
       "BrushTee:active panel": false
     }
   },
-  "active": "c9436a51755b42c9",
+  "active": "a735018c1ee19a27",
   "lastOpenFiles": [
     "test_bank/ct2023-10-29-01-52-53.md",
     "test_bank/ct2024-8-15-05-43-49.md",
