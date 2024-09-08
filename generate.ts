@@ -1,4 +1,5 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App, getAllTags} from "obsidian";
+import { getPriority } from "os";
 import { text } from "stream/consumers";
 import { string } from "yaml/dist/schema/common/string";
 
@@ -11,6 +12,10 @@ function read_property(filepath,property){
   return(front_matter[property])
 }
 
+function allElementsExist(list1, list2) {  
+  return list1.every(element => list2.includes(element));  
+} 
+
 async function getAttributeValuesFromFolder(folderPath = 'test_bank') {  
   let class_list = []
   // 获取文件夹下的所有文件  
@@ -18,15 +23,17 @@ async function getAttributeValuesFromFolder(folderPath = 'test_bank') {
   if (folder && folder.children) {  
     for (const file of folder.children) {  
       if (file instanceof TFile) {  
-
-        let metadata = this.app.metadataCache.getFileCache(file);
+        let metadata = await this.app.metadataCache.getFileCache(file);
+        console.log(metadata,file.name)
         let front_matter = metadata.frontmatter
         // console.log(front_matter.frontmatter)
         // let metadata = await processFile(file)
+        if(front_matter.hasOwnProperty("class")){
         if (front_matter['class'] != null){
           //console.log(metadata['class'])
           class_list.push(front_matter.class)
         }
+      }
       }  
     }  
   }  
@@ -53,14 +60,14 @@ export class test_gnerate_view extends ItemView {
   }
 
   getDisplayText() {
-    return "随机抽题";
+    return "刷题";
   }
  
   async onOpen() {
     let class_list = await getAttributeValuesFromFolder()
     const container = this.containerEl.children[1];
     container.empty();
-    container.createEl("h4", { text: "随机抽题" });
+    // container.createEl("h4", { text: "随机抽题" });
 
     const config_div = container.createDiv({cls:"config-div"})
     const setting = config_div.createDiv({cls:"setting-set"})
@@ -120,6 +127,20 @@ export class test_gnerate_view extends ItemView {
       text:"排除"
     })
 
+    tag_in.addEventListener('click',()=>{
+      if(!this.check_tag(tag_in_display_div,tag_out_display_div,tag_input.value)){
+      this.create_in_tag(tag_in_display_div,tag_input.value)
+      console.log(this.get_in_tag(tag_in_display_div))
+      }
+    })
+
+    tag_out.addEventListener('click',()=>{
+      if(!this.check_tag(tag_in_display_div,tag_out_display_div,tag_input.value)){
+      this.create_out_tag(tag_out_display_div,tag_input.value)
+      console.log(this.get_in_tag(tag_out_display_div))
+      }
+    })
+
     const tag_display_div = tag_rule_div.createDiv()
     const tag_in_display_div = tag_display_div.createDiv()
     tag_display_div.createEl("hr")
@@ -128,6 +149,7 @@ export class test_gnerate_view extends ItemView {
     tag_in_display_div.createEl("p",{
       text:"包含"
     })
+
 
     tag_out_display_div.createEl("p",{
       text:"排除"
@@ -169,6 +191,22 @@ export class test_gnerate_view extends ItemView {
       value:1
   }); 
 
+    const max_num = numberDiv.createEl("button",{
+      text:"MAX"
+    })
+
+    max_num.addEventListener("click",async ()=>{
+      let in_tag_list = this.get_in_tag(tag_in_display_div)
+      let out_tag_list = this.get_in_tag(tag_out_display_div)
+      const numberValue = numberInputBox.value;  
+      let req = [selectBox.value,mode_select_Box.value,numberValue]
+      let req_test = await this.fetch(req)//获取满足科目和体型要求的题目
+      console.log(req_test)
+      console.log(in_tag_list)
+      req_test = await this.tag_filter(req_test,in_tag_list,out_tag_list)
+      numberInputBox.value = req_test.length
+    })
+
   const buttonDiv = config_div.createDiv({ cls: "button_div" });  
   const button_add = buttonDiv.createEl("button", {  
       text: "新建题目", // 按钮文本  
@@ -182,15 +220,24 @@ export class test_gnerate_view extends ItemView {
 
   // 添加按钮点击事件  
   button_add.addEventListener("click", async () => {  
+    let in_tag_list = this.get_in_tag(tag_in_display_div)
+    let out_tag_list = this.get_in_tag(tag_out_display_div)
       const numberValue = numberInputBox.value;  
       let req = [selectBox.value,mode_select_Box.value,numberValue]
-      let req_test = await this.fetch(req)
+      let req_test = await this.fetch(req)//获取满足科目和体型要求的题目
+      console.log(req_test)
+      console.log(in_tag_list)
+      req_test = await this.tag_filter(req_test,in_tag_list,out_tag_list)
+      console.log(req_test)
+      console.log(req[2])
       let selet_test_list = await this.getRandomElements(req_test,req[2])
       this.test_list.push([selectBox.value,mode_select_Box.value,numberValue,selet_test_list])
       this.parse_table(this.tbody,this.test_list)
   });  
 
   button_generate.addEventListener("click", async () => {  
+    const in_tag_list = []
+    const out_tag_list = []
     await this.fetch_test()
     await this.parse_table(this.tbody,this.test_list)
 }); 
@@ -232,7 +279,53 @@ export class test_gnerate_view extends ItemView {
 
   }
 
+  check_tag(in_tag_div,out_tag_div,input_value){
+    const in_tag_list = this.get_in_tag(in_tag_div)
+    const out_tag_list = this.get_in_tag(out_tag_div)
+    return(in_tag_list.includes(input_value)||out_tag_list.includes(input_value))
+  }
 
+  async create_in_tag(tag_div,tag){
+    const td = tag_div.createDiv({
+      cls:"in-tag",
+      name : tag
+    })
+    const display_div = td.createDiv({
+      cls:"tag-content"
+    })
+    display_div.createEl("span",{
+      text:tag,
+      cls:"tag-text"
+    })
+    td.addEventListener("click",()=>{
+      td.remove()
+    })
+  }
+
+  async create_out_tag(tag_div,tag){
+    const td = tag_div.createDiv({
+      cls:"out-tag",
+      name : tag
+    })
+    const display_div = td.createDiv({
+      cls:"tag-content"
+    })
+    display_div.createEl("span",{
+      text:tag,
+      cls:"tag-text"
+    })
+    td.addEventListener("click",()=>{
+      td.remove()
+    })
+  }
+
+  get_in_tag(in_tag_div){
+    let in_list = []
+    in_tag_div.querySelectorAll(".tag-text").forEach(tag=>{
+      in_list.push(tag.innerText)
+    })
+    return(in_list)
+  }
 
   async parse_table(tbody: HTMLTableElement | HTMLTableSectionElement,table_data: any[][]){
     this.reset_table(tbody)
@@ -327,9 +420,17 @@ export class test_gnerate_view extends ItemView {
         cls:"q_des"
       })
 
+      const t_link = t.des_div.createEl('a',{
+        text:t.id
+      })
+
       t.des_div.createEl('p',{
         text:t.cls+" · "+t.mode,
         cls:"des_text"
+      })
+
+      t_link.addEventListener("click",()=>{
+        this.openFileInNewLeaf(app,this.path+"/"+t.id)
       })
 
       //
@@ -399,7 +500,31 @@ export class test_gnerate_view extends ItemView {
     return sections;  
 }  
 
-  async fetch(req){
+  async tag_filter(testlist,include_tag_list,exclude_tag_lsit){
+    let filter_list = []
+    // console.log(filter_list,include_tag_list,exclude_tag_lsit)
+    if(include_tag_list.length<1 && exclude_tag_lsit.length<1){
+      filter_list = testlist
+      return(filter_list)
+    }
+    if(include_tag_list.length>=1){
+      testlist.forEach(id =>{
+        // console.log(id)
+        let file_tag_list = read_property(this.path+"/"+id,"tags")
+        // console.log(file_tag_list)
+        if(file_tag_list!=null){
+        if(allElementsExist(include_tag_list, file_tag_list)){
+          filter_list.push(id)
+        }}
+      })
+    }
+    if(exclude_tag_lsit.length>=1){
+
+    }
+    return(filter_list)
+  }
+
+  async fetch(req){ //废用
     const folder = this.app.vault.getAbstractFileByPath(this.path); 
     let suject_req = []
     for (const file of folder.children) {  
@@ -931,12 +1056,12 @@ openFileInNewLeaf(app: App, filePath: string) {
   }  
 }  
 
-getalltags(){
+getalltags(){ //获取试题库文件夹下所有的tag
   const filelist = this.app.vault.getAbstractFileByPath(this.path); 
-  console.log(filelist)
+  // console.log(filelist)
   let all_tag_list = []
   filelist.children.forEach(tf=>{
-    console.log(tf.name)
+    // console.log(tf.name)
     let metadata = this.app.metadataCache.getFileCache(tf);
     // console.log(tf.name)
     if(metadata?.frontmatter==null){

@@ -3,7 +3,6 @@ import {test_gnerate_view, test_generate} from "generate";
 import { testdb } from "base";
 import { log } from "console";
 import {parseYamlMetadata,processFile} from "metadata_solve"
-import {quiz_view,new_test} from "quiz"
 
 export default class brushtee extends Plugin {
   folderpath: string;
