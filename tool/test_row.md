@@ -1,7 +1,4 @@
-import re
-from datetime import datetime  
-
-text = """1. 国际标准视力表远视力检查距离为：
+1. 国际标准视力表远视力检查距离为：
    - A. 50m
    - B. 5m
    - C. 3m
@@ -89,8 +86,12 @@ text = """1. 国际标准视力表远视力检查距离为：
     - A. 6000-8000个
     - B. 3000-4000个
     - C. 2600-2800个
-    - D. 2150-1500个"""
-answer = """1. B
+    - D. 2150-1500个
+    - E. 1500-2000个
+
+**答案列表：**
+
+1. B
 2. A
 3. D
 4. D
@@ -103,45 +104,3 @@ answer = """1. B
 11. C
 12. C
 13. B
-"""
-
-clas = "眼科学" 
-mode = "A1"
-tag = ["习题","章节-眼科检查"]
-# 获取当前时间  
-now = datetime.now()  
-
-# 格式化为 yyyy-m-d-H-s  
-timestamp = now.strftime("%Y-%m-%d-%H-%S")  
-
-def retain_only_letters(input_string):  
-    # 使用正则表达式替换非字母字符  
-    result = re.sub(r'[^a-zA-Z]', '', input_string)  
-    return result  
-
-test_extract = text.split("\n\n")
-answer = retain_only_letters(answer)
-tag_string = ""
-for i in tag:
-    tag_string = tag_string+"  - "+i+"\n"
-
-for i in range(len(test_extract)):
-    id = timestamp + "-" + str(i)+".md"
-    path = "./tool/extract_result/"
-    markdown_content = f"""---
-class: {clas}
-mode: {mode}
-tags:
-{tag_string}
----
-
-# Q
-{test_extract[i]}
-# A
-{answer[i]}
-# D
-"""
-    with open(path+id,"w",encoding="utf-8") as md:
-        md.write(markdown_content) 
-
-    print("id:",id,"\n",test_extract[i],"\n答案：",answer[i],"\n-----------\n")

@@ -117,7 +117,7 @@ export class test_gnerate_view extends ItemView {
     const tag_set_div = tag_rule_div.createDiv()
     const tag_input_div = tag_set_div.createDiv()
     const tag_input = tag_input_div.createEl('input',{
-      
+      cls:"test-number-input"
     })
     const tag_suggest = tag_input_div.createDiv()
     const tag_in = tag_set_div.createEl('button',{
@@ -438,9 +438,30 @@ export class test_gnerate_view extends ItemView {
         cls:"q_div"
       })
       let pt = t.q.split("\n")
+      const regex = /!\[\[.*?\]\]/;
+      const reg_extract = /(?<=!\[\[)[^\]]+(?=\]\])/g
       pt.forEach(p=>{
+        if(regex.test(p)){//显示图片
+          let sub_p = p.split(p.match(regex)[0])
+          const pic_embed_name = p.match(reg_extract)[0]
+          console.log(pic_embed_name)
+          
+          const file = this.app.vault.getFiles()
+          const pic_file = file.find(f => f.name === pic_embed_name);
+          console.log(`File path: ${pic_file.path}`);
+
+          t.q_div.createEl("p",{text:sub_p[0]})
+          t.q_div.createEl('br')
+
+          const pic_embed = t.q_div.createEl("img")
+          pic_embed.src = this.app.vault.getResourcePath(pic_file);  
+
+          t.q_div.createEl("p",{text:sub_p[1]})
+          t.q_div.createEl('br')
+        }else{
         t.q_div.createEl("p",{text:p})
         t.q_div.createEl('br')
+        }
       })
 
       //
