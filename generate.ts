@@ -16,6 +16,27 @@ function allElementsExist(list1, list2) {
   return list1.every(element => list2.includes(element));  
 } 
 
+function arraysEqual(arr1, arr2) {  
+  // 首先检查长度是否相等  
+  if (arr1.length !== arr2.length) {  
+      return false;  
+  }  
+
+  // 检查每个元素是否相等  
+  for (let i = 0; i < arr1.length; i++) {  
+      // 如果元素是数组，递归比较  
+      if (Array.isArray(arr1[i]) && Array.isArray(arr2[i])) {  
+          if (!arraysEqual(arr1[i], arr2[i])) {  
+              return false;  
+          }  
+      } else if (arr1[i] !== arr2[i]) {  
+          return false;  
+      }  
+  }  
+
+  return true; // 如果所有检查都通过，返回 true  
+}  
+
 async function getAttributeValuesFromFolder(folderPath = 'test_bank') {  
   let class_list = []
   // 获取文件夹下的所有文件  
@@ -128,20 +149,22 @@ export class test_gnerate_view extends ItemView {
     })
 
     tag_in.addEventListener('click',()=>{
-      if(!this.check_tag(tag_in_display_div,tag_out_display_div,tag_input.value)){
+      if(tag_input.value != "" && !this.check_tag(tag_in_display_div,tag_out_display_div,tag_input.value)){
       this.create_in_tag(tag_in_display_div,tag_input.value)
       console.log(this.get_in_tag(tag_in_display_div))
       }
     })
 
     tag_out.addEventListener('click',()=>{
-      if(!this.check_tag(tag_in_display_div,tag_out_display_div,tag_input.value)){
+      if(tag_input.value != "" && !this.check_tag(tag_in_display_div,tag_out_display_div,tag_input.value)){
       this.create_out_tag(tag_out_display_div,tag_input.value)
       console.log(this.get_in_tag(tag_out_display_div))
       }
     })
 
-    const tag_display_div = tag_rule_div.createDiv()
+    const tag_display_div = tag_rule_div.createDiv({
+      cls:"tag-display"
+    })
     const tag_in_display_div = tag_display_div.createDiv()
     tag_display_div.createEl("hr")
     const tag_out_display_div = tag_display_div.createDiv()
@@ -225,8 +248,8 @@ export class test_gnerate_view extends ItemView {
       const numberValue = numberInputBox.value;  
       let req = [selectBox.value,mode_select_Box.value,numberValue]
       let req_test = await this.fetch(req)//获取满足科目和体型要求的题目
-      console.log(req_test)
-      console.log(in_tag_list)
+      // console.log(req_test)
+      // console.log(in_tag_list)
       req_test = await this.tag_filter(req_test,in_tag_list,out_tag_list)
       console.log(req_test)
       console.log(req[2])
@@ -299,6 +322,20 @@ export class test_gnerate_view extends ItemView {
     })
     td.addEventListener("click",()=>{
       td.remove()
+    })
+  }
+
+  async create_tag(tag_div,tag){
+    const td = tag_div.createDiv({
+      cls:"in-tag",
+      name : tag
+    })
+    const display_div = td.createDiv({
+      cls:"tag-content"
+    })
+    display_div.createEl("span",{
+      text:tag,
+      cls:"tag-text"
     })
   }
 
@@ -689,6 +726,17 @@ export class test_gnerate_view extends ItemView {
       cls:"standard-answer",
       text:t.standard_answer
     })
+    //reveal tags
+    let tag_display_div = t.div.createDiv({
+      cls:"tag-display"
+    })
+    let file_tag_list = read_property(this.path+"/"+t.id,"tags")
+    // console.log(file_tag_list)
+    if(file_tag_list!=null){
+      file_tag_list.forEach(tag=>{
+        this.create_tag(tag_display_div,tag)
+      })
+    }
   }
 
   async A1_control(t:any){
@@ -859,7 +907,7 @@ export class test_gnerate_view extends ItemView {
       }else{
         console.log(t.answer)
         //判断正误
-        if(t.answer == t.standard_answer){
+        if(arraysEqual(t.answer,t.standard_answer)){
           this.right(t)
         }else{
           this.wrong(t)

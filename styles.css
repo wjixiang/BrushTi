@@ -144,12 +144,14 @@ If your plugin does not need CSS, delete this file.
     display: inline-block;
     background-color: green;
     border-radius: 20px;
-    padding: 0 5px
+    padding: 0 5px;
+    margin: 0 2px
 }
 
 .out-tag{
     display: inline-block;
     background-color: #a82931;
     border-radius: 20px;
-    padding: 0 5px
+    padding: 0 5px;
+    margin: 0 2px
 }

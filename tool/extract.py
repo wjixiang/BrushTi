@@ -1,122 +1,38 @@
 import re
 from datetime import datetime  
+from ai_process import a1_test_convert,answer_convert
 
-text = """1. 国际标准视力表远视力检查距离为：
-   - A. 50m
-   - B. 5m
-   - C. 3m
-   - D. 2.5m
-   - E. 6m
+text = ""
+answer = ""
 
-2. 在眼病诊断中，较有参考价值的是：
-   - A. 矫正视力
-   - B. 裸眼视力
-   - C. 针孔视力
-   - D. 远视力
-   - E. 近视力
+clas = "妇产科学" 
+mode = "A2"
+tag = ["习题","章节-正常分娩","景晴"]
 
-3. 对视力低于0.3的屈光介质浑浊患者预测术后视功能时，选择哪种检测视功能结果较可靠：
-   - A. 眼电图
-   - B. 图形视网膜电图
-   - C. 闪光视网膜电图
-   - D. 视觉诱发电位
-   - E. 多焦视网膜电图
+######
+a1_test_convert()
+answer_convert()
+#####
+with open("./tool/test.md","r") as f:
+    text = f.read()
 
-4. 以下对于磁共振成像（MRI）不正确的描述是：
-   - A. 通过射频探测病变
-   - B. 用于眼内病变的诊断
-   - C. 检测视神经病变
-   - D. 探测磁性异物
-   - E. 灵敏度优于 CT
+with open("./tool/answer.md","r") as f:
+    answer = f.read()
 
-5. 正常人在行眼底荧光血管造影检查中，臂—视网膜循环时间大约为：
-   - A. 1—3 秒
-   - B. 7-12 秒
-   - C. 1分
-   - D. 5分
-   - E. 10 分
-
-6. 慢性闭角型青光眼形态学诊断应选择：
-   - A. 超声生物显微镜
-   - B. 光学相干断层扫描
-   - C. A超
-   - D. B超
-   - E. 彩色多普勒成像
-
-7. 黄斑部裂孔检查宜选择：
-   - A. 超声生物显微镜
-   - B. 光学相干断层扫描
-   - C. A超
-   - D. B超
-   - E. 彩色多普勒成像
-
-8. 目前测量较准确，不受巩膜硬度影响的眼压计是：
-   - A. Goldmann 眼压计
-   - B. Schiotz 眼压计
-   - C. 费卡眼压计
-   - D. 非接触眼压计
-   - E. 眼压描计
-
-9. 对比敏感度反映的是：
-   - A. 高对比度时的分辨能力
-   - B. 不同物体远近关系
-   - C. 空间、明暗对比二维频率的形觉功能
-   - D. 二维物体形状、位置
-   - E. 视杆细胞的功能状态
-
-10. 有关三面镜检查法的描述，错误的是：
-    - A. 中央部分的凹面镜用于检查眼底的后极部
-    - B. 75 镜检查后极部到赤道部之间的区域
-    - C. 67°镜用以检查周边部
-    - D. 59°镜可看到锯齿缘
-    - E. 59°镜不能用于检查前房角
-
-11. 有关超声生物显微镜（UBM）的描述，错误的是：
-    - A. 它是50Hz的高频率分辨率的B超
-    - B. 用于眼前段疾病的辅助诊断
-    - C. 其因穿透力高可用于眼后节病辅助诊断
-    - D. 它对闭角型青光眼、恶性青光眼的诊断有意义
-    - E. 有利于眼前段肿瘤诊断
-
-12. 裂隙灯显微镜检查时最常用的照明方法为：
-    - A. 弥散光照明法
-    - B. 直接焦点照明法
-    - C. 角巩膜缘分光照明法
-    - D. 后部反光照明法
-    - E. 镜面反光照明法
-
-13. 正常人在30岁前，角膜内皮细胞的平均密度为每平方毫米：
-    - A. 6000-8000个
-    - B. 3000-4000个
-    - C. 2600-2800个
-    - D. 2150-1500个"""
-answer = """1. B
-2. A
-3. D
-4. D
-5. B
-6. A
-7. B
-8. A
-9. C
-10. E
-11. C
-12. C
-13. B
-"""
-
-clas = "眼科学" 
-mode = "A1"
-tag = ["习题","章节-眼科检查"]
 # 获取当前时间  
 now = datetime.now()  
 
 # 格式化为 yyyy-m-d-H-s  
 timestamp = now.strftime("%Y-%m-%d-%H-%S")  
 
-def retain_only_letters(input_string):  
-    # 使用正则表达式替换非字母字符  
-    result = re.sub(r'[^a-zA-Z]', '', input_string)  
+def retain_only_letters(input_string):  #提取不连续的答案
+
+    pattern = r'[^a-zA-Z]+'  
+
+    result = re.split(pattern, input_string)  
+    # 过滤掉空字符串  
+    result = [s for s in result if s]  
+    # result = re.sub(r'[^a-zA-Z]', '', input_string)  
     return result  
 
 test_extract = text.split("\n\n")
@@ -145,3 +61,4 @@ tags:
         md.write(markdown_content) 
 
     print("id:",id,"\n",test_extract[i],"\n答案：",answer[i],"\n-----------\n")
+
