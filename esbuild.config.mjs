@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import {copy} from 'esbuild-plugin-copy';
 
 const banner =
 `/*
@@ -15,7 +16,7 @@ const context = await esbuild.context({
 	banner: {
 		js: banner,
 	},
-	entryPoints: ["main.ts"],
+	entryPoints: ["./src/main.ts"],
 	bundle: true,
 	external: [
 		"obsidian",
@@ -32,13 +33,21 @@ const context = await esbuild.context({
 		"@lezer/highlight",
 		"@lezer/lr",
 		...builtins],
+	plugins: [
+		copy({
+			assets: [{
+				from: ["./dist/*"],
+				to: ["../test_vault/.obsidian/plugins/brushTi"]
+			}]
+		}),
+	],
 	format: "cjs",
 	target: "es2018",
 	logLevel: "info",
 	sourcemap: prod ? false : "inline",
 	treeShaking: true,
 	// outdir:"./obsidian_test_vault/.obsidian/plugins/BrushTi",
-	outfile:"main.js"
+	outfile:"./dist/main.js"
 });
 
 if (prod) {

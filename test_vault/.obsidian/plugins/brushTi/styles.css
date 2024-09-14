@@ -1,0 +1,157 @@
+/*
+
+This CSS file will be included with your plugin, and
+available in the app when your plugin is enabled.
+
+If your plugin does not need CSS, delete this file.
+
+*/
+
+.setting_div{
+    display: flex; /* 使用 Flexbox 布局 */  
+    justify-content: space-between; /* 在主要轴上分配空间，左右对齐 */  
+    align-items: center; /* 在交叉轴上居中对齐 */  
+    padding: 2.5px; /* 添加一些内边距 */   
+}
+
+.brushti_table_div {  
+    display: flex;
+    margin-top: 20px;  
+} 
+
+.my-table {  
+    width: 100%;  
+    border-collapse: collapse;  
+}  
+
+.my-table th, .my-table td {  
+    border: 1px solid #ccc;  
+    padding: 8px;  
+    text-align: left;  
+}  
+
+.my-table th {  
+    background-color: grey;  
+}
+
+.buttonDiv{
+    display: flex; /* 使用 Flexbox 布局 */  
+    justify-content: space-between; /* 在主要轴上分配空间，左右对齐 */  
+    align-items: center; /* 在交叉轴上居中对齐 */  
+    padding: 2.5px; /* 添加一些内边距 */ 
+}
+
+.add_button{
+    margin-right: 20px
+}
+
+.quiz {  
+    border: 3px dashed blue; /* 边框宽度为3px，虚线，颜色为蓝色 */  
+    padding: 10px;  
+    margin: 10px;  
+}  
+
+.des_text{
+    color:burlywood
+}
+
+.toggle-button-div {  
+    display: flex;  
+    align-items: center;  
+    margin-top: 10px;  
+}  
+
+.toggle-button {  
+    justify-content: center;
+    position: relative;  
+    width: 100px;  
+    height: 25px;  
+    background-color: #ccc;  
+    border-radius: 25px;  
+    cursor: pointer;  
+    transition: background-color 0.3s;  
+}  
+
+.toggle-button::before {  
+    content: "";  
+    position: absolute;  
+    width: 21px;  
+    height: 21px;  
+    background-color: white;  
+    border-radius: 50%;  
+    top: 2px;  
+    left: 2px;  
+    transition: transform 0.3s;  
+}  
+
+.toggle-button.active {  
+    background-color: #6200ea;  
+}  
+
+.toggle-button.active::before {  
+    transform: translateX(79px);  
+}  
+
+.toggle-state {  
+    margin-left: 15px;  
+    font-size: 16px;  
+    color: #333;  
+}
+
+.control_div{
+    display: flex;
+}
+
+.control_div > div{
+    /*flex: 1;  让子 div 均分容器宽度 */
+    margin: 10px; /* 添加间距 */
+}
+
+.red-border {  
+    border-color: red;  
+} 
+
+.dx-div{
+    display: flex;
+}
+
+.dx-s{
+    display: flex;
+    align-items: center; /* 同时水平和垂直居中 */   
+}
+
+.answer_select{
+    position: relative
+}
+
+.locker{
+    position: absolute;   
+    top: 0;  
+    left: 0;  
+    width: 100%;  
+    height: 100%;  
+    background-color: rgba(255, 255, 255, 0); /* 半透明背景 */  
+    pointer-events: auto; /* 允许事件 */  
+}  
+
+.setting-set{
+    border: 1px dashed azure; 
+    padding: 10px;  
+    margin: 10px; 
+}
+
+.in-tag{
+    display: inline-block;
+    background-color: green;
+    border-radius: 20px;
+    padding: 0 5px;
+    margin: 0 2px
+}
+
+.out-tag{
+    display: inline-block;
+    background-color: #a82931;
+    border-radius: 20px;
+    padding: 0 5px;
+    margin: 0 2px
+}

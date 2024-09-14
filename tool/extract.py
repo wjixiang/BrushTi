@@ -5,9 +5,9 @@ from ai_process import a1_test_convert,answer_convert
 text = ""
 answer = ""
 
-clas = "妇产科学" 
+clas = "内科学" 
 mode = "A2"
-tag = ["习题","章节-正常分娩","景晴"]
+tag = ["习题","章节-肺部感染性疾病","人卫习题集"]
 
 ######
 a1_test_convert()
