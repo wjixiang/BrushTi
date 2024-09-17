@@ -4,14 +4,14 @@
     "type": "split",
     "children": [
       {
-        "id": "9fbaf5db48af4208",
+        "id": "3c423740055e2966",
         "type": "tabs",
         "children": [
           {
-            "id": "bc8dd08b6831920c",
+            "id": "e737dab70fe96849",
             "type": "leaf",
             "state": {
-              "type": "test-view",
+              "type": "empty",
               "state": {}
             }
           }
@@ -60,8 +60,17 @@
               "type": "bookmarks",
               "state": {}
             }
+          },
+          {
+            "id": "271c932ba80fa609",
+            "type": "leaf",
+            "state": {
+              "type": "test-view",
+              "state": {}
+            }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
@@ -81,7 +90,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "test_bank/ct2024-6-8-12-27-26.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -98,7 +106,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "test_bank/ct2024-6-8-12-27-26.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -120,16 +127,15 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "test_bank/ct2024-6-8-12-27-26.md"
-              }
+              "state": {}
             }
           }
-        ]
+        ],
+        "currentTab": 3
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 310.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -140,36 +146,54 @@
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
       "obsidian-excalidraw-plugin:新建绘图文件": false,
-      "BrushTee:active panel": false
+      "BrushTee:active panel": false,
+      "BrushTee:active link-test panel": false,
+      "BrushTee:active target-test panel": false
     }
   },
-  "active": "a735018c1ee19a27",
+  "active": "e737dab70fe96849",
   "lastOpenFiles": [
-    "test_bank/ct2024-8-15-05-43-49.md",
-    "test_bank/ct2023-10-29-01-52-53.md",
-    "test_bank/ct2023-10-29-09-25-50.md",
-    "test_bank/ct2023-10-29-10-24-50.md",
-    "test_bank/ct2023-10-29-10-44-09.md",
-    "test_bank/ct2023-10-29-03-05-33.md",
-    "test_bank/ct2023-10-27-11-06-41.md",
-    "test_bank/ct2023-10-27-10-32-21.md",
-    "test_bank/ct2023-10-29-02-35-10.md",
-    "test_bank/ct2023-10-29-01-34-12.md",
-    "test_bank/ct2023-10-27-10-17-06.md",
-    "test_bank/ct2023-10-27-09-54-37.md",
-    "test_bank/ct2023-10-27-10-05-42.md",
-    "test_bank/ct2023-10-29-10-39-38.md",
-    "test_bank/ct2023-10-29-10-43-23.md",
-    "test_bank/ct2023-10-30-10-44-40.md",
-    "test_bank/ct2023-11-4-11-32-29.md",
-    "test_bank/ct2023-11-2-10-50-20.md",
-    "test_bank/ct2023-10-30-06-18-58.md",
-    "test_bank/ct2023-10-29-10-00-43.md",
-    "test_bank/ct2023-11-14-11-53-01.md",
-    "test_bank/ct2024-3-14-09-00-16.md",
-    "test_bank/ct2023-11-14-11-43-23.md",
-    "test_bank/ct2023-11-9-09-28-50.md",
-    "test_bank/ct2023-11-9-09-26-17.md",
-    "test_bank/ct2023-11-9-09-20-44.md"
+    "test_bank/题库.md",
+    "test_bank/ct2024-5-9-07-26-48.md",
+    "test_bank/ct2024-5-21-09-10-39.md",
+    "test_bank/2024-09-11-00-39-36.md",
+    "test_bank/ct2024-9-14-19-43-07.md",
+    "test_bank/ct2024-9-7-15-18-56.md",
+    "test_bank/2024-09-13-14-41-3.md",
+    "test_bank/ct2024-9-5-22-22-27.md",
+    "test_bank/2024-09-09-07-54-28.md",
+    "test_bank/2024-09-11-00-39-18.md",
+    "test_bank/2024-09-08-16-12-11.md",
+    "test_bank/ct2024-9-7-15-07-12.md",
+    "test_bank/2024-09-11-14-29-0.md",
+    "test_bank/2024-09-08-20-41-15.md",
+    "test_bank/2024-09-11-10-48-2.md",
+    "test_bank/2024-09-10-17-25-3.md",
+    "test_bank/ct2024-9-5-9-59-08.md",
+    "test_bank/2024-09-11-14-04-1.md",
+    "test_bank/2024-09-11-15-53-0.md",
+    "test_bank/2024-09-10-08-38-5.md",
+    "test_bank/ct2024-9-6-20-20-11.md",
+    "test_bank/ct2024-9-4-15-47-16.md",
+    "test_bank/2024-09-10-09-03-5.md",
+    "test_bank/2024-09-13-14-24-23.md",
+    "test_bank/2024-09-09-07-54-8.md",
+    "test_bank/2024-09-12-16-22-7.md",
+    "Vault/Pasted image 20230321204900.png",
+    "Vault/Pasted image 20230315204023.png",
+    "Vault/Pasted image 20230315200245.png",
+    "Vault/Pasted image 20230321222333.png",
+    "Vault/Pasted image 20230317161324.png",
+    "Vault/Pasted image 20230321201501.png",
+    "Vault/Pasted Image 20230321195453_277.svg",
+    "Vault/Pasted image 20230315204234.png",
+    "Vault/Pasted Image 20230322132808_232.png",
+    "Vault/Pasted image 20230315200244.png",
+    "Vault/补体系统的激活.canvas",
+    "Vault/凝血note.canvas",
+    "Vault/疾病",
+    "Vault/card",
+    "Vault/note",
+    "Vault"
   ]
 }

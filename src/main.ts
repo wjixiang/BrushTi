@@ -1,14 +1,26 @@
-import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile, App} from "obsidian";
+import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile, App,PluginSettingTab,Setting} from "obsidian";
 import {test_gnerate_view, test_generate} from "src/generate";
+import { link_pract,link_practice_view } from "./link_practice";
+import { quiz_view,quiz } from "./quiz";
 import { testdb } from "src/base";
 import { log } from "console";
 import {parseYamlMetadata,processFile} from "src/metadata_solve"
 
-export default class brushtee extends Plugin {
-  folderpath: string;
+export interface MyPluginSettings {  
+  bank_path: string;
+}
 
+const DEFAULT_SETTINGS: Partial<MyPluginSettings> = {  
+  bank_path: "test_bank",  
+};
+
+//setting part
+
+export default class brushtee extends Plugin {
+  settings:MyPluginSettings
   async onload() {
-    this.folderpath = 'test_bank'
+    await this.loadSettings();
+    this.addSettingTab(new MySettingTab(this.app, this));  
 
     const test1 = new testdb(app,this.manifest)
     //alert(test1.testfile.length)
@@ -18,16 +30,51 @@ export default class brushtee extends Plugin {
       (leaf) => new test_gnerate_view(leaf) 
     );
 
-    this.addRibbonIcon('circle', 'active panel', () => {
+    this.registerView(
+      link_pract,
+      (leaf) => new link_practice_view(leaf)
+    )
+
+    this.registerView(
+      quiz,
+      (leaf)=>new quiz_view(leaf,[],this.settings.bank_path)
+    )
+
+    this.addRibbonIcon('crosshair', 'active target-test panel', () => {
       new Notice('active setting panel');
       this.activateView();
     });
 
+    this.addRibbonIcon('link', 'active link-test panel', () => {
+      new Notice('active link-test panel');
+      this.activate_link_test_view();
+    });
+
     this.addCommand({  
-      id: 'get-attribute-value',  
+      id: 'get-attribute-value',   
       name: 'Get Document Attribute Value',  
       callback: () => this.getAttributeValuesFromFolder(),  
     });  
+  }
+
+  async activate_link_test_view(){
+    const { workspace } = this.app;
+
+    let leaf: WorkspaceLeaf | null = null;
+    const leaves = workspace.getLeavesOfType(link_pract);
+
+    if (leaves.length > 0) {
+      // A leaf with our view already exists, use that
+      leaf = leaves[0];
+    } else {
+      // Our view could not be found in the workspace, create a new leaf
+      // in the right sidebar for it
+      leaf = workspace.getRightLeaf(false); // 修改这一行，若为true则会进一步分裂  
+      await leaf.setViewState({ type: link_pract, active: true });
+    } 
+
+    // "Reveal" the leaf in case it is in a collapsed sidebar
+    workspace.revealLeaf(leaf);
   }
 
   async activateView() {
@@ -42,17 +89,15 @@ export default class brushtee extends Plugin {
     } else {
       // Our view could not be found in the workspace, create a new leaf
       // in the right sidebar for it
-      leaf = workspace.getLeaf(true); // 修改这一行  
+      leaf = workspace.getLeftLeaf(false); // 修改这一行  
       await leaf.setViewState({ type: test_generate, active: true });
     } 
 
     // "Reveal" the leaf in case it is in a collapsed sidebar
     workspace.revealLeaf(leaf);
-    console.log("123")
-
   }   
 
-  async getAttributeValuesFromFolder(folderPath = 'test_bank') {  
+  async getAttributeValuesFromFolder(folderPath = this.settings.bank_path) {  
     let class_list = []
     // 获取文件夹下的所有文件  
     const folder = this.app.vault.getAbstractFileByPath(folderPath); 
@@ -73,4 +118,39 @@ export default class brushtee extends Plugin {
     console.log(uniqueArray) 
   }   
 
+  async loadSettings() {  
+    this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());  
+}  
+
+  async saveSettings() {  
+    await this.saveData(this.settings);  
 }
+
+}
+
+class MySettingTab extends PluginSettingTab {  
+  plugin: brushtee;  
+
+  constructor(app: App, plugin: brushtee) {  
+      super(app, plugin);  
+      this.plugin = plugin;  
+  }  
+
+  display(): void {  
+      let { containerEl } = this;  
+      containerEl.empty();  
+
+      new Setting(containerEl)  
+          .setName("试题库目录")  
+          //.setDesc("示例：test_bank")  
+          .addText((text) =>  
+              text  
+                  .setPlaceholder("Enter a value")  
+                  .setValue(this.plugin.settings.bank_path)  
+                  .onChange(async (value) => {  
+                      this.plugin.settings.bank_path = value;  
+                      await this.plugin.saveSettings();  
+                  })  
+          );  
+  }  
+}  

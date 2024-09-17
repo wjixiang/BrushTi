@@ -1,21 +1,21 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice } from "obsidian";
 
-export const new_test = "quiz-view";
+export const quiz = "quiz-view";
 
 export class quiz_view extends ItemView {
     path: string;
     test_list: never[];
-    constructor(leaf: WorkspaceLeaf,test_list: never[]) {
+    constructor(leaf: WorkspaceLeaf,test_list: never[],path:string) {
       super(leaf);
-      this.path = 'test_bank'
       this.test_list = test_list
+      this.path = path
     }
   
     getViewType() {
-      return new_test;
+      return quiz;
     }
   
     getDisplayText() {
-      return "随机抽题";
+      return "试卷";
     }
 }

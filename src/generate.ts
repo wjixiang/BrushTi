@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App, getAllTags} from "obsidian";
+import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App, getAllTags,MarkdownRenderer} from "obsidian";
 import { getPriority } from "os";
 import { text } from "stream/consumers";
 import { string } from "yaml/dist/schema/common/string";
@@ -464,7 +464,7 @@ export class test_gnerate_view extends ItemView {
       t.des_div.createEl('p',{
         text:t.cls+" · "+t.mode,
         cls:"des_text"
-      })
+      }) 
 
       t_link.addEventListener("click",()=>{
         this.openFileInNewLeaf(app,this.path+"/"+t.id)
@@ -474,34 +474,38 @@ export class test_gnerate_view extends ItemView {
       t.q_div = t.div.createDiv({
         cls:"q_div"
       })
-      let pt = t.q.split("\n")
-      const regex = /!\[\[.*?\]\]/;
-      const reg_extract = /(?<=!\[\[)[^\]]+(?=\]\])/g
-      pt.forEach(p=>{
-        if(regex.test(p)){//显示图片
-          let sub_p = p.split(p.match(regex)[0])
-          const pic_embed_name = p.match(reg_extract)[0]
-          console.log(pic_embed_name)
+
+      MarkdownRenderer.render(this.app,t.q,t.q_div,t.path,t.q_div)
+      /////////////////////////////////////////////////////////
+      //原始html转换
+      // let pt = t.q.split("\n")
+      // const regex = /!\[\[.*?\]\]/;
+      // const reg_extract = /(?<=!\[\[)[^\]]+(?=\]\])/g
+      // pt.forEach(p=>{
+      //   if(regex.test(p)){//显示图片
+      //     let sub_p = p.split(p.match(regex)[0])
+      //     const pic_embed_name = p.match(reg_extract)[0]
+      //     console.log(pic_embed_name)
           
-          const file = this.app.vault.getFiles()
-          const pic_file = file.find(f => f.name === pic_embed_name);
-          console.log(`File path: ${pic_file.path}`);
+      //     const file = this.app.vault.getFiles()
+      //     const pic_file = file.find(f => f.name === pic_embed_name);
+      //     console.log(`File path: ${pic_file.path}`);
 
-          t.q_div.createEl("p",{text:sub_p[0]})
-          t.q_div.createEl('br')
+      //     t.q_div.createEl("p",{text:sub_p[0]})
+      //     t.q_div.createEl('br')
 
-          const pic_embed = t.q_div.createEl("img")
-          pic_embed.src = this.app.vault.getResourcePath(pic_file);  
+      //     const pic_embed = t.q_div.createEl("img")
+      //     pic_embed.src = this.app.vault.getResourcePath(pic_file);  
 
-          t.q_div.createEl("p",{text:sub_p[1]})
-          t.q_div.createEl('br')
-        }else{
-        t.q_div.createEl("p",{text:p})
-        t.q_div.createEl('br')
-        }
-      })
+      //     t.q_div.createEl("p",{text:sub_p[1]})
+      //     t.q_div.createEl('br')
+      //   }else{
+      //   t.q_div.createEl("p",{text:p})
+      //   t.q_div.createEl('br')
+      //   }
+      // })
+      /////////////////////////////////////////////////////////////////
 
-      //
       t.answer_select_div = t.div.createDiv({
         cls:'answer_select'
       })
