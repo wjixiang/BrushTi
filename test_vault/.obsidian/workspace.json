@@ -4,15 +4,19 @@
     "type": "split",
     "children": [
       {
-        "id": "3c423740055e2966",
+        "id": "a452d5397d3edbb3",
         "type": "tabs",
         "children": [
           {
-            "id": "e737dab70fe96849",
+            "id": "a8ae35b4fb0c4057",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "test_bank/ct2024-9-7-9-44-15.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -62,7 +66,7 @@
             }
           },
           {
-            "id": "271c932ba80fa609",
+            "id": "068efb96e4b7a739",
             "type": "leaf",
             "state": {
               "type": "test-view",
@@ -90,6 +94,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "test_bank/ct2024-9-7-9-44-15.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -106,6 +111,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "test_bank/ct2024-9-7-9-44-15.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -127,11 +133,21 @@
             "type": "leaf",
             "state": {
               "type": "outline",
+              "state": {
+                "file": "test_bank/ct2024-9-7-9-44-15.md"
+              }
+            }
+          },
+          {
+            "id": "bda51e06c46d131c",
+            "type": "leaf",
+            "state": {
+              "type": "link-test-view",
               "state": {}
             }
           }
         ],
-        "currentTab": 3
+        "currentTab": 4
       }
     ],
     "direction": "horizontal",
@@ -146,39 +162,39 @@
       "templates:插入模板": false,
       "command-palette:打开命令面板": false,
       "obsidian-excalidraw-plugin:新建绘图文件": false,
-      "BrushTee:active panel": false,
       "BrushTee:active link-test panel": false,
       "BrushTee:active target-test panel": false
     }
   },
-  "active": "e737dab70fe96849",
+  "active": "068efb96e4b7a739",
   "lastOpenFiles": [
-    "test_bank/题库.md",
-    "test_bank/ct2024-5-9-07-26-48.md",
-    "test_bank/ct2024-5-21-09-10-39.md",
-    "test_bank/2024-09-11-00-39-36.md",
+    "test_bank/2024-09-17-21-38-1.md",
     "test_bank/ct2024-9-14-19-43-07.md",
+    "test_bank/2024-09-17-21-38-10.md",
+    "test_bank/ct2024-5-1-09-27-40.md",
+    "test_bank/ct2024-5-28-09-54-00.md",
+    "test_bank/ct2024-4-4-02-46-46.md",
     "test_bank/ct2024-9-7-15-18-56.md",
     "test_bank/2024-09-13-14-41-3.md",
+    "test_bank/ct2023111071114.md",
+    "test_bank/ct2024-4-23-09-56-07.md",
+    "test_bank/ct2024-6-24-04-03-18.md",
     "test_bank/ct2024-9-5-22-22-27.md",
     "test_bank/2024-09-09-07-54-28.md",
     "test_bank/2024-09-11-00-39-18.md",
     "test_bank/2024-09-08-16-12-11.md",
+    "test_bank/ct2024-6-24-08-55-40.md",
     "test_bank/ct2024-9-7-15-07-12.md",
     "test_bank/2024-09-11-14-29-0.md",
     "test_bank/2024-09-08-20-41-15.md",
+    "test_bank/ct2024-4-19-10-40-41.md",
     "test_bank/2024-09-11-10-48-2.md",
     "test_bank/2024-09-10-17-25-3.md",
     "test_bank/ct2024-9-5-9-59-08.md",
     "test_bank/2024-09-11-14-04-1.md",
     "test_bank/2024-09-11-15-53-0.md",
     "test_bank/2024-09-10-08-38-5.md",
-    "test_bank/ct2024-9-6-20-20-11.md",
-    "test_bank/ct2024-9-4-15-47-16.md",
-    "test_bank/2024-09-10-09-03-5.md",
-    "test_bank/2024-09-13-14-24-23.md",
-    "test_bank/2024-09-09-07-54-8.md",
-    "test_bank/2024-09-12-16-22-7.md",
+    "test_bank/试卷",
     "Vault/Pasted image 20230321204900.png",
     "Vault/Pasted image 20230315204023.png",
     "Vault/Pasted image 20230315200245.png",

@@ -2,12 +2,26 @@ import re
 from datetime import datetime  
 from ai_process import a1_test_convert,answer_convert
 
+class convertor:
+    with open("./tool/test.md","r") as f:
+        text = f.read()
+
+    with open("./tool/answer.md","r") as f:
+        answer = f.read()
+
+    def __init__(self,clas,mode,tag) -> None:
+        self.text = text
+        self.answer = answer
+        self.clas = clas
+        self.tag = tag
+        
+
 text = ""
 answer = ""
 
 clas = "内科学" 
-mode = "A2"
-tag = ["习题","章节-肺部感染性疾病","人卫习题集"]
+mode = "A1"
+tag = ["习题","章节-胃食管反流病","人卫习题集"]
 
 ######
 a1_test_convert()

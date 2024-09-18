@@ -6,18 +6,23 @@ import { testdb } from "src/base";
 import { log } from "console";
 import {parseYamlMetadata,processFile} from "src/metadata_solve"
 
-export interface MyPluginSettings {  
+export interface btsettings {  
   bank_path: string;
+  api_url: string;
+	api_key: string;
 }
 
-const DEFAULT_SETTINGS: Partial<MyPluginSettings> = {  
-  bank_path: "test_bank",  
+
+export const DEFAULT_SETTINGS: Partial<btsettings> = {  
+  bank_path: "test_bank", 
+  api_url: 'https://www.gptapi.us/v1/chat/completions',
+	api_key: "sk-0SghhgFMzyNOoRwG981eDcFbEeCa4aEa9c1b831bDc73360b"
 };
 
 //setting part
 
 export default class brushtee extends Plugin {
-  settings:MyPluginSettings
+  settings:btsettings 
   async onload() {
     await this.loadSettings();
     this.addSettingTab(new MySettingTab(this.app, this));  
@@ -152,5 +157,27 @@ class MySettingTab extends PluginSettingTab {
                       await this.plugin.saveSettings();  
                   })  
           );  
+
+      new Setting(containerEl)
+        .setName('API-URL')
+        .setDesc('自定义API地址')
+        .addText(text => text
+          .setPlaceholder('Enter your url')
+          .setValue(this.plugin.settings.api_url)
+          .onChange(async (value) => {
+            this.plugin.settings.api_url = value;
+            await this.plugin.saveSettings();
+          }));
+
+      new Setting(containerEl)
+        .setName('API-KEY')
+        .setDesc("填入API-key")
+        .addText(text => text
+          .setPlaceholder('Enter your api-key')
+          .setValue(this.plugin.settings.api_key)
+          .onChange(async (value) => {
+            this.plugin.settings.api_key = value;
+            await this.plugin.saveSettings();
+          }));
   }  
 }  

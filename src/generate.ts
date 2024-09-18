@@ -1,11 +1,10 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App, getAllTags,MarkdownRenderer} from "obsidian";
-import { getPriority } from "os";
-import { text } from "stream/consumers";
-import { string } from "yaml/dist/schema/common/string";
+import { test_info,test } from "./test";
+
 
 export const test_generate = "test-view";
 
-function read_property(filepath,property){
+export function read_property(filepath,property){
   const tf = this.app.vault.getFileByPath(filepath)
   let metadata = this.app.metadataCache.getFileCache(tf);
   let front_matter = metadata.frontmatter
@@ -420,62 +419,78 @@ export class test_gnerate_view extends ItemView {
   }}
 
   async create_test_page(quiz_div){
-    let test_concat = [];
-    const tl = [];
-    this.test_list.forEach(e=>{
-      test_concat = test_concat.concat(e[3])
-    });
-    // console.log(test_concat);
+    let test_concat = [];  
+    let tl = [];  
+    const test_list = [];  
+    this.test_list.forEach(e => {  
+        test_concat = test_concat.concat(e[3]);  
+    });  
 
-    test_concat.forEach(async ts=>{
-      const test = {id:ts,
-        tf: this.app.vault.getFileByPath(this.path+"/"+ts),
-        cls: read_property(this.path+"/"+ts,"class"),
-        mode: read_property(this.path+"/"+ts,"mode"),
-        q:"",
-        a:"",
-        div:HTMLElement
-      }
+    // 收集所有的 Promise  
+    const promises = test_concat.map(async ts => {  
+        const tf = this.app.vault.getFileByPath(this.path + "/" + ts);  
+        const text = await this.test_parse(tf);  
+        const q = text["Q"];  
+        const a = text["A"];  
 
-       tl.push(test)
-    });
+        const test_info: test_info = {  
+            id: ts,  
+            tf: tf,  
+            cls: read_property(this.path + "/" + ts, "class"),  
+            mode: read_property(this.path + "/" + ts, "mode"),  
+            q: q,  
+            a: a,  
+            div: quiz_div.createDiv({  
+                cls: "quiz",  
+                id: ts  
+            })  
+        };  
 
+        const tes = new test(test_info);  
+        tl.push(tes);  
+    });  
+
+    // 等待所有 Promise 完成  
+    await Promise.all(promises);  
+    console.log(tl); 
     tl.forEach(async t=>{
+      console.log("hello")
+      t.create_test_body()
       // console.log(t)
-      let text =  await this.test_parse(t.tf)
-      t.q = text["Q"]
-      t.a = text["A"]
-      t.state = 0 //0:未提交；1：回答正确；2：回答错误
-      t.answer = null
-      t.div = quiz_div.createDiv({
-        cls:"quiz",
-        id:t.id
-      })
+      // let text =  await this.test_parse(t.tf)
+      // t.q = text["Q"]
+      // t.a = text["A"]
+      // t.state = 0 //0:未提交；1：回答正确；2：回答错误
+      // t.answer = null
+      // t.div = quiz_div.createDiv({
+      //   cls:"quiz",
+      //   id:t.id
+      //})
       //
 
-      t.des_div = t.div.createDiv({
-        cls:"q_des"
-      })
+      // t.des_div = t.div.createDiv({
+      //   cls:"q_des"
+      // })
 
-      const t_link = t.des_div.createEl('a',{
-        text:t.id
-      })
+      // const t_link = t.des_div.createEl('a',{
+      //   text:t.id
+      // })
 
-      t.des_div.createEl('p',{
-        text:t.cls+" · "+t.mode,
-        cls:"des_text"
-      }) 
+      // t.des_div.createEl('p',{
+      //   text:t.cls+" · "+t.mode,
+      //   cls:"des_text"
+      // }) 
 
-      t_link.addEventListener("click",()=>{
-        this.openFileInNewLeaf(app,this.path+"/"+t.id)
-      })
+      // t_link.addEventListener("click",()=>{
+      //   this.openFileInNewLeaf(app,this.path+"/"+t.id)
+      // })
 
-      //
-      t.q_div = t.div.createDiv({
-        cls:"q_div"
-      })
+      // //
+      // t.q_div = t.div.createDiv({
+      //   cls:"q_div"
+      // })
 
-      MarkdownRenderer.render(this.app,t.q,t.q_div,t.path,t.q_div)
+      // MarkdownRenderer.render(this.app,t.q,t.q_div,t.path,t.q_div)
       /////////////////////////////////////////////////////////
       //原始html转换
       // let pt = t.q.split("\n")
@@ -506,19 +521,19 @@ export class test_gnerate_view extends ItemView {
       // })
       /////////////////////////////////////////////////////////////////
 
-      t.answer_select_div = t.div.createDiv({
-        cls:'answer_select'
-      })
+      // t.answer_select_div = t.div.createDiv({
+      //   cls:'answer_select'
+      // })
 
       //input control zone
 
-      if (t.mode=='A1'||t.mode =='A2'){
-        this.A1_control(t)
-      }else if(t.mode == "X"){
-        this.X_control(t)
-      }else if(t.mode =="B"||t.mode == "A3"){
-        this.B_control(t)
-      }
+      // if (t.mode=='A1'||t.mode =='A2'){
+      //   this.A1_control(t)
+      // }else if(t.mode == "X"){
+      //   this.X_control(t)
+      // }else if(t.mode =="B"||t.mode == "A3"){
+      //   this.B_control(t)
+      // }
 
     })
 

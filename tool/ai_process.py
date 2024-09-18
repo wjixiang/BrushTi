@@ -7,7 +7,7 @@ def chat_with_gpt(api_url, api_key, prompt):
     }  
     
     data = {  
-        'model': 'gpt-4o',  # 或者使用其他可用的模型  
+        'model': 'gpt-4o-mini',  # 或者使用其他可用的模型  
         'messages': [  
             {'role': 'system', 'content': 'You are a format converter.'},  
             {'role': 'user', 'content': prompt}  
