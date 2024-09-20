@@ -21,6 +21,7 @@ export interface test_info{
     mode: string,
     q:string,
     a:string,
+    d:string,
     div:HTMLElement,
     answer:string,
 }
@@ -37,6 +38,7 @@ export class test implements test_info{
     answer: string;
     reveal_button:HTMLElement;
     answer_select_div:HTMLElement;
+    d:string;
     constructor(test_info:test_info){
         this.tf = test_info.tf
         this.cls = test_info.cls
@@ -44,6 +46,7 @@ export class test implements test_info{
         this.q = test_info.q
         this.a = test_info.a
         this.div = test_info.div
+        this.d = test_info.d
     }
 
     create_test_body(){
@@ -67,10 +70,46 @@ export class test implements test_info{
 
         //
         const q_div = this.div.createDiv({
-        cls:"q_div"
+        cls:"q-div" 
         })
 
-        MarkdownRenderer.render(app,this.q,q_div,this.tf.path,this.div,MyComponent)
+        //MarkdownRenderer.render(app,this.q,q_div,this.tf.path,this.div,MyComponent)
+             /////////////////////////////////////////////////////////
+      //原始html转换
+      let pt = this.q.split("\n")
+      const regex = /!\[\[.*?\]\]/;
+      const reg_extract = /(?<=!\[\[)[^\]]+(?=\]\])/g
+      pt.forEach(p=>{
+        if(regex.test(p)){//显示图片 
+          let sub_p = p.split(p.match(regex)[0])
+          const pic_embed_name = p.match(reg_extract)[0]
+          console.log(pic_embed_name)
+          
+          const file = app.vault.getFiles()
+          const pic_file = file.find(f => f.name === pic_embed_name);
+          console.log(`File path: ${pic_file.path}`);
+
+          q_div.createEl("p",{text:sub_p[0]})
+          q_div.createEl('span',{
+            cls:"q-span"
+          }) 
+
+          const pic_embed = t.q_div.createEl("img") 
+          pic_embed.src = this.app.vault.getResourcePath(pic_file);  
+
+          q_div.createEl("p",{text:sub_p[1]})
+          q_div.createEl('span',{
+            cls:"q-span"
+          }) 
+        }else{
+        // q_div.createEl("p",{text:p})
+        MarkdownRenderer.render(app,p,q_div,this.tf.path,this.div,MyComponent)
+        q_div.createEl('span',{
+          cls:"q-span"
+        }) 
+        }
+      })
+      /////////////////////////////////////////////////////////////////
         
 
         if (this.mode=='A1'||this.mode =='A2'){
@@ -457,6 +496,11 @@ export class test implements test_info{
             this.create_tag(tag_display_div,tag)
           })
         }
+        this.div.createEl("hr")
+        const discus = this.div.createDiv()
+        console.log(this.d)
+        MarkdownRenderer.render(app,this.d,discus,this.tf.path,this.div,MyComponent)
+
       }
     
       async lock_option(){

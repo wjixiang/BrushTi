@@ -41,7 +41,7 @@ def a1_test_convert():
         test_row = f.read()
 
     print(test_row)
-    user_input = f"不提供解释，修正格式，题目与题目间由2个换行符分隔:\n{test_row}"
+    user_input = f"不提供解释，修正格式，一个选项占单独一行，同一道题目内部不要有空行，题目与题目间由2个换行符分隔:\n{test_row}"
 
     test = ai(user_input)
 
@@ -57,7 +57,7 @@ def answer_convert():
 
     print(answer_row)
 
-    answer = ai(f"不提供解释，转为markdown有序列表:\n{answer_row}")
+    answer = ai(f"不提供解释，修正下列列表的格式，提取转为有序列表，不改动原先的内容，一行一个:\n{answer_row}")
 
     print(answer)
     with open("./tool/answer.md",'w') as f:

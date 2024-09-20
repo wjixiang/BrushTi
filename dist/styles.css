@@ -155,3 +155,7 @@ If your plugin does not need CSS, delete this file.
     padding: 0 5px;
     margin: 0 2px
 }
+
+.q-div{
+    line-height: 20px
+  }

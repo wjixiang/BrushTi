@@ -79,7 +79,7 @@ export class test_gnerate_view extends ItemView {
     return test_generate;
   }
 
-  getDisplayText() {
+  getDisplayText() { 
     return "刷题";
   }
  
@@ -432,6 +432,7 @@ export class test_gnerate_view extends ItemView {
         const text = await this.test_parse(tf);  
         const q = text["Q"];  
         const a = text["A"];  
+        const d = text["D"];
 
         const test_info: test_info = {  
             id: ts,  
@@ -440,6 +441,7 @@ export class test_gnerate_view extends ItemView {
             mode: read_property(this.path + "/" + ts, "mode"),  
             q: q,  
             a: a,  
+            d: d,
             div: quiz_div.createDiv({  
                 cls: "quiz",  
                 id: ts  
