@@ -4,19 +4,15 @@
     "type": "split",
     "children": [
       {
-        "id": "a452d5397d3edbb3",
+        "id": "c983786f284f741b",
         "type": "tabs",
         "children": [
           {
-            "id": "a8ae35b4fb0c4057",
+            "id": "c5fd1b22539366c1",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "test_bank/ct2024-6-3-10-01-37.md",
-                "mode": "source",
-                "source": false
-              }
+              "type": "empty",
+              "state": {}
             }
           }
         ]
@@ -66,7 +62,7 @@
             }
           },
           {
-            "id": "068efb96e4b7a739",
+            "id": "d38c617d3898371b",
             "type": "leaf",
             "state": {
               "type": "test-view",
@@ -78,7 +74,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 269.5
   },
   "right": {
     "id": "69dc33d24e608dd8",
@@ -94,7 +90,6 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "test_bank/ct2024-6-3-10-01-37.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -111,7 +106,6 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "test_bank/ct2024-6-3-10-01-37.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -133,9 +127,7 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {
-                "file": "test_bank/ct2024-6-3-10-01-37.md"
-              }
+              "state": {}
             }
           },
           {
@@ -145,9 +137,17 @@
               "type": "link-test-view",
               "state": {}
             }
+          },
+          {
+            "id": "49f8e7b78fbd02ac",
+            "type": "leaf",
+            "state": {
+              "type": "quiz-view",
+              "state": {}
+            }
           }
         ],
-        "currentTab": 4
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
@@ -166,34 +166,35 @@
       "BrushTee:active target-test panel": false
     }
   },
-  "active": "a8ae35b4fb0c4057",
+  "active": "d38c617d3898371b",
   "lastOpenFiles": [
-    "test_bank/ct2024-5-20-04-30-55.md",
-    "test_bank/ct2024-9-5-13-54-08.md",
-    "test_bank/ct2024-9-7-9-44-15.md",
-    "test_bank/2024-09-17-21-38-1.md",
-    "test_bank/ct2024-9-14-19-43-07.md",
-    "test_bank/2024-09-17-21-38-10.md",
-    "test_bank/ct2024-5-1-09-27-40.md",
-    "test_bank/ct2024-5-28-09-54-00.md",
-    "test_bank/ct2024-4-4-02-46-46.md",
-    "test_bank/ct2024-9-7-15-18-56.md",
-    "test_bank/2024-09-13-14-41-3.md",
-    "test_bank/ct2023111071114.md",
-    "test_bank/ct2024-4-23-09-56-07.md",
-    "test_bank/ct2024-6-24-04-03-18.md",
-    "test_bank/ct2024-9-5-22-22-27.md",
-    "test_bank/2024-09-09-07-54-28.md",
-    "test_bank/2024-09-11-00-39-18.md",
-    "test_bank/2024-09-08-16-12-11.md",
-    "test_bank/ct2024-6-24-08-55-40.md",
-    "test_bank/ct2024-9-7-15-07-12.md",
-    "test_bank/2024-09-11-14-29-0.md",
-    "test_bank/2024-09-08-20-41-15.md",
-    "test_bank/ct2024-4-19-10-40-41.md",
-    "test_bank/2024-09-11-10-48-2.md",
-    "test_bank/2024-09-10-17-25-3.md",
-    "test_bank/ct2024-9-5-9-59-08.md",
+    "test_bank/ct2024-09-22-14-07-42-906.md",
+    "test_bank/ct2024-09-22-18-21-50-687.md",
+    "test_bank/ct2024-09-22-18-21-46-946.md",
+    "test_bank/ct2024-09-22-18-21-15-014.md",
+    "test_bank/ct2024-09-22-18-25-47-813.md",
+    "test_bank/ct2024-09-22-18-32-14-163.md",
+    "test_bank/ct2024-09-22-18-34-55-441.md",
+    "test_bank/ct2024-09-22-18-40-56-300.md",
+    "test_bank/ct2024-09-22-18-41-00-071.md",
+    "test_bank/ct2024-09-22-19-24-51-652.md",
+    "test_bank/ct2024-09-22-19-25-49-554.md",
+    "test_bank/ct2024-09-22-19-26-21-786.md",
+    "test_bank/ct2024-09-22-19-26-42-823.md",
+    "test_bank/ct2024-09-22-19-28-00-892.md",
+    "test_bank/ct2023200082012.md",
+    "test_bank/ct2023382103842.md",
+    "test_bank/ct2023024090255.md",
+    "test_bank/ct2024-09-22-19-28-39-333.md",
+    "test_bank/ct2023595105914.md",
+    "test_bank/ct2024-09-22-18-02-05-840.md",
+    "test_bank/ct2024-09-22-19-25-32-664.md",
+    "test_bank/2024-09-21-20-03-57-941.md",
+    "test_bank/2024-09-12-16-22-18.md",
+    "test_bank/2024-09-12-16-22-16.md",
+    "test_bank/2024-09-10-09-03-16.md",
+    "test_bank/2024-09-10-08-28-2.md",
+    "Pasted image 20240920214004.png",
     "test_bank/试卷",
     "Vault/Pasted image 20230321204900.png",
     "Vault/Pasted image 20230315204023.png",
@@ -204,7 +205,6 @@
     "Vault/Pasted Image 20230321195453_277.svg",
     "Vault/Pasted image 20230315204234.png",
     "Vault/Pasted Image 20230322132808_232.png",
-    "Vault/Pasted image 20230315200244.png",
     "Vault/补体系统的激活.canvas",
     "Vault/凝血note.canvas",
     "Vault/疾病",

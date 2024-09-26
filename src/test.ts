@@ -20,7 +20,7 @@ export interface test_info{
     cls: string,
     mode: string,
     q:string,
-    a:string,
+    a:string, 
     d:string,
     div:HTMLElement,
     answer:string,
@@ -45,7 +45,10 @@ export class test implements test_info{
         this.mode = test_info.mode
         this.q = test_info.q
         this.a = test_info.a
-        this.div = test_info.div
+        this.div = test_info.div.createDiv({  
+          cls: "quiz",  
+          id:test_info.tf.name
+      }) 
         this.d = test_info.d
     }
 
@@ -94,8 +97,8 @@ export class test implements test_info{
             cls:"q-span"
           }) 
 
-          const pic_embed = t.q_div.createEl("img") 
-          pic_embed.src = this.app.vault.getResourcePath(pic_file);  
+          const pic_embed = q_div.createEl("img") 
+          pic_embed.src = app.vault.getResourcePath(pic_file);  
 
           q_div.createEl("p",{text:sub_p[1]})
           q_div.createEl('span',{
@@ -108,6 +111,13 @@ export class test implements test_info{
           cls:"q-span"
         }) 
         }
+
+        // MarkdownRenderer.render(app,p,q_div,this.tf.path,this.div,MyComponent)
+        // console.log(p)
+        // q_div.createEl('span',{
+        //   cls:"q-span"
+        // }) 
+
       })
       /////////////////////////////////////////////////////////////////
         
@@ -140,7 +150,7 @@ export class test implements test_info{
         //创建控制栏
         const quiz_control_div = t.div.createDiv({
           cls:"control_div"
-        })
+        }) 
     
         const toggle_button_div = quiz_control_div.createDiv({
           cls:"toggle-button-div"
@@ -211,16 +221,16 @@ export class test implements test_info{
               { value: 'C', label: 'C' },
               { value: 'D', label: 'D' },
               { value: 'E', label: 'E' } 
-          ];  
+          ];   
     
           t.answer_bow = {
             A:0,
             B:0,
             C:0,
-            D:0,
+            D:0,  
             E:0
           }
-          options.forEach(option => {  
+          options.forEach(option => {   
             // 创建一个单选框元素  
             t.answer_bow[option.value] = this.answer_select_div.createEl('input');  
             t.answer_bow[option.value].type = 'radio';  
@@ -479,32 +489,32 @@ export class test implements test_info{
         this.append_record()
       }
 
-      async reveal_answer(){
+      async reveal_answer(){ 
         this.div.createEl("hr")
         this.div.createEl("p",{
           cls:"standard-answer",
-          text:this.standard_answer
+          text:this.standard_answer  
         })
         //reveal tags
         let tag_display_div = this.div.createDiv({
-          cls:"tag-display"
+          cls:"tag-display" 
         })
         let file_tag_list = read_property(this.tf.path,"tags")
         // console.log(file_tag_list)
         if(file_tag_list!=null){
           file_tag_list.forEach(tag=>{
-            this.create_tag(tag_display_div,tag)
+            this.create_tag(tag_display_div,tag) 
           })
         }
-        this.div.createEl("hr")
-        const discus = this.div.createDiv()
-        console.log(this.d)
-        MarkdownRenderer.render(app,this.d,discus,this.tf.path,this.div,MyComponent)
+        // this.div.createEl("hr")
+        // const discus = this.div.createDiv()
+        // console.log(this.d)
+        // MarkdownRenderer.render(app,this.d,discus,this.tf.path,this.div,MyComponent)
 
       }
     
       async lock_option(){
-        this.answer_select_div.createDiv({
+        this.answer_select_div.createDiv({ 
           cls:"locker"
         })
         // const checkboxes = this.answer_select_div.querySelectorAll('input[type="checkbox"]'); 

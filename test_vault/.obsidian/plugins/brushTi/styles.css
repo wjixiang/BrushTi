@@ -1,3 +1,26 @@
+.setting_div {  
+    padding: 16px;  
+    /* background-color: #f9f9f9;   */
+    border-radius: 8px;  
+    border: 1px #959191 solid ;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);  
+    max-width: 400px;  
+    margin: 1% auto;  
+}  
+
+.tag-setting-div p {  
+    font-size: 18px;  
+    font-weight: bold;  
+    margin-bottom: 12px;  
+} 
+
+.tag-rule {  
+    display: flex;  
+    flex-direction: column;  
+    gap: 16px;  
+}  
+
+
 /*
 
 This CSS file will be included with your plugin, and
@@ -7,12 +30,14 @@ If your plugin does not need CSS, delete this file.
 
 */
 
-.setting_div{
-    display: flex; /* 使用 Flexbox 布局 */  
-    justify-content: space-between; /* 在主要轴上分配空间，左右对齐 */  
-    align-items: center; /* 在交叉轴上居中对齐 */  
-    padding: 2.5px; /* 添加一些内边距 */   
+.horizon-div{
+    display: flex;  
+    justify-content: space-around;
+    align-items: center
 }
+
+
+
 
 .brushti_table_div {  
     display: flex;
@@ -41,14 +66,78 @@ If your plugin does not need CSS, delete this file.
     padding: 2.5px; /* 添加一些内边距 */ 
 }
 
-.add_button{
-    margin-right: 20px
+.button_div {  
+    display: grid;  
+    grid-template-columns: repeat(2, 1fr); /* Creates 2 equal columns */  
+    gap: 10px; /* Space between buttons */  
+    max-width: 500px; /* Optional: Set a max width for the grid */  
+    margin: auto; /* Center the grid */  
+}  
+
+.tag-button-div{
+    display: flex; /* 使用 Flexbox 布局 */  
+    justify-content: space-between; /* 按钮之间的间距 */  
+    width: 300px; /* 设置容器宽度 */  
 }
 
-.quiz {  
-    border: 3px dashed blue; /* 边框宽度为3px，虚线，颜色为蓝色 */  
+.tag_button{
+    flex: 1; /* 按钮均分空间 */  
+    margin: 5px; /* 按钮之间的间距 */  
+}
+
+.add_button{
+    width: 100%; /* 设置按钮宽度为 100% */  
     padding: 10px;  
-    margin: 10px;  
+    background-color: #007BFF;  
+    color: white;  
+    border: none;  
+    border-radius: 5px;  
+    cursor: pointer;  
+    text-align: center;  
+}
+
+.container {  
+    display: flex;  
+    flex-direction: column; /* 垂直排列 */  
+    width: 100%; /* 设置容器宽度 */  
+    max-width: 400px;
+}  
+.input-container {  
+    margin-bottom: 10px; /* 输入框与按钮之间的间距 */  
+
+}  
+.test-number-input {  
+    width: 100%; /* 输入框宽度为100% */  
+    padding: 8px; /* 输入框内边距 */  
+    margin: 3px;
+    box-sizing: border-box; /* 包含内边距和边框 */  
+}  
+
+.number-button{
+    flex: 1; /* 按钮均分空间 */  
+    margin: 0 5px; /* 按钮之间的间距 */  
+    padding: 8px; /* 按钮内边距 */  
+    box-sizing: border-box; /* 包含内边距和边框 */  
+}
+
+.tag-button-div {  
+    display: flex; /* 使用 Flexbox 布局 */  
+    justify-content: space-between; /* 按钮之间的间距 */  
+    width: 100%;
+}  
+.tag_button {  
+    flex: 1; /* 按钮均分空间 */  
+    margin: 0 5px; /* 按钮之间的间距 */  
+    padding: 8px; /* 按钮内边距 */  
+    box-sizing: border-box; /* 包含内边距和边框 */  
+}  
+
+
+.quiz {  
+    border: 2px solid rgb(57, 57, 184); /* 边框宽度为3px，虚线，颜色为蓝色 */ 
+    border-radius: 3px;
+    padding: 8px;  
+    margin: 3px;  
 }  
 
 .des_text{
@@ -135,9 +224,9 @@ If your plugin does not need CSS, delete this file.
 }  
 
 .setting-set{
-    border: 1px dashed azure; 
-    padding: 10px;  
-    margin: 10px; 
+    /* border: 1px dashed azure;  */
+    padding: 1px;  
+    margin: 1px; 
 }
 
 .in-tag{

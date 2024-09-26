@@ -1,5 +1,7 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App, getAllTags,MarkdownRenderer} from "obsidian";
 import { test_info,test } from "./test";
+import { quiz } from "./quiz";
+import { string } from "yaml/dist/schema/common/string";
 
 
 export const test_generate = "test-view";
@@ -8,6 +10,9 @@ export function read_property(filepath,property){
   const tf = this.app.vault.getFileByPath(filepath)
   let metadata = this.app.metadataCache.getFileCache(tf);
   let front_matter = metadata.frontmatter
+  if(front_matter==null){
+    console.log(tf.name)
+  }
   return(front_matter[property])
 }
 
@@ -82,7 +87,7 @@ export class test_gnerate_view extends ItemView {
   getDisplayText() { 
     return "刷题";
   }
- 
+   
   async onOpen() {
     let class_list = await getAttributeValuesFromFolder()
     const container = this.containerEl.children[1];
@@ -95,9 +100,10 @@ export class test_gnerate_view extends ItemView {
     const dropdownDiv = setting.createDiv({cls:"setting_div"});  
 
     // Create a dropdown select box  
-    dropdownDiv.createEl("p",{text:"科目"})
-    setting.createEl("hr")
-    const selectBox = dropdownDiv.createEl("select", {  
+    const dropdonwDiv_h = dropdownDiv.createDiv({cls:"horizon-div"});  
+    dropdonwDiv_h.createEl("p",{text:"科目"})
+    
+    const selectBox = dropdonwDiv_h.createEl("select", {  
       cls: "brushti_suject_select", // Optional: Add a custom class for styling  
     });  
 
@@ -118,33 +124,47 @@ export class test_gnerate_view extends ItemView {
         const option = mode_select_Box.createEl("option", { text: optionText });  
         option.value = optionText; // Set the value for each option  
       }); 
-    }); 
+    });  
   
     // Create a div for the input box  
     const mode_select_div = setting.createDiv({cls:"setting_div"});  
-    setting.createEl("hr")
+    const msd = mode_select_div.createDiv({
+      cls:"horizon-div"
+    })
 
-    mode_select_div.createEl("p",{text:"题型"})
+    msd.createEl("p",{text:"题型"})
 
-    const mode_select_Box = mode_select_div.createEl("select", {  
+    const mode_select_Box = msd.createEl("select", {  
       cls: "brushti_mode_select", // Optional: Add a custom class for styling  
     }); 
 
     const tagDiv = setting.createDiv({cls:"setting_div"});
-    setting.createEl("hr")
-    tagDiv.createEl("p",{text:"标签"})
+    // tagDiv.createEl("p",{text:"标签"}) 
     const tag_rule_div = tagDiv.createDiv({cls:"tag-rule"})
-    const tag_set_div = tag_rule_div.createDiv()
-    const tag_input_div = tag_set_div.createDiv()
-    const tag_input = tag_input_div.createEl('input',{
+    const tag_set_div = tag_rule_div.createDiv({
+      cls:"container"
+    }
+    )
+    const tag_input_div = tag_set_div.createDiv({
+      cls:"input-container"
+    })
+    const tag_input = tag_input_div.createEl('input',{ 
       cls:"test-number-input"
     })
+
+    tag_input.placeholder = "要包含/排除的标签"
+
     const tag_suggest = tag_input_div.createDiv()
-    const tag_in = tag_set_div.createEl('button',{
-      text:"包含"
+    const tag_button_div = tag_set_div.createDiv({
+      cls:"tag-button-div"
     })
-    const tag_out = tag_set_div.createEl('button',{
-      text:"排除"
+    const tag_in = tag_button_div.createEl('button',{
+      text:"包含",
+      cls:"tag_button"
+    })
+    const tag_out = tag_button_div.createEl('button',{
+      text:"排除",
+      cls:"tag_button"
     })
 
     tag_in.addEventListener('click',()=>{
@@ -205,16 +225,48 @@ export class test_gnerate_view extends ItemView {
 
 
     const numberDiv = setting.createDiv({cls:"setting_div"});
-    numberDiv.createEl("p",{text:"题数"})
+    // numberDiv.createEl("p",{text:"题数"})
 
-    const numberInputBox = numberDiv.createEl("input", {  
+    const numberInputBox = numberDiv.createEl("input",  {  
       type: "number", // 设置输入类型为数字  
       cls: "test-number-input",  
       value:1
   }); 
 
-    const max_num = numberDiv.createEl("button",{
-      text:"MAX"
+  const horizon_div = numberDiv.createDiv({
+    cls:"horizon-div"
+  })
+
+    const plus =  horizon_div.createEl("button",{
+      text:"+1",
+      cls:"number-button"
+    })
+
+    const minus =  horizon_div.createEl("button",{
+      text:"-1",
+      cls:"number-button"
+    })
+
+    plus.addEventListener('click',()=>{
+      if(numberInputBox.value!=""){
+        numberInputBox.value=String(Number(numberInputBox.value) + 1)
+      }else{
+        numberInputBox.value=String(1)
+      }
+    })
+
+    minus.addEventListener('click',()=>{
+      if(numberInputBox.value!=""){
+        if(Number(numberInputBox.value)>0)
+        numberInputBox.value=String(Number(numberInputBox.value) - 1)
+      }else{
+        
+      }
+    })
+
+    const max_num = horizon_div.createEl("button",{
+      text:"MAX",
+      cls:"number-button"
     })
 
     max_num.addEventListener("click",async ()=>{
@@ -245,16 +297,21 @@ export class test_gnerate_view extends ItemView {
     let in_tag_list = this.get_in_tag(tag_in_display_div)
     let out_tag_list = this.get_in_tag(tag_out_display_div)
       const numberValue = numberInputBox.value;  
-      let req = [selectBox.value,mode_select_Box.value,numberValue]
-      let req_test = await this.fetch(req)//获取满足科目和体型要求的题目
-      // console.log(req_test)
-      // console.log(in_tag_list)
-      req_test = await this.tag_filter(req_test,in_tag_list,out_tag_list)
-      console.log(req_test)
-      console.log(req[2])
-      let selet_test_list = await this.getRandomElements(req_test,req[2])
-      this.test_list.push([selectBox.value,mode_select_Box.value,numberValue,selet_test_list])
-      this.parse_table(this.tbody,this.test_list)
+      if(numberValue==""){
+        new Notice("未输入题数",1000)
+      }else{
+        let req = [selectBox.value,mode_select_Box.value,numberValue]
+        let req_test = await this.fetch(req)//获取满足科目和体型要求的题目
+        // console.log(req_test)
+        // console.log(in_tag_list)
+        req_test = await this.tag_filter(req_test,in_tag_list,out_tag_list)
+        console.log(req_test)
+        console.log(req[2])
+        let selet_test_list = await this.getRandomElements(req_test,req[2])
+        this.test_list.push([selectBox.value,mode_select_Box.value,numberValue,selet_test_list])
+        this.parse_table(this.tbody,this.test_list)
+        new Notice("题目添加成功",1000)
+      }
   });  
 
   button_generate.addEventListener("click", async () => {  
@@ -289,7 +346,8 @@ export class test_gnerate_view extends ItemView {
 });  
   // const create_test_div = container.createDiv({cls:"setting_div"});  
   const create_test_button = buttonDiv.createEl("button",{
-    text:"生成试卷"
+    text:"生成试卷",
+    cls:"add_button",
   });  
 
   create_test_button.addEventListener("click", () => {  
@@ -442,102 +500,59 @@ export class test_gnerate_view extends ItemView {
             q: q,  
             a: a,  
             d: d,
-            div: quiz_div.createDiv({  
-                cls: "quiz",  
-                id: ts  
-            })  
+            // div: quiz_div 
         };  
 
-        const tes = new test(test_info);  
-        tl.push(tes);  
+      //   const test_info: test_info = {  
+      //     id: ts,  
+      //     tf: tf,  
+      //     cls: read_property(this.path + "/" + ts, "class"),  
+      //     mode: read_property(this.path + "/" + ts, "mode"),  
+      //     q: q,  
+      //     a: a,  
+      //     d: d,
+      //     div: quiz_div.createDiv({  
+      //         cls: "quiz",  
+      //         id: ts  
+      //     })  
+      // };  
+
+        // const tes = new test(test_info);  
+        tl.push(test_info);  
     });  
 
     // 等待所有 Promise 完成  
     await Promise.all(promises);  
-    console.log(tl); 
-    tl.forEach(async t=>{
-      console.log("hello")
-      t.create_test_body()
-      // console.log(t)
-      // let text =  await this.test_parse(t.tf)
-      // t.q = text["Q"]
-      // t.a = text["A"]
-      // t.state = 0 //0:未提交；1：回答正确；2：回答错误
-      // t.answer = null
-      // t.div = quiz_div.createDiv({
-      //   cls:"quiz",
-      //   id:t.id
-      //})
-      //
+    const leaves = this.app.workspace.getLeavesOfType(quiz);  
 
-      // t.des_div = t.div.createDiv({
-      //   cls:"q_des"
-      // })
+    const { workspace } = this.app;
 
-      // const t_link = t.des_div.createEl('a',{
-      //   text:t.id
-      // })
+    let leaf: WorkspaceLeaf | null = null;
+    // const leaves = workspace.getLeavesOfType(test_generate);
 
-      // t.des_div.createEl('p',{
-      //   text:t.cls+" · "+t.mode,
-      //   cls:"des_text"
-      // }) 
+    if (leaves.length > 0) {
+      // A leaf with our view already exists, use that
+      leaf = leaves[0];
+    } else {
+      // Our view could not be found in the workspace, create a new leaf
+      // in the right sidebar for it
+      leaf = workspace.getRightLeaf(false); // 修改这一行  
+      await leaf.setViewState({ type: quiz, active: true });
+    } 
 
-      // t_link.addEventListener("click",()=>{
-      //   this.openFileInNewLeaf(app,this.path+"/"+t.id)
-      // })
+    // "Reveal" the leaf in case it is in a collapsed sidebar
+    workspace.revealLeaf(leaf);
 
-      // //
-      // t.q_div = t.div.createDiv({
-      //   cls:"q_div"
-      // })
+    if (leaves.length > 0) {  
+        const quizViewInstance = leaves[0].view; // 获取第一个实例  
+        quizViewInstance.generate_quiz(tl) 
+    }
 
-      // MarkdownRenderer.render(this.app,t.q,t.q_div,t.path,t.q_div)
-      /////////////////////////////////////////////////////////
-      //原始html转换
-      // let pt = t.q.split("\n")
-      // const regex = /!\[\[.*?\]\]/;
-      // const reg_extract = /(?<=!\[\[)[^\]]+(?=\]\])/g
-      // pt.forEach(p=>{
-      //   if(regex.test(p)){//显示图片
-      //     let sub_p = p.split(p.match(regex)[0])
-      //     const pic_embed_name = p.match(reg_extract)[0]
-      //     console.log(pic_embed_name)
-          
-      //     const file = this.app.vault.getFiles()
-      //     const pic_file = file.find(f => f.name === pic_embed_name);
-      //     console.log(`File path: ${pic_file.path}`);
-
-      //     t.q_div.createEl("p",{text:sub_p[0]})
-      //     t.q_div.createEl('br')
-
-      //     const pic_embed = t.q_div.createEl("img")
-      //     pic_embed.src = this.app.vault.getResourcePath(pic_file);  
-
-      //     t.q_div.createEl("p",{text:sub_p[1]})
-      //     t.q_div.createEl('br')
-      //   }else{
-      //   t.q_div.createEl("p",{text:p})
-      //   t.q_div.createEl('br')
-      //   }
-      // })
-      /////////////////////////////////////////////////////////////////
-
-      // t.answer_select_div = t.div.createDiv({
-      //   cls:'answer_select'
-      // })
-
-      //input control zone
-
-      // if (t.mode=='A1'||t.mode =='A2'){
-      //   this.A1_control(t)
-      // }else if(t.mode == "X"){
-      //   this.X_control(t)
-      // }else if(t.mode =="B"||t.mode == "A3"){
-      //   this.B_control(t)
-      // }
-
-    })
+    // console.log(tl); 
+    // tl.forEach(async t=>{
+    //   //console.log("hello")
+    //   t.create_test_body()
+    // })
 
 
   }
@@ -598,7 +613,15 @@ export class test_gnerate_view extends ItemView {
       })
     }
     if(exclude_tag_lsit.length>=1){
-
+      testlist.forEach(id =>{
+        // console.log(id)
+        let file_tag_list = read_property(this.path+"/"+id,"tags")
+        // console.log(file_tag_list)
+        if(file_tag_list!=null){
+        if(!allElementsExist(exclude_tag_lsit, file_tag_list)){
+          filter_list.push(id)
+        }}
+      })
     }
     return(filter_list)
   }
@@ -667,446 +690,19 @@ export class test_gnerate_view extends ItemView {
 
   async test_parse(tf:TFile){
     let plain_text = await this.app.vault.read(tf)
-    // const test = {q:"",a:""}
-
     let md_parse = this.parseMarkdownHeadings(plain_text)
-    // console.log(md_parse)
-
-    // //console.log(plain_text)
-    // const regex_1 = /Q\s*==\s*([\s\S]*?)\s*A\s*==/;  
-
-    // const matches_1 = plain_text.match(regex_1);  
-
-    // if (matches_1 && matches_1[1]) {  
-    //     const content = matches_1[1].trim();  
-    //     console.log("Q:\n",content); // 输出提取的内容  
-    //     test.q = content
-    // } else {  
-    //     console.log('未找到问题');  
-    // } 
-
-    // const regex_2 =/A\s*==\n([\s\S]*?)\n(?=[A-Z] ==|$)/;  
-
-    // const matches_2 = plain_text.match(regex_2);  
-
-    // if (matches_2 && matches_2[1]) {  
-    //     const content = matches_2[1].trim();  
-    //     console.log("A:\n",content); // 输出提取的内容  
-    //     test.a = content
-    // } else {  
-    //     console.log('未找到答案');  
-    // } 
     return(md_parse)
   }
 
-  async right_change(t){
-    // new Notice("回答正确",1000)
-    t.state = 1
-      //change color
-    t.div.setAttribute('style', 'border-color: green;');
-  }
 
-  async wrong_change(t){
-    // new Notice("回答错误",1000)
-    t.state = 2
-     //change color
-    t.div.setAttribute('style', 'border-color: red;');
-  }
 
-  async color_change(t:any){
-    if(t.state==1){
-      t.div.setAttribute('style', 'border-color: green;');
-    }
-    if(t.state==2){
-      t.div.setAttribute('style', 'border-color: red;');
-    }
-  }
-
-  async lock_option(t){
-    t.answer_select_div.createDiv({
-      cls:"locker"
-    })
-    const checkboxes = t.answer_select_div.querySelectorAll('input[type="checkbox"]'); 
-    checkboxes.forEach(box=>{
-      box.disabled = true
-    })
-    for(const opt in t.answer_bow){
-      t.answer_bow[opt].disabled = true
-    }
-    t.toggle_input.disabled = true
-    t.answer_input.disabled = true
-  }
 
   async onClose() {
     // Nothing to clean up.
   }
 
-  async reveal_answer(t){
-    t.div.createEl("hr")
-    t.div.createEl("p",{
-      cls:"standard-answer",
-      text:t.standard_answer
-    })
-    //reveal tags
-    let tag_display_div = t.div.createDiv({
-      cls:"tag-display"
-    })
-    let file_tag_list = read_property(this.path+"/"+t.id,"tags")
-    // console.log(file_tag_list)
-    if(file_tag_list!=null){
-      file_tag_list.forEach(tag=>{
-        this.create_tag(tag_display_div,tag)
-      })
-    }
-  }
 
-  async A1_control(t:any){
-    //转化标准答案
-      t.standard_answer = t.a.replace(" ","")
 
-    //创建单选栏
-    this.create_single_select(t)
-    //创建控制栏
-    t.quiz_control_div = t.div.createDiv({
-      cls:"control_div"
-    })
-
-    t.toggle_button_div = t.quiz_control_div.createDiv({
-      cls:"toggle-button-div"
-    })
-
-    this.create_reveal_button(t)
-
-    t.reveal_button.addEventListener("click",() =>{
-      if(t.state==0){
-        //get input method
-        if(t.toggle_input.innerText=="选择模式"){
-          // console.log(t.answer_bow)
-          for(const opt in t.answer_bow){
-            // console.log(opt)
-            if(t.answer_bow[opt].checked){
-              console.log(t.answer_bow[opt].value)
-              t.answer = t.answer_bow[opt].value
-            }                
-          }
-          if(t.answer==null){
-            new Notice("未作答",1000)
-          }else{
-             const standard_answer = t.a.replace(" ","")
-             if(standard_answer == t.answer){
-              this.right(t)
-             }else{
-              this.wrong(t)
-             }
-              //lock option
-          }
-          
-        }else{
-          const answer = t.answer_input.value.replace(" ","")
-          console.log("input answer:",answer)
-          //judge answer
-          if(answer.toUpperCase() == t.a.replace(" ","").toUpperCase()){
-            this.right(t)
-          }else{
-            this.wrong(t)
-          }
-        }
-      }else{
-        new Notice("已提交",1000);
-      }
-    })
-
-    t.toggle_input = t.toggle_button_div.createEl('button',{
-      text:"选择模式",
-      cls:"toggle-button"
-    })
-  //   t.input_from_state = t.quiz_control_div.createEl("span", {  
-  //     text: "选择模式", // 初始状态  
-  //     cls: "toggle-state"  
-  // }); 
-
-    t.toggle_input.addEventListener("click", () => {  
-      t.toggle_input.classList.toggle("active");  
-      const isActive = t.toggle_input.innerText === "选择模式";  
-      t.toggle_input.setText(isActive ? "输入模式" : "选择模式");  
-      // t.input_from_state.setText(`状态: ${isActive ? "选择模式" : "输入模式"}`);  
-
-      if(isActive){
-        t.answer_select_div.empty()
-        t.answer_input = t.answer_select_div.createEl('input',{
-          text:"输入选项"
-        });
-      }else{
-        t.answer_select_div.empty()
-        const options = [  
-          { value: 'A', label: 'A' },  
-          { value: 'B', label: 'B' },  
-          { value: 'C', label: 'C' },
-          { value: 'D', label: 'D' },
-          { value: 'E', label: 'E' } 
-      ];  
-
-      t.answer_bow = {
-        A:0,
-        B:0,
-        C:0,
-        D:0,
-        E:0
-      }
-      options.forEach(option => {  
-        // 创建一个单选框元素  
-        t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
-        t.answer_bow[option.value].type = 'radio';  
-        t.answer_bow[option.value].name = t.id; // 同组单选框名称  
-        t.answer_bow[option.value].value = option.value; // 设置单选框的值  
-
-        // 创建标签元素  
-        const radioLabel = t.answer_select_div.createEl('label');  
-        radioLabel.textContent = option.label; // 设置标签文本  
-   });
-      }
-  });  
-  }
-  
-  async X_control(t:any){
-    t.standard_answer = t.a.replace(" ","")
-    t.state = 0
-    this.create_multi_select(t)
-    t.quiz_control_div = t.div.createDiv({
-      cls:"control_div"
-    })
-    this.create_reveal_button(t)
-
-    t.reveal_button.addEventListener("click",()=>{
-      if(t.state==0){
-        t.answer = this.getSelectedCheckboxValues(t)
-        console.log(t.answer)
-        if(this.areLettersInString(t.standard_answer,t.answer)){
-          new Notice("回答正确",1000)
-          t.state =  1
-          this.right(t)
-        }else{
-          new Notice("回答错误",1000)
-          t.state =  2
-          this.wrong(t)
-        }
-
-      }else{
-        new Notice("已提交",1000)
-      }
-    })
-  }
-
-  async B_control(t:any){
-    t.standard_answer = t.a.replace(/[^a-zA-Z]/g,"")
-    t.standard_answer = t.standard_answer.split("")
-    console.log(t.standard_answer)
-    t.state = 0  
-    t.dx_option = []
-    t.answer = []
-
-    //创建选择区
-    for(let i=1;i<=t.standard_answer.length;i++){
-      t.dx_option.push(this.single_select(t.answer_select_div,i))
-    }
-    //创建提交按钮
-    t.quiz_control_div = t.div.createDiv({
-      cls:"control_div"
-    })
-    this.create_reveal_button(t)
-
-    t.reveal_button.addEventListener("click",()=>{
-      if(t.state == 0){
-      t.answer=[]
-      t.dx_option.forEach(sgroup=>{
-        t.answer.push(this.get_single_select_answer(sgroup))
-      })
-      console.log(t.answer)
-
-      if(t.answer.includes(0)){
-        new Notice("当前题目未完成",1000)
-      }else{
-        console.log(t.answer)
-        //判断正误
-        if(arraysEqual(t.answer,t.standard_answer)){
-          this.right(t)
-        }else{
-          this.wrong(t)
-        }
-      }
-    }else{
-      new Notice("已作答",1000)
-    }
-      
-
-    })
-
-  }
-
-  async create_single_select(t:any){
-    const options = [  
-      { value: 'A', label: 'A' },  
-      { value: 'B', label: 'B' },  
-      { value: 'C', label: 'C' },
-      { value: 'D', label: 'D' },
-      { value: 'E', label: 'E' } 
-  ];  
-
-  t.answer_bow = {
-    A:0,
-    B:0,
-    C:0,
-    D:0,
-    E:0
-  }
-  t.answer_select_div.empty()
-
-  options.forEach(option => {  
-    // 创建一个单选框元素  
-    t.answer_bow[option.value] = t.answer_select_div.createEl('input');  
-    t.answer_bow[option.value].type = 'radio';  
-    t.answer_bow[option.value].name = t.id; // 同组单选框名称  
-    t.answer_bow[option.value].value = option.value; // 设置单选框的值  
-
-    // 创建标签元素  
-    const radioLabel = t.answer_select_div.createEl('label');  
-    radioLabel.textContent = option.label; // 设置标签文本  
-});
-  }
-
-  single_select(ssdiv:any,id){
-    const options = [  
-      { value: 'A', label: 'A' },  
-      { value: 'B', label: 'B' },  
-      { value: 'C', label: 'C' },
-      { value: 'D', label: 'D' },
-      { value: 'E', label: 'E' } 
-  ]; 
-    let answer_bow = {
-      A:0,
-      B:0,
-      C:0,
-      D:0,
-      E:0
-    }
-    const dx_div = ssdiv.createDiv({cls:"dx-div"})
-    const dx_div_p = dx_div.createDiv()
-    dx_div_p.createEl("p",{
-      text:id+". "
-    })
-    const dx_div_s = dx_div.createDiv({cls:"dx-s"})
-    options.forEach(option=>{
-     answer_bow[option.value] = dx_div_s.createEl('input',{
-        type:'radio',
-        value:option.value
-      });
-      answer_bow[option.value].name = id
-      const radioLabel = dx_div_s.createEl('label');  
-      radioLabel.textContent = option.label; // 设置标签文本  
-    })
-    return(answer_bow)
-  }
-
-  get_single_select_answer(answer_bow){
-    console.log(answer_bow)
-    for(const opt in answer_bow){
-      if(answer_bow[opt].checked){
-        // console.log(answer_bow[opt])
-        return(answer_bow[opt].value)
-      }
-    }
-    return(0)
-  }
-
-  async create_multi_select(t:any){
-    t.answer_select_div.empty()
-    t.answer_select_div.style.display = 'flex';  
-    t.answer_select_div.style.flexDirection = 'row';  
-    t.answer_select_div.style.alignItems = 'center'; // 垂直居中对齐  
-    t.answer_select_div.style.gap = '10px';
-
-    const options = ['A', 'B', 'C', 'D', 'E'];  
-
-    options.forEach(option => {  
-        const checkboxContainer = document.createElement('div');  
-        checkboxContainer.className = 'flex items-center';  
-
-        const checkbox = document.createElement('input');  
-        checkbox.type = 'checkbox';  
-        checkbox.id = t.id;  
-        checkbox.value = option;  
-
-        const label = document.createElement('label');  
-        label.htmlFor = option;  
-        label.innerText = option;  
-        label.className = 'ml-2';  
-
-        checkboxContainer.appendChild(checkbox);  
-        checkboxContainer.appendChild(label);  
-        t.answer_select_div.appendChild(checkboxContainer);  
-    });  
-  }
-
-  getSelectedCheckboxValues(t:any) {  
-    const checkboxes = t.answer_select_div.querySelectorAll('input[type="checkbox"]:checked');  
-    const selectedValues = Array.from(checkboxes).map(checkbox => checkbox.value);  
-    return selectedValues;  
-}  
-
-  create_reveal_button(t:any){
-    t.reveal_button_div = t.quiz_control_div.createDiv({
-      cls:"reveal-button-div"
-    })
-
-    t.reveal_button = t.reveal_button_div.createEl('button',{
-      text:"提交",
-      cls:"reveal-button"
-    })
-  }
-
-  async right(t){
-    new Notice("回答正确✅",1000)
-    this.reveal_answer(t)
-    this.lock_option(t)
-    this.right_change(t)
-    t.state = 1
-    this.append_record(t)
-  }
-
-  async wrong(t){
-    new Notice("回答错误❌",1000)
-    this.reveal_answer(t)
-    this.lock_option(t)
-    this.wrong_change(t)
-    t.state = 2
-    this.append_record(t)
-  }
-
-   async append_record(t){
-    // console.log(this.path+"/"+t.id)
-    // const content = this.app.vault.getAbstractFileByPath(this.path+"/"+t.id);
-    // console.log(content)
-    this.app.fileManager.processFrontMatter(t.tf,(frontmatter)=>{
-      let record = read_property(this.path+"/"+t.id,"record")
-      const timestamps = this.getFormattedTimestamp()
-      let score = 1
-      if(t.state==1){
-        score = 0
-      }else{
-        score = 1
-      }
-      if(record==null){
-        frontmatter['record'] = [{
-          timestamps:timestamps,
-          score:score}]
-      }else{
-        record.push([{
-          timestamps:timestamps,
-          score:score}])
-        frontmatter['record'] = record
-      }
-    })
-  } 
   areLettersInString(str:string, letters:any) {  
     // 将字符串转换为小写并分割成数组  
     const lowerStr = str.toLowerCase();  
