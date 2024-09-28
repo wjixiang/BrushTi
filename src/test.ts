@@ -23,7 +23,7 @@ export interface test_info{
     a:string, 
     d:string,
     div:HTMLElement,
-    answer:string,
+    answer:any[],
 }
 
 export class test implements test_info{
@@ -35,7 +35,7 @@ export class test implements test_info{
     div:HTMLElement;
     state: number;
     standard_answer: string[]|string;
-    answer: string;
+    answer: any[];
     reveal_button:HTMLElement;
     answer_select_div:HTMLElement;
     d:string;
@@ -247,7 +247,7 @@ export class test implements test_info{
       
     async X_control(t:any){
         this.standard_answer = this.a.replace(" ","")
-        t.state = 0
+        this.state = 0
         this.answer_select_div = this.div.createDiv({
             cls:'answer_select'
         })
@@ -257,18 +257,16 @@ export class test implements test_info{
         })
         this.create_reveal_button(quiz_control_div)
     
-        t.reveal_button.addEventListener("click",()=>{
-          if(t.state==0){
-            t.answer = this.getSelectedCheckboxValues(t)
-            console.log(t.answer)
-            if(this.areLettersInString(t.standard_answer,t.answer)){
-              new Notice("回答正确",1000)
-              t.state =  1
-              this.right(t)
+        this.reveal_button.addEventListener("click",()=>{
+          if(this.state==0){
+            this.answer = this.getSelectedCheckboxValues()
+            console.log(this.answer)
+            if(this.areLettersInString(this.standard_answer,this.answer)){
+              this.state =  1
+              this.right()
             }else{
-              new Notice("回答错误",1000)
-              t.state =  2
-              this.wrong(t)
+              this.state =  2
+              this.wrong()
             }
     
           }else{
@@ -283,7 +281,7 @@ export class test implements test_info{
         console.log(this.standard_answer)
         this.state = 0  
         const dx_option: { A: number; B: number; C: number; D: number; E: number; }[] = []
-        const answer: number[] = []
+        
         
         this.answer_select_div = this.div.createDiv({
             cls:'answer_select'
@@ -300,30 +298,30 @@ export class test implements test_info{
         this.create_reveal_button(quiz_control_div)
     
         this.reveal_button.addEventListener("click",()=>{
-          if(this.state == 0){
-            dx_option.forEach(sgroup=>{
-            answer.push(this.get_single_select_answer(sgroup))
+          let ans:  any[]
+          ans = []
+          dx_option.forEach(sgroup=>{
+            ans.push(this.get_single_select_answer(sgroup))
           })
-          console.log(answer)
-    
-          if(answer.includes(0)){
+      
+          console.log(ans)
+          if(ans.includes(0)){
             new Notice("当前题目未完成",1000)
+            
           }else{
-            console.log(answer)
-            //判断正误
-            if(this.arraysEqual(answer,this.standard_answer)){
-              this.right()
-            }else{
-              this.wrong()
-            }
+            if(this.state == 0){
+              this.answer = ans
+              //判断正误
+              if(this.arraysEqual(this.answer,this.standard_answer)){
+                this.right()
+              }else{
+                this.wrong()
+              }
+          }else{
+            new Notice("已作答",1000)
           }
-        }else{
-          new Notice("已作答",1000)
-        }
-
-        
-          
-    
+          }
+                
         })
     
       }
@@ -583,9 +581,9 @@ export class test implements test_info{
               timestamps:timestamps,
               score:score}]
           }else{
-            record.push([{
+            record.push({
               timestamps:timestamps,
-              score:score}])
+              score:score})
             frontmatter['record'] = record
           }
         })

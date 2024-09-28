@@ -1,0 +1,11 @@
+{
+	"id": "BrushTee",
+	"name": "BrushTee",
+	"version": "0.0.0",
+	"minAppVersion": "0.15.0",
+	"description": "个人题库管理插件",
+	"author": "wjc",
+	"authorUrl": "https://obsidian.md",
+	"fundingUrl": "https://obsidian.md/pricing",
+	"isDesktopOnly": false
+}

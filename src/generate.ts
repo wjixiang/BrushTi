@@ -1,6 +1,8 @@
 import { ItemView, WorkspaceLeaf,TFile,MetadataCache,Events, Notice ,Plugin,FileManager,App, getAllTags,MarkdownRenderer} from "obsidian";
 import { test_info,test } from "./test";
 import { quiz } from "./quiz";
+import { times_fliter } from "./filter";
+import { RangeSlider } from "./rangebox";
 import { string } from "yaml/dist/schema/common/string";
 
 
@@ -73,6 +75,8 @@ export class test_gnerate_view extends ItemView {
   path: string;
   test_list: never[];
   tbody: any;
+  lower_input:HTMLElement;
+  upper_input:HTMLElement;
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
     this.path = 'test_bank'
@@ -221,7 +225,21 @@ export class test_gnerate_view extends ItemView {
               tag_suggest.appendChild(div);  
           });  
       }  
-  }); 
+  });  
+
+    const rangeSlidDiv = setting.createDiv({cls:"setting_div"})
+    const rangeSlider = new RangeSlider(rangeSlidDiv)
+    const rangeSettingDiv = rangeSlidDiv.createDiv({
+      cls:"symmetry"
+    })
+    this.lower_input = rangeSettingDiv.createEl("input",{
+      cls: "test-number-input",  
+      value:"0"
+    })
+    this.upper_input = rangeSettingDiv.createEl("input",{
+      cls: "test-number-input",  
+      value:"100"
+    })
 
 
     const numberDiv = setting.createDiv({cls:"setting_div"});
@@ -230,7 +248,7 @@ export class test_gnerate_view extends ItemView {
     const numberInputBox = numberDiv.createEl("input",  {  
       type: "number", // 设置输入类型为数字  
       cls: "test-number-input",  
-      value:1
+      value:"1"
   }); 
 
   const horizon_div = numberDiv.createDiv({
@@ -260,7 +278,7 @@ export class test_gnerate_view extends ItemView {
         if(Number(numberInputBox.value)>0)
         numberInputBox.value=String(Number(numberInputBox.value) - 1)
       }else{
-        
+        numberInputBox.value = "0"
       }
     })
 
@@ -548,12 +566,6 @@ export class test_gnerate_view extends ItemView {
         quizViewInstance.generate_quiz(tl) 
     }
 
-    // console.log(tl); 
-    // tl.forEach(async t=>{
-    //   //console.log("hello")
-    //   t.create_test_body()
-    // })
-
 
   }
 
@@ -628,8 +640,10 @@ export class test_gnerate_view extends ItemView {
 
   async fetch(req){ //废用
     const folder = this.app.vault.getAbstractFileByPath(this.path); 
+    let tet = new times_fliter(folder.children,this.upper_input.value,this.lower_input.value)
+
     let suject_req = []
-    for (const file of folder.children) {  
+    for (const file of tet.filter()) {  
       if (file instanceof TFile) {  
         let metadata = this.app.metadataCache.getFileCache(file);
         let front_matter = metadata.frontmatter
@@ -647,7 +661,10 @@ export class test_gnerate_view extends ItemView {
     this.test_list.forEach(async req =>{
       //调取指定科目的所有题目、题型
       let suject_req = []
+
       for (const file of folder.children) {  
+        
+
         if (file instanceof TFile) {  
           let metadata = this.app.metadataCache.getFileCache(file);
           let front_matter = metadata.frontmatter
@@ -762,7 +779,7 @@ getalltags(){ //获取试题库文件夹下所有的tag
       })
     }
   }})
-  console.log(all_tag_list)
+  // console.log(all_tag_list)
   return(all_tag_list)
 }
 }
