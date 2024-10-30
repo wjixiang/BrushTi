@@ -16,7 +16,9 @@
                 "file": "test_bank/2024-09-09-07-31-0.md",
                 "mode": "source",
                 "source": true
-              }
+              },
+              "icon": "lucide-file",
+              "title": "2024-09-09-07-31-0"
             }
           }
         ]
@@ -39,7 +41,9 @@
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical"
-              }
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
             }
           },
           {
@@ -54,7 +58,9 @@
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical"
-              }
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
             }
           },
           {
@@ -62,7 +68,9 @@
             "type": "leaf",
             "state": {
               "type": "bookmarks",
-              "state": {}
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
             }
           },
           {
@@ -70,7 +78,9 @@
             "type": "leaf",
             "state": {
               "type": "test-view",
-              "state": {}
+              "state": {},
+              "icon": "lucide-file",
+              "title": "刷题"
             }
           }
         ],
@@ -102,7 +112,9 @@
                 "searchQuery": "",
                 "backlinkCollapsed": false,
                 "unlinkedCollapsed": true
-              }
+              },
+              "icon": "links-coming-in",
+              "title": "2024-09-09-07-31-0 的反向链接列表"
             }
           },
           {
@@ -114,7 +126,9 @@
                 "file": "test_bank/2024-09-09-07-31-0.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
-              }
+              },
+              "icon": "links-going-out",
+              "title": "2024-09-09-07-31-0 的出链列表"
             }
           },
           {
@@ -125,7 +139,9 @@
               "state": {
                 "sortOrder": "frequency",
                 "useHierarchy": true
-              }
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
             }
           },
           {
@@ -135,7 +151,9 @@
               "type": "outline",
               "state": {
                 "file": "test_bank/2024-09-09-07-31-0.md"
-              }
+              },
+              "icon": "lucide-list",
+              "title": "2024-09-09-07-31-0 的大纲"
             }
           },
           {
@@ -143,7 +161,9 @@
             "type": "leaf",
             "state": {
               "type": "link-test-view",
-              "state": {}
+              "state": {},
+              "icon": "lucide-file",
+              "title": "插件不再活动"
             }
           },
           {
@@ -151,7 +171,9 @@
             "type": "leaf",
             "state": {
               "type": "quiz-view",
-              "state": {}
+              "state": {},
+              "icon": "lucide-file",
+              "title": "试卷"
             }
           }
         ],

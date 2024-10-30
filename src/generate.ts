@@ -607,14 +607,14 @@ export class test_gnerate_view extends ItemView {
 }  
 
   async tag_filter(testlist,include_tag_list,exclude_tag_lsit){
-    let filter_list = []
+    let filter_list: any[] = []
     // console.log(filter_list,include_tag_list,exclude_tag_lsit)
     if(include_tag_list.length<1 && exclude_tag_lsit.length<1){
       filter_list = testlist
       return(filter_list)
     }
     if(include_tag_list.length>=1){
-      testlist.forEach(id =>{
+      testlist.forEach((id: string) =>{
         // console.log(id)
         let file_tag_list = read_property(this.path+"/"+id,"tags")
         // console.log(file_tag_list)
@@ -625,7 +625,7 @@ export class test_gnerate_view extends ItemView {
       })
     }
     if(exclude_tag_lsit.length>=1){
-      testlist.forEach(id =>{
+      testlist.forEach((id: string) =>{
         // console.log(id)
         let file_tag_list = read_property(this.path+"/"+id,"tags")
         // console.log(file_tag_list)
