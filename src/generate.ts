@@ -8,6 +8,10 @@ import { string } from "yaml/dist/schema/common/string";
 
 export const test_generate = "test-view";
 
+function hasCommonElement(arrayA: any[], arrayB: any[]): boolean {  
+  return arrayB.some(element => arrayA.includes(element));  
+}  
+
 export function read_property(filepath,property){
   const tf = this.app.vault.getFileByPath(filepath)
   let metadata = this.app.metadataCache.getFileCache(tf);
@@ -619,7 +623,7 @@ export class test_gnerate_view extends ItemView {
         let file_tag_list = read_property(this.path+"/"+id,"tags")
         // console.log(file_tag_list)
         if(file_tag_list!=null){
-        if(allElementsExist(include_tag_list, file_tag_list)){
+        if(hasCommonElement(include_tag_list, file_tag_list)){
           filter_list.push(id)
         }}
       })

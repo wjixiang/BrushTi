@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "test_bank/2024-09-09-07-31-0.md",
+                "file": "test_bank/ct2024-9-2-03-11-17.md",
                 "mode": "source",
                 "source": true
               },
               "icon": "lucide-file",
-              "title": "2024-09-09-07-31-0"
+              "title": "ct2024-9-2-03-11-17"
             }
           }
         ]
@@ -52,7 +52,7 @@
             "state": {
               "type": "search",
               "state": {
-                "query": "2024-09-17-16-26-0.md",
+                "query": "心力衰竭",
                 "matchingCase": false,
                 "explainSearch": false,
                 "collapseAll": false,
@@ -104,7 +104,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "test_bank/2024-09-09-07-31-0.md",
+                "file": "test_bank/ct2024-9-2-03-11-17.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -114,7 +114,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "2024-09-09-07-31-0 的反向链接列表"
+              "title": "ct2024-9-2-03-11-17 的反向链接列表"
             }
           },
           {
@@ -123,12 +123,12 @@
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "test_bank/2024-09-09-07-31-0.md",
+                "file": "test_bank/ct2024-9-2-03-11-17.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "2024-09-09-07-31-0 的出链列表"
+              "title": "ct2024-9-2-03-11-17 的出链列表"
             }
           },
           {
@@ -150,10 +150,10 @@
             "state": {
               "type": "outline",
               "state": {
-                "file": "test_bank/2024-09-09-07-31-0.md"
+                "file": "test_bank/ct2024-9-2-03-11-17.md"
               },
               "icon": "lucide-list",
-              "title": "2024-09-09-07-31-0 的大纲"
+              "title": "ct2024-9-2-03-11-17 的大纲"
             }
           },
           {
@@ -196,8 +196,10 @@
       "BrushTee:active target-test panel": false
     }
   },
-  "active": "66bd1235f4c30c9d",
+  "active": "d38c617d3898371b",
   "lastOpenFiles": [
+    "test_bank/2024-09-10-17-25-0.md",
+    "test_bank/2024-09-09-07-31-0.md",
     "test_bank/2024-09-12-16-14-3.md",
     "test_bank/2024-09-12-16-14-1.md",
     "test_bank/ct2024-4-11-10-31-25.md",
@@ -222,8 +224,6 @@
     "test_bank/ct2023200082012.md",
     "test_bank/ct2023382103842.md",
     "test_bank/ct2023024090255.md",
-    "test_bank/ct2024-09-22-19-28-39-333.md",
-    "test_bank/ct2023595105914.md",
     "Pasted image 20240920214004.png",
     "test_bank/试卷",
     "Vault/Pasted image 20230321204900.png",
