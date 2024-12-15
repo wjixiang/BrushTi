@@ -22,6 +22,5 @@
   },
   "include": [
     "**/*.ts"
-  ],
-  
+, "tool/delFile.js"  ],
 }
