@@ -1,10 +1,8 @@
 import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile, App,PluginSettingTab,Setting} from "obsidian";
-import {test_gnerate_view, test_generate} from "src/generate";
-import { link_pract,link_practice_view } from "./link_practice";
-import { quiz_view,quiz } from "./quiz";
-import { testdb } from "src/base";
-import { log } from "console";
-import {parseYamlMetadata,processFile} from "src/metadata_solve"
+
+
+
+
 
 export interface btsettings {  
   bank_path: string;
