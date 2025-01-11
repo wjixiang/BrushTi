@@ -1,6 +1,6 @@
 import { ItemView } from 'obsidian';
 import { createRoot } from 'react-dom/client';
-import Page from '../Page';
+import Page from '../components/Page';
 
 
 
