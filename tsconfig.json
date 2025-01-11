@@ -10,6 +10,7 @@
     "moduleResolution": "node",
     "importHelpers": true,
     "isolatedModules": true,
+    "jsx": "react-jsx",
     // "outDir": "./obsidian_test_vault/.obsidian/plugins/BrushTi", // 设置编译结果的位置  
     // "rootDir": "./src", // 设置源文件的位置   
 	"strictNullChecks": true,
@@ -21,6 +22,7 @@
     ]
   },
   "include": [
-    "**/*.ts"
+    "**/*.ts",
+    "**/*.tsx"
 , "tool/delFile.js"  ],
 }
