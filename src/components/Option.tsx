@@ -1,29 +1,40 @@
 import * as React from "react";  
-import { useState } from "react";  
 import styled from "styled-components";  
-import { Check, X } from "lucide-react"; // 导入 Check 和 X 图标  
+import { Check, X } from "lucide-react"; 
+import { useEffect, useState } from "react";
 
 interface OptionProps {  
     id: number;  
     content: string;  
     isSelected: boolean;  
-    status: "correct" | "wrong" | "unknown"  
-    onSelect?: (id: number) => void;  
+    isSubmitted: boolean;
+    correctOpt: string;
+    select: (id:number)=>void
+    
 }  
 
 const Option: React.FC<OptionProps> = (props) => {  
-    const handleClick = () => {  
-        if (props.onSelect) {  
-            props.onSelect(props.id);  
+    const answerDict = ["A","B","C","D","E"]
+
+    const [isCorrect,setIsCorrect] = useState<null|boolean>(null)
+    useEffect(() => {  
+        // 只在 isSubmitted 为 true 时设置 isCorrect  
+        if (props.isSubmitted) {  
+            setIsCorrect(props.correctOpt === answerDict[props.id])  
         }  
+    }, [props.isSubmitted, props.correctOpt, props.id])  
+
+    const handleClick = () => {  
+        console.log(props.id)
+        props.select(props.id)
     };  
 
-    switch (props.status) {  
-        case "unknown":  
+    switch (isCorrect) {  
+        case null:  
             return (  
                 <OptionBox  
                     $isSelected={props.isSelected}  
-                    $status={props.status}  
+                    $status={isCorrect}  
                     onClick={handleClick}  
                 >  
                     <div>  
@@ -31,7 +42,7 @@ const Option: React.FC<OptionProps> = (props) => {
                     </div>  
                 </OptionBox>  
             );  
-        case "correct":  
+        case true:  
             return (  
                 <OptCorrect>  
                     <ContentWrapper>  
@@ -42,7 +53,7 @@ const Option: React.FC<OptionProps> = (props) => {
                     </ContentWrapper>  
                 </OptCorrect>  
             );  
-        case "wrong":  
+        case false:  
             return (  
                 <OptWrong>  
                     <ContentWrapper>  
@@ -60,7 +71,7 @@ const Option: React.FC<OptionProps> = (props) => {
 
 export default Option;  
 
-// 新增内容：用于布局内容和图标的容器  
+
 const ContentWrapper = styled.div`  
     display: flex;  
     justify-content: space-between;  
@@ -76,7 +87,7 @@ const IconWrapper = styled.div`
 
 const OptionBox = styled.div<{  
     $isSelected: boolean  
-    $status: "correct" | "wrong" | "unknown"  
+    $status: null | boolean
 }>`  
     padding: 10px;  
     margin: 3px;  
