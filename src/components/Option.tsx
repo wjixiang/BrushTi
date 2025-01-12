@@ -1,6 +1,6 @@
 import * as React from "react";  
 import styled from "styled-components";  
-import { Check, X } from "lucide-react"; 
+import { Check, X, Circle } from "lucide-react"; 
 import { useEffect, useState } from "react";
 
 interface OptionProps {  
@@ -9,14 +9,14 @@ interface OptionProps {
     isSelected: boolean;  
     isSubmitted: boolean;
     correctOpt: string;
-    select: (id:number)=>void
-    
+    select: (id:number)=>void;
+    submit: (id:number)=>void;
 }  
 
 const Option: React.FC<OptionProps> = (props) => {  
     const answerDict = ["A","B","C","D","E"]
-
     const [isCorrect,setIsCorrect] = useState<null|boolean>(null)
+
     useEffect(() => {  
         // 只在 isSubmitted 为 true 时设置 isCorrect  
         if (props.isSubmitted) {  
@@ -25,9 +25,12 @@ const Option: React.FC<OptionProps> = (props) => {
     }, [props.isSubmitted, props.correctOpt, props.id])  
 
     const handleClick = () => {  
-        console.log(props.id)
         props.select(props.id)
     };  
+
+    const doubleClickSubmit = () => {
+        props.submit(props.id)
+    }
 
     switch (isCorrect) {  
         case null:  
@@ -35,7 +38,8 @@ const Option: React.FC<OptionProps> = (props) => {
                 <OptionBox  
                     $isSelected={props.isSelected}  
                     $status={isCorrect}  
-                    onClick={handleClick}  
+                    onClick={handleClick}
+                    onDoubleClick={doubleClickSubmit}
                 >  
                     <div>  
                         {props.content}  
@@ -59,7 +63,7 @@ const Option: React.FC<OptionProps> = (props) => {
                     <ContentWrapper>  
                         <div>{props.content}</div>  
                         <IconWrapper>  
-                            <X color="#FF4D4F" size={20} />  
+                            {props.isSelected ? <X color="#FF4D4F" size={20} />  : <></>}
                         </IconWrapper>  
                     </ContentWrapper>  
                 </OptWrong>  

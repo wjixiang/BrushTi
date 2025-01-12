@@ -1,21 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
-import Quiz from './Quiz';
+import SingleSelect from './SingleSelect';
 
 const meta = {
-  component: Quiz,
-} satisfies Meta<typeof Quiz>;
+  component: SingleSelect,
+} satisfies Meta<typeof SingleSelect>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
+
 
 const testQuiz = {
   name: "2024-09-25-00-03-53-448",
   "cls": "生理学",
   "numb": "1",
   "unit": "第一章 绪论",
-  "mode": "A1",
+  "mode": "A1型题",
   "test": "2010N1A 关于体液的叙述正确的是",
   "option": [
     "A.分布在各部分的体液量大体相等",

@@ -12,6 +12,6 @@ type Story = StoryObj<typeof Page>;
 
 export const FirstStory: Story = {
   args: {
-    test:"view of quiz collection"
+    
   },
 };
