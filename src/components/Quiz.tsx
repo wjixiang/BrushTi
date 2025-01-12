@@ -24,7 +24,9 @@ export interface quizData {
 interface QuizProps {
     qdata: quizData;
     status: "todo"|"correct"|"wrong";
-    noticeFn?:(notice:string)=>void
+    noticeFn?:(notice:string)=>void;
+    initialState?: any;  
+    onStateChange?: (state: any) => void;  
 }
 
 const Quiz: React.FC<QuizProps> = (props) => {  
@@ -69,7 +71,7 @@ const Quiz: React.FC<QuizProps> = (props) => {
         {status !== "todo" && props.qdata.discuss && (  
             <ExpandableSection>  
                 <SectionHeader onClick={() => setIsDiscussOpen(!isDiscussOpen)}>  
-                    <h3>讨论与解析</h3>  
+                    <h3>解析</h3>  
                     {isDiscussOpen ? <FaChevronUp /> : <FaChevronDown />}  
                 </SectionHeader>  
                 <DiscussContent $isOpen={isDiscussOpen}>  

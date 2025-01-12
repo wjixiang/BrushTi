@@ -2,18 +2,7 @@ import { useState, useEffect } from "react";
 import styled from "styled-components";  
 import Option from "../Option"  
 import * as React from "react";  
-
-interface quizData {  
-    name: string,  
-    cls: string,  
-    unit: string,  
-    mode: string,  
-    test: string,  
-    option: string[],  
-    answer: string,  
-    point: string,  
-    discuss: string  
-}  
+import { quizData } from "../Quiz";
 
 interface SingleSelectQAProps {  
     qdata: quizData;  
