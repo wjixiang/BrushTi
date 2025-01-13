@@ -2,7 +2,10 @@ import * as React from "react";
 import SingleSelectQa from "./QA/SingleSelect";
 import styled from "styled-components";  
 import { useState } from "react";
+import { useEffect } from "react";
 import { FaChevronDown, FaChevronUp } from 'react-icons/fa';  
+import { QAState } from './QA/SingleSelect';
+import { OptionState } from "./Option";
 
 const QAType = {
     "A1": SingleSelectQa,//单选题
@@ -19,26 +22,87 @@ export interface quizData {
     answer: string,
     point: string,
     discuss: string
-  }
+}
+
+export interface QuizState {  
+    isPointOpen?: boolean;  
+    isDiscussOpen?: boolean;  
+    selectedAnswers?: [];
+    qaState: QAState;
+}  
 
 interface QuizProps {
     qdata: quizData;
-    status: "todo"|"correct"|"wrong";
     noticeFn?:(notice:string)=>void;
-    initialState?: any;  
-    onStateChange?: (state: any) => void;  
+    state: QuizState;
+    onStateChange?: (name:string,newState: QuizState) => void; 
 }
 
 const Quiz: React.FC<QuizProps> = (props) => {  
-    const [status, setStatus] = useState(props.status)  
-    const [isPointOpen, setIsPointOpen] = useState(false)  
-    const [isDiscussOpen, setIsDiscussOpen] = useState(false)  
+    // 使用传入的状态或默认值初始化  
+    // console.log(props.state)
+    // const [quizState, setQuizState] = useState<QuizState>(() => ({  
+    //     isPointOpen: props.state.isPointOpen ?? true,  
+    //     isDiscussOpen: props.state.isDiscussOpen ?? true,  
+    //     selectedAnswers: [], 
+    //     qaState: {
+    //         status: props.state.qaState.status,
+    //         optionStates: props.state.qaState.optionStates,
+    //     }
+    // }));  
 
-    const changeStatus = (status: "todo" | "correct" | "wrong") => {  
-        setStatus(status)  
-        console.log(status)  
-    }  
-    
+    const [quizState, setQuizState] = useState<QuizState>(() => {  
+        // 创建默认的 optionStates  
+        const defaultOptionStates: {[key: number]: OptionState} = {};  
+        props.qdata.option.forEach((_, index) => {  
+            defaultOptionStates[index] = {  
+                isCorrect: false,  
+                isSelected: false,  
+                isSubmitted: false,  
+            };  
+        });  
+
+        return {  
+            isPointOpen: props.state.isPointOpen ?? true,  
+            isDiscussOpen: props.state.isDiscussOpen ?? true,  
+            selectedAnswers: [],   
+            qaState: {  
+                status: props.state.qaState.status,  
+                optionStates: props.state.qaState.optionStates || defaultOptionStates,  
+            }  
+        };  
+    }); 
+
+    // 当本地状态改变时，通知父组件  
+    useEffect(() => {  
+        if (props.onStateChange) {  
+            props.onStateChange(props.qdata.name,quizState);  
+        }  
+    }, [quizState]); // 添加正确的依赖项  
+  
+
+    // 状态更新函数  
+    const updateState = (updates: Partial<QuizState>) => {  
+        setQuizState(prev => ({  
+            ...prev,  
+            ...updates  
+        }));  
+    };  
+
+    const changeStatus = (newQAState: QAState) => {  
+        console.log("input state",newQAState)
+        setQuizState(prev => {
+            const NewState = {
+                ...prev,
+                qaState: newQAState
+            }
+            props.onStateChange?.(props.qdata.name,quizState)
+            console.log(NewState)
+            return NewState
+        })
+        
+    };  
+
     return <>  
         <Info>  
             {props.qdata.mode}  
@@ -48,39 +112,47 @@ const Quiz: React.FC<QuizProps> = (props) => {
             switch(props.qdata.mode){  
                 case "A1":  
                     return <SingleSelectQa   
-                                qdata={props.qdata}   
-                                status={status}   
-                                noticeFn={props.noticeFn}   
-                                setStatus={changeStatus}  
-                            />  
+                        qdata={props.qdata}   
+                        state={quizState.qaState}  
+                        noticeFn={props.noticeFn}   
+                        onSubmitted={changeStatus}
+                    />  
             }  
         })()}  
 
-        {status !== "todo" && props.qdata.point && (  
+        {quizState.qaState.status !== "todo" && props.qdata.point && (  
             <ExpandableSection>  
-                <SectionHeader onClick={() => setIsPointOpen(!isPointOpen)}>  
+                <SectionHeader   
+                    onClick={() => updateState({   
+                        isPointOpen: !quizState.isPointOpen   
+                    })}  
+                >  
                     <h3>知识要点</h3>  
-                    {isPointOpen ? <FaChevronUp /> : <FaChevronDown />}  
+                    {quizState.isPointOpen ? <FaChevronUp /> : <FaChevronDown />}  
                 </SectionHeader>  
-                <PointContent $isOpen={isPointOpen}>  
+                <PointContent $isOpen={quizState.isPointOpen}>  
                     {props.qdata.point}  
                 </PointContent>  
             </ExpandableSection>  
         )}  
 
-        {status !== "todo" && props.qdata.discuss && (  
+        {quizState.qaState.status !== "todo" && props.qdata.discuss && (  
             <ExpandableSection>  
-                <SectionHeader onClick={() => setIsDiscussOpen(!isDiscussOpen)}>  
+                <SectionHeader   
+                    onClick={() => updateState({   
+                        isDiscussOpen: !quizState.isDiscussOpen   
+                    })}  
+                >  
                     <h3>解析</h3>  
-                    {isDiscussOpen ? <FaChevronUp /> : <FaChevronDown />}  
+                    {quizState.isDiscussOpen ? <FaChevronUp /> : <FaChevronDown />}  
                 </SectionHeader>  
-                <DiscussContent $isOpen={isDiscussOpen}>  
+                <DiscussContent $isOpen={quizState.isDiscussOpen}>  
                     {props.qdata.discuss}  
                 </DiscussContent>  
             </ExpandableSection>  
         )}  
     </>  
-}  
+} 
 
 export default Quiz  
 
@@ -136,3 +208,4 @@ const PointContent = styled(ContentBase)`
 const DiscussContent = styled(ContentBase)`  
     border-top: 1px solid #e9e9e9; 
 `
+

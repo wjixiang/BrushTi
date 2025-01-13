@@ -4,55 +4,88 @@ import Quiz, { quizData } from "./Quiz"
 import { useState, useMemo, useRef } from "react"  
 import QuizPreview from "./QuizPreview"  
 import { FaArrowLeft } from 'react-icons/fa'  
+import { QuizState } from "./Quiz"
+import { OptionState } from "./Option"
 
 interface PageProps {  
     quizSet: quizData[]  
 }  
 
+const defaultQuiz:quizData = {
+    name: "",
+    cls: "",
+    unit: "",
+    mode: "",
+    test: "",
+    option: [],
+    answer: "",
+    point: "",
+    discuss: ""
+}
+
 const Page:React.FC<PageProps> = (props) => {  
     const [currentPage, setCurrentPage] = useState("grid-view")  
     const [currentQuizName, setCurrentQuizName] = useState<string>(props.quizSet[0].name)  
+    const [currentQuiz,setCurrentQuiz] = useState<quizData>(defaultQuiz)
+    // 使用初始化函数来设置 quizStates  
+    const [quizStates, setQuizStates] = useState<{[key: string]: QuizState}>(() => {  
+        const initialStates: {[key: string]: QuizState} = {};  
+        props.quizSet.forEach(quiz => { 
+            const initOptState: {[key:number]: OptionState} = {}
+            quiz.option.forEach((value:string,index:number)=>{
+                initOptState[index] =  {
+                            isCorrect:false,
+                            isSelected:false,
+                            isSubmitted:false,
+                        }
+                    }) 
+            initialStates[quiz.name] = {  
+                qaState: {
+                    status: "todo",
+                    optionStates: initOptState,
+                },  
+            };  
+        });  
+        return initialStates;  
+    });  
 
-    // 使用 useRef 存储 Quiz 组件的状态  
-    const quizStatesRef = useRef<{[key: string]: any}>({})  
+    const updateQuizStates = (name:string,newState:QuizState) => {
+        // console.log(`change quiz state:${name}`,newState)
 
-    // 创建一个函数来更新特定 Quiz 的状态  
-    const updateQuizState = (quizName: string, newState: any) => {  
-        quizStatesRef.current[quizName] = {  
-            ...quizStatesRef.current[quizName],  
-            ...newState  
-        }  
-    }  
+        setQuizStates(quizStates=>({
+            ...quizStates,
+            [name]: newState
+        }))
 
-    // 将所有 Quiz 组件预先渲染  
+    }
+
+    React.useEffect(()=>{
+        const quiz = props.quizSet.find(quiz=>quiz.name === currentQuizName)
+        if(quiz) setCurrentQuiz(quiz)
+    },[currentQuizName])
+    
     const renderedQuizzes = useMemo(() => {  
-        return props.quizSet.map((quiz, index) => {  
-            // 获取或初始化该 Quiz 的状态  
-            const quizState = quizStatesRef.current[quiz.name] || {}  
+        return props.quizSet.map((quiz) => (  
+            <div  
+                key={quiz.name}  
+                style={{  
+                    display: currentQuizName === quiz.name && currentPage === "quiz-view" ? 'block' : 'none'  
+                }}  
+            >  
+                <Quiz  
+                    qdata={quiz}  
+                    state={quizStates[quiz.name]}  
+                    onStateChange={updateQuizStates}
+                />  
+            </div>  
+        ));  
+    }, [currentQuizName,quizStates]);  
 
-            return (  
-                <div   
-                    key={index}   
-                    style={{   
-                        display: currentQuizName === quiz.name && currentPage === "quiz-view" ? 'block' : 'none'   
-                    }}  
-                >  
-                    <Quiz   
-                        qdata={quiz}   
-                        status={"todo"}   
-                        // 传递当前状态  
-                        initialState={quizState}  
-                        // 提供状态更新回调  
-                        onStateChange={(newState) => updateQuizState(quiz.name, newState)}  
-                    />  
-                </div>  
-            )  
-        })  
-    }, [props.quizSet, currentQuizName, currentPage])  
 
     const gridToQuiz = (quizName:string)=>{  
         setCurrentQuizName(quizName)  
         setCurrentPage("quiz-view")  
+        console.log(quizName,quizStates[quizName])
     }  
 
     const backToGridView = () => {  
@@ -84,7 +117,12 @@ const Page:React.FC<PageProps> = (props) => {
                         </BackButton>  
                         <QuizTitle>{currentQuizName}</QuizTitle>  
                     </TopBar>  
-                    {renderedQuizzes}  
+                    {renderedQuizzes}
+                    {/* <Quiz  
+                        qdata={currentQuiz}  
+                        state={quizStates[currentQuiz.name]}  
+                        onStateChange={updateQuizStates}
+                />   */}
                 </>  
             )  
         default:  

@@ -1,43 +1,46 @@
 import * as React from "react";  
 import styled from "styled-components";  
-import { Check, X, Circle } from "lucide-react"; 
-import { useEffect, useState } from "react";
+import { Check, X } from "lucide-react"; 
 
-interface OptionProps {  
+
+export interface OptionState {
+    isSelected: boolean; 
+    isSubmitted: boolean;
+    isCorrect: boolean;
+}
+
+export interface OptionProps {  
     id: number;  
     content: string;  
-    isSelected: boolean;  
-    isSubmitted: boolean;
-    correctOpt: string;
     select: (id:number)=>void;
     submit: (id:number)=>void;
+    state: OptionState;
 }  
 
 const Option: React.FC<OptionProps> = (props) => {  
-    const answerDict = ["A","B","C","D","E"]
-    const [isCorrect,setIsCorrect] = useState<null|boolean>(null)
+    const defaultState: OptionState = {  
+        isSelected: false,  
+        isSubmitted: false,  
+        isCorrect: false  
+    };  
 
-    useEffect(() => {  
-        // 只在 isSubmitted 为 true 时设置 isCorrect  
-        if (props.isSubmitted) {  
-            setIsCorrect(props.correctOpt === answerDict[props.id])  
-        }  
-    }, [props.isSubmitted, props.correctOpt, props.id])  
+    const state = props.state || defaultState;  
+
 
     const handleClick = () => {  
         props.select(props.id)
     };  
 
+
     const doubleClickSubmit = () => {
         props.submit(props.id)
     }
-
-    switch (isCorrect) {  
-        case null:  
+    switch (state.isSubmitted) {
+        case false:
             return (  
                 <OptionBox  
-                    $isSelected={props.isSelected}  
-                    $status={isCorrect}  
+                    $isSelected={state.isSelected}  
+                    $status={state.isCorrect}  
                     onClick={handleClick}
                     onDoubleClick={doubleClickSubmit}
                 >  
@@ -46,31 +49,34 @@ const Option: React.FC<OptionProps> = (props) => {
                     </div>  
                 </OptionBox>  
             );  
-        case true:  
-            return (  
-                <OptCorrect>  
-                    <ContentWrapper>  
-                        <div>{props.content}</div>  
-                        <IconWrapper>  
-                            <Check color="#38B881" size={20} />  
-                        </IconWrapper>  
-                    </ContentWrapper>  
-                </OptCorrect>  
-            );  
-        case false:  
-            return (  
-                <OptWrong>  
-                    <ContentWrapper>  
-                        <div>{props.content}</div>  
-                        <IconWrapper>  
-                            {props.isSelected ? <X color="#FF4D4F" size={20} />  : <></>}
-                        </IconWrapper>  
-                    </ContentWrapper>  
-                </OptWrong>  
-            );  
-        default:  
-            return null;  
-    }  
+        case true:
+            switch (props.state.isCorrect) {  
+                case true:  
+                    return (  
+                        <OptCorrect>  
+                            <ContentWrapper>  
+                                <div>{props.content}</div>  
+                                <IconWrapper>  
+                                    <Check color="#38B881" size={20} />  
+                                </IconWrapper>  
+                            </ContentWrapper>  
+                        </OptCorrect>  
+                    );  
+                case false:  
+                    return (  
+                        <OptWrong>  
+                            <ContentWrapper>  
+                                <div>{props.content}</div>  
+                                <IconWrapper>  
+                                    {state.isSelected ? <X color="#FF4D4F" size={20} />  : <></>}
+                                </IconWrapper>  
+                            </ContentWrapper>  
+                        </OptWrong>  
+                    );  
+                default:  
+                    return null;  
+            }  
+    }
 }  
 
 export default Option;  
