@@ -31,7 +31,7 @@ export interface QuizState {
     qaState: QAState;
 }  
 
-interface QuizProps {
+export interface QuizProps {
     qdata: quizData;
     noticeFn?:(notice:string)=>void;
     state: QuizState;
@@ -39,17 +39,6 @@ interface QuizProps {
 }
 
 const Quiz: React.FC<QuizProps> = (props) => {  
-    // 使用传入的状态或默认值初始化  
-    // console.log(props.state)
-    // const [quizState, setQuizState] = useState<QuizState>(() => ({  
-    //     isPointOpen: props.state.isPointOpen ?? true,  
-    //     isDiscussOpen: props.state.isDiscussOpen ?? true,  
-    //     selectedAnswers: [], 
-    //     qaState: {
-    //         status: props.state.qaState.status,
-    //         optionStates: props.state.qaState.optionStates,
-    //     }
-    // }));  
 
     const [quizState, setQuizState] = useState<QuizState>(() => {  
         // 创建默认的 optionStates  

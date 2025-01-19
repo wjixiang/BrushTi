@@ -101,7 +101,7 @@ const Page:React.FC<PageProps> = (props) => {
                             <QuizPreview   
                                 id={index}   
                                 name={quiz.name}   
-                                status={"todo"}   
+                                status={quizStates[quiz.name].qaState.status}   
                                 redirect={gridToQuiz}  
                             />  
                         </GridItem>  
@@ -118,11 +118,6 @@ const Page:React.FC<PageProps> = (props) => {
                         <QuizTitle>{currentQuizName}</QuizTitle>  
                     </TopBar>  
                     {renderedQuizzes}
-                    {/* <Quiz  
-                        qdata={currentQuiz}  
-                        state={quizStates[currentQuiz.name]}  
-                        onStateChange={updateQuizStates}
-                />   */}
                 </>  
             )  
         default:  

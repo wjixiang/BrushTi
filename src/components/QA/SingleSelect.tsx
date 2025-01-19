@@ -10,7 +10,7 @@ export interface QAState {
     optionStates: {[key: number]: OptionState};
 }
 
-interface SingleSelectQAProps {  
+export interface SingleSelectQAProps {  
     qdata: quizData;  
     state: QAState; 
     // setStatus?: (status:"todo"|"correct"|"wrong")=>void; // 可选的状态更新回调  

@@ -9,7 +9,7 @@ export interface btsettings {
   
   
 export const DEFAULT_SETTINGS: Partial<btsettings> = {  
-    bank_path: "test_bank", 
+    bank_path: "quiz_bank", 
     api_url: 'https://www.gptapi.us/v1/chat/completions',
       api_key: "sk-0SghhgFMzyNOoRwG981eDcFbEeCa4aEa9c1b831bDc73360b"
   };

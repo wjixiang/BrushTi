@@ -1,12 +1,20 @@
-import { ItemView } from 'obsidian';
+import { ItemView, WorkspaceLeaf } from 'obsidian';
 import { createRoot } from 'react-dom/client';
 import Page from '../components/Page';
+import { quizData } from 'src/components/Quiz';
 
 
 
 export default class PageContainer extends ItemView {
+    
     viewType = "pageview";
-    dispalytext = "quiz"
+    dispalytext = "quiz";
+    quizList: quizData[] = []
+
+    constructor(leaf: WorkspaceLeaf,quizList: quizData[]){
+        super(leaf)
+        this.quizList = quizList
+    }
 
     getViewType(): string {
         return this.viewType
@@ -19,7 +27,8 @@ export default class PageContainer extends ItemView {
         const container = this.containerEl.children[1]
         container.empty()
         const root = createRoot(container)
-        root.render(<Page />)
+        console.log(this.quizList)
+        root.render(<Page quizSet={this.quizList} />)
 
     }
 

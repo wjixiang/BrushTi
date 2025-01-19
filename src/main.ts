@@ -1,10 +1,12 @@
 import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile, App,PluginSettingTab,Setting} from "obsidian";
 import { btsettings,BtSettingTab,DEFAULT_SETTINGS } from "./setting";
 import PageContainer from './container/PageContainer';
+import quizDB from "./quizDB";
 
 
 export default class brushtee extends Plugin {
-  settings:btsettings 
+  settings: btsettings;
+  quizDB: quizDB;
   view = {
     practice: "pageview"
   }
@@ -12,28 +14,24 @@ export default class brushtee extends Plugin {
   async onload() {
     await this.loadSettings();
     this.addSettingTab(new BtSettingTab(this.app,this));  
-
-
-    this.registerView(
-      "pageview",
-      (leaf) => new PageContainer(leaf) 
-    );
-
+    this.quizDB = new quizDB(this)
+    this.quizDB.load()
 
     this.addRibbonIcon('crosshair', 'active target-test panel', () => {
       new Notice('active setting panel');
       this.activateQuiz();
     });
 
-
-
-
   }
 
   
-
   async activateQuiz() {
-        const { workspace } = this.app;
+    this.registerView(
+      "pageview",
+      (leaf) => new PageContainer(leaf,this.quizDB.quizes.slice(0,30)) 
+    );
+
+    const { workspace } = this.app;
 
     let leaf: WorkspaceLeaf | null = null;
     const leaves = workspace.getLeavesOfType(this.view.practice);

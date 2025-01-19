@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 
 import Quiz from './Quiz';
+import { QuizProps } from './Quiz';
 
 const meta = {
   component: Quiz,
@@ -28,9 +29,16 @@ const testQuiz = {
   "discuss": "人体内体液包括了细胞内液和细胞外液两种，其中细胞内液约占正常成年人体重的40%，细胞外液约占正常成年人体重的20%，细胞外液又包括了组织间液和血浆，组织间液约占体重的15%，血浆约占体重的5%，故分布在人体各部分的体液量是不相等的（A错）。细胞内液和细胞外液被细胞膜隔开，成分存在较大差别，如细胞外高钠、高钙、高氯，细胞内高钾等，但细胞内液和细胞外液可以通过细胞膜进行跨膜物质转运（互相沟通），跨膜物质转运的形式包括单纯扩散、易化扩散、主动转运等。同样，组织间液和血浆被毛细血管壁分隔，成分存在较大差别，如血浆中含有大量的血浆蛋白，而组织液中蛋白含量很少，血浆蛋白分子量大，不易通过毛细血管壁，但水和晶体物质等小分子物质却可以自由通过（互相沟通）（B对C错）。由于血浆是沟通各部分体液并与外界环境进行物质交换的重要媒介，因而各部分体液中最为活跃的部分是血浆，而不是细胞内液（D错）。"
 }
 
-export const Default: Story = {
-  args: {
-    qdata: testQuiz,
-    status: "todo"
+const props:QuizProps = {
+  qdata: testQuiz,
+  state: {
+    qaState: {
+      status: 'todo',
+      optionStates: {}
+    }
   }
+}
+
+export const Default: Story = {
+  args: props
 };
