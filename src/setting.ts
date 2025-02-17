@@ -4,14 +4,16 @@ import brushtee from "./main";
 export interface btsettings {  
     bank_path: string;
     api_url: string;
-      api_key: string;
-  }
-  
+    api_key: string;
+    mongodbURL: string
+}
+
   
 export const DEFAULT_SETTINGS: Partial<btsettings> = {  
     bank_path: "quiz_bank", 
     api_url: 'https://www.gptapi.us/v1/chat/completions',
-      api_key: "sk-0SghhgFMzyNOoRwG981eDcFbEeCa4aEa9c1b831bDc73360b"
+    api_key: "sk-0SghhgFMzyNOoRwG981eDcFbEeCa4aEa9c1b831bDc73360b",
+    mongodbURL: "http://localhost:27017"
   };
 
 export class BtSettingTab extends PluginSettingTab {  

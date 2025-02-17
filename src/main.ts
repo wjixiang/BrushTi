@@ -6,16 +6,22 @@ import quizDB from "./quizDB";
 
 export default class brushtee extends Plugin {
   settings: btsettings;
-  quizDB: quizDB;
+  quizDB = new quizDB();
   view = {
     practice: "pageview"
   }
 
-  async onload() {
+  async init() {
     await this.loadSettings();
+    await this.quizDB.connectToDatabase(this.settings.mongodbURL)
+
+  }
+
+  async onload() {
+    
+    await this.init()
+
     this.addSettingTab(new BtSettingTab(this.app,this));  
-    this.quizDB = new quizDB(this)
-    this.quizDB.load()
 
     this.addRibbonIcon('crosshair', 'active target-test panel', () => {
       new Notice('active setting panel');
