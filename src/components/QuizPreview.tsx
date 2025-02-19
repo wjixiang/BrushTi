@@ -1,6 +1,7 @@
 import * as React from "react";  
 import styled, { keyframes } from "styled-components";  
 import { FaCheck, FaTimes } from 'react-icons/fa';  
+import { QuizImperativeHandle } from "./Quiz";
 
 type status = "todo"|"correct"|"wrong"  
 
@@ -9,33 +10,50 @@ interface QuizPreviewProps {
     name: string;
     status: status;  
     redirect?: (name:string)=>void;
+    getquizstate: (quizindex:number)=>{
+        submitted: boolean,  
+        isCorrect: boolean,  
+        selectedOptions: string
+      };
 }  
 
 const QuizPreview: React.FC<QuizPreviewProps> = (props) => {  
+    const [status, setStatus] = React.useState<status>("todo");
+
+    React.useEffect(() => {
+        const quizState = props.getquizstate(props.id);
+        if (quizState.submitted) {
+            setStatus(quizState.isCorrect ? "correct" : "wrong");
+        } else {
+            setStatus("todo");
+        }
+    }, [props.id, props.getquizstate]);
+
     const renderIcon = () => {  
-        switch(props.status) {  
+        switch (status) {  
             case "correct":  
-                return <CorrectIcon />  
+                return <CorrectIcon />;  
             case "wrong":  
-                return <WrongIcon />  
+                return <WrongIcon />;  
             default:  
-                return null  
+                return null;  
         }  
-    }  
+    };  
 
     const gotoQuiz = () => {  
-        props.redirect?.(props.name)  
-    }  
+        props.redirect?.(props.name);  
+    };  
 
     return (  
         <Block onClick={gotoQuiz}>  
-            <PreviewBlock $status={props.status}>  
-                {renderIcon() || <span>{props.id + 1}</span>}  
+            <PreviewBlock $status={status}>  
+                {<span>{props.id + 1}</span>}  
+                {/* {renderIcon()} */}
             </PreviewBlock>  
-            <QuizName>{props.name || `Quiz ${props.id + 1}`}</QuizName>  
         </Block>  
-    )  
-}  
+    );  
+};  
+
 
 export default QuizPreview  
 

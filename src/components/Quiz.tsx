@@ -5,10 +5,9 @@ import * as React from 'react'
 import { CirclePlus } from 'lucide-react';
 import axios from 'axios';
 import { request } from 'obsidian';
-
-// 假设类型接口已经定义在 types.ts 文件中  
-// import { quizType, oid } from './types';  
-
+import { FaArrowLeft } from 'react-icons/fa';
+import { FaArrowRight } from 'react-icons/fa';
+import { Grid } from 'lucide-react';
 //////////////////////////  
 // Styled Components  
 //////////////////////////  
@@ -73,6 +72,72 @@ const Result = styled.div`
   color: ${props => (props.children === '正确' ? 'green' : 'red')};  
 `;  
 
+const AnswerSection = styled.div`  
+  margin-top: 20px;  
+  padding: 15px;  
+  background-color: #f5f5f5;  
+  border-radius: 8px;  
+`;  
+
+const AnswerTitle = styled.h3`  
+  color: #333;  
+  margin-bottom: 10px;  
+`;  
+
+const AnalysisText = styled.p`  
+  color: #666;  
+  margin: 10px 0;  
+`;  
+
+const LinksList = styled.ul`  
+  list-style: none;  
+  padding: 0;  
+`;  
+
+const LinkItem = styled.li`  
+  margin: 5px 0;  
+  a {  
+    color: #1890ff;  
+    text-decoration: none;  
+    &:hover {  
+      text-decoration: underline;  
+    }  
+  }  
+`;  
+
+const TopBar = styled.div`  
+    display: flex;  
+    align-items: center;  
+    justify-content: space-between; // 在元素之间添加相等的间距  
+    padding: 3px 3px;  
+    position: sticky;  
+    top: 0;  
+    z-index: 100;  
+    width: 100%; // 确保容器占满父元素宽度  
+`  
+
+const ToolButton = styled.div`  
+    cursor: pointer;  
+    display: flex;  
+    align-items: center;  
+    justify-content: center;  
+    width: 40px;  
+    height: 40px;  
+    border-radius: 50%;  
+    transition: background-color 0.3s ease;  
+
+    &:hover {  
+        background-color: rgba(0,0,0,0.1);  
+    }  
+`  
+
+const QuizTitle = styled.div`  
+    margin-left: 15px;  
+    font-size: 18px;  
+    font-weight: 600;  
+`  
+
+
 //////////////////////////  
 // QuizComponent  
 //////////////////////////  
@@ -80,14 +145,22 @@ const Result = styled.div`
 // 定义组件属性  
 interface QuizComponentProps {  
   quiz: quizType; // 实际项目中可以替换为 quizType  
+  handleBackToGrid:()=>void;
   appendLink:()=>Promise<null|string>
+  currentQuizIndex: number;
+  back:()=>void;
+  forward: ()=>void;
 }  
 
 export interface QuizImperativeHandle {  
-    getCurrentState: () => any;  
+    getCurrentState: () => {
+      submitted: boolean,  
+      isCorrect: boolean,  
+      selectedOptions: string
+    };
 }  
 
-const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ quiz,appendLink }, ref) => {  
+const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ quiz, appendLink, handleBackToGrid, currentQuizIndex, back, forward }, ref) => {  
   // submitted：是否提交过答案  
   // selected：记录选项的选中情况  
   // 对于单选类型（A1、A2）：selected 为 string（oid）；  
@@ -126,6 +199,7 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
   const handleSubmit = () => {  
     setSubmitted(true);  
     pushRecord()
+    fetchLinks()
   };  
 
   //////////////////////////  
@@ -171,7 +245,7 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
 
     // 使用 useImperativeHandle 将 getCurrentState 方法暴露给父组件调用  
     useImperativeHandle(ref, () => ({  
-        getCurrentState: () => quizState,  
+      getCurrentState: () => quizState,  
     }), [submitted, selected]);  
           
     const API_URL = 'http://localhost:3000/api';  
@@ -185,10 +259,11 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
           
           const plresponse = await request({url:`${API_URL}/obcors/updatelink/${quiz._id}`,method:'GET'})
           const res = JSON.parse(plresponse)
-          console.log(res)
+
           if(res.success){
             const newLinks = res.links
             newLinks.push(value)
+            setLinks(newLinks)
             console.log(newLinks)
             await request({  
               url:`${API_URL}/obcors/updatelink/${quiz._id}`,  
@@ -215,7 +290,7 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
     await request({  
       url:`${API_URL}/obcors/addrecord/${userid}`,  
       contentType: "application/x-www-form-urlencoded",
-      body: JSON.stringify({ link: quiz._id, selectrecord: selected, correct: isCorrect  }),
+      body: JSON.stringify({ quizid: quiz._id, selectrecord: selected, correct: isCorrect  }),
       method: "POST",
       headers: {  
           'Content-Type': 'application/json',  
@@ -223,6 +298,139 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
       }  
     ); 
   }
+
+  const renderAnswer = () => {  
+    if (!submitted) return null;  
+  
+    switch (quiz.type) {  
+      case 'A1':  
+      case 'A2':  
+        return (  
+          <AnswerSection>  
+            <AnswerTitle>正确答案：{quiz.answer}</AnswerTitle>  
+            {quiz.analysis.point && (  
+              <AnalysisText>要点：{quiz.analysis.point}</AnalysisText>  
+            )}  
+            {quiz.analysis.discuss && (  
+              <AnalysisText>解析：{quiz.analysis.discuss}</AnalysisText>  
+            )}  
+            {quiz.analysis.link && quiz.analysis.link.length > 0 && (  
+              <>  
+                <AnswerTitle>相关链接：</AnswerTitle>  
+                <LinksList>  
+                  {quiz.analysis.link.map((link, index) => (  
+                    <LinkItem key={index}>  
+                      <a href={link} target="_blank" rel="noopener noreferrer">  
+                        参考资料 {index + 1}  
+                      </a>  
+                    </LinkItem>  
+                  ))}  
+                </LinksList>  
+              </>  
+            )}  
+          </AnswerSection>  
+        );  
+  
+      case 'X':  
+        return (  
+          <AnswerSection>  
+            <AnswerTitle>  
+              正确答案：{quiz.answer.join('、')}  
+            </AnswerTitle>  
+            {quiz.analysis.point && (  
+              <AnalysisText>要点：{quiz.analysis.point}</AnalysisText>  
+            )}  
+            {quiz.analysis.discuss && (  
+              <AnalysisText>解析：{quiz.analysis.discuss}</AnalysisText>  
+            )}  
+            {quiz.analysis.link && quiz.analysis.link.length > 0 && (  
+              <>  
+                <AnswerTitle>相关链接：</AnswerTitle>  
+                <LinksList>  
+                  {quiz.analysis.link.map((link, index) => (  
+                    <LinkItem key={index}>  
+                      <a href={link} target="_blank" rel="noopener noreferrer">  
+                        参考资料 {index + 1}  
+                      </a>  
+                    </LinkItem>  
+                  ))}  
+                </LinksList>  
+              </>  
+            )}  
+          </AnswerSection>  
+        );  
+  
+      case 'A3':  
+        return (  
+          <AnswerSection>  
+            {quiz.subQuizs.map((sub, index) => (  
+              <div key={sub.subQuizId}>  
+                <AnswerTitle>  
+                  子题 {index + 1} 正确答案：{sub.answer}  
+                </AnswerTitle>  
+              </div>  
+            ))}  
+            {quiz.analysis.point && (  
+              <AnalysisText>要点：{quiz.analysis.point}</AnalysisText>  
+            )}  
+            {quiz.analysis.discuss && (  
+              <AnalysisText>解析：{quiz.analysis.discuss}</AnalysisText>  
+            )}  
+            {quiz.analysis.link && quiz.analysis.link.length > 0 && (  
+              <>  
+                <AnswerTitle>相关链接：</AnswerTitle>  
+                <LinksList>  
+                  {quiz.analysis.link.map((link, index) => (  
+                    <LinkItem key={index}>  
+                      <a href={link} target="_blank" rel="noopener noreferrer">  
+                        参考资料 {index + 1}  
+                      </a>  
+                    </LinkItem>  
+                  ))}  
+                </LinksList>  
+              </>  
+            )}  
+          </AnswerSection>  
+        );  
+  
+      case 'B':  
+        return (  
+          <AnswerSection>  
+            {quiz.questions.map((q, index) => (  
+              <div key={q.questionId}>  
+                <AnswerTitle>  
+                  问题 {index + 1} 正确答案：{q.answer}  
+                </AnswerTitle>  
+              </div>  
+            ))}  
+            {quiz.analysis.point && (  
+              <AnalysisText>要点：{quiz.analysis.point}</AnalysisText>  
+            )}  
+            {quiz.analysis.discuss && (  
+              <AnalysisText>解析：{quiz.analysis.discuss}</AnalysisText>  
+            )}  
+            {quiz.analysis.link && quiz.analysis.link.length > 0 && (  
+              <>  
+                <AnswerTitle>相关链接：</AnswerTitle>  
+                <LinksList>  
+                  {quiz.analysis.link.map((link, index) => (  
+                    <LinkItem key={index}>  
+                      <a href={link} target="_blank" rel="noopener noreferrer">  
+                        参考资料 {index + 1}  
+                      </a>  
+                    </LinkItem>  
+                  ))}  
+                </LinksList>  
+              </>  
+            )}  
+          </AnswerSection>  
+        );  
+  
+      default:  
+        return null;  
+    }  
+  }; 
+
 
   //////////////////////////  
   // 渲染不同类型试题代码  
@@ -307,20 +515,62 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
     return null;  
   };  
 
+
+
+  const [links,setLinks] = useState<string[]>([])
+
+  const fetchLinks = async() => {
+    const plresponse = await request({url:`${API_URL}/obcors/updatelink/${quiz._id}`,method:'GET'})
+    const res = JSON.parse(plresponse)
+    console.log(res)
+
+    if(res.success){
+      setLinks(res.links as string[])
+    }
+  }
+
+
+
   return (  
     <Container>  
-      {renderQuizContent()}  
-      {!submitted && (  
-        <SubmitButton onClick={handleSubmit}>提交答案</SubmitButton>  
-      )}  
-      {submitted && (  
+      <TopBar> 
+        <ToolButton onClick={back}>  
+            <FaArrowLeft/>
+        </ToolButton>   
+        <ToolButton onClick={handleBackToGrid}>  
+            <Grid />  
+        </ToolButton>  
+        <QuizTitle>  
+            Quiz {currentQuizIndex + 1}  
+        </QuizTitle>  
+        <ToolButton onClick={forward}>  
+            <FaArrowRight/>
+        </ToolButton>  
+      </TopBar>  
+
+    {renderQuizContent()}  
+
+    <button onClick={appendNewLink}>  
+      <CirclePlus/>  
+    </button>  
+
+    {!submitted && (  
+      <SubmitButton onClick={handleSubmit}>提交答案</SubmitButton>  
+    )}  
+
+    {submitted && (  
+      <>  
         <Result>{isCorrect ? '正确' : '错误'}</Result>  
-      )}  
-      <button onClick={appendNewLink}>
-        <CirclePlus/>
-      </button>
-    </Container>  
+
+        <>{links.map(link=><li>{link}</li>)}</>
+
+        {renderAnswer()}
+      </>  
+    )}  
+  </Container>
   );  
 })
+
+
 
 export default QuizComponent;
