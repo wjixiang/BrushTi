@@ -23,25 +23,32 @@ const QuizPreview: React.FC<QuizPreviewProps> = (props) => {
         }  
     }  
 
-    const gotoQuiz = ()=>{
-        props.redirect?.(props.name)
-    }
+    const gotoQuiz = () => {  
+        props.redirect?.(props.name)  
+    }  
 
     return (  
-        <>
-            <Block onClick={gotoQuiz}>
-                <PreviewBlock $status={props.status}>  
-                    {renderIcon()}  
-                </PreviewBlock>
-                <div>
-                {props.id}
-                </div>  
-            </Block>
-        </>
+        <Block onClick={gotoQuiz}>  
+            <PreviewBlock $status={props.status}>  
+                {renderIcon() || <span>{props.id + 1}</span>}  
+            </PreviewBlock>  
+            <QuizName>{props.name || `Quiz ${props.id + 1}`}</QuizName>  
+        </Block>  
     )  
 }  
 
 export default QuizPreview  
+
+const QuizName = styled.div`  
+    margin-top: 8px;  
+    font-size: 14px;  
+    color: #333;  
+    text-align: center;  
+    max-width: 100px;  
+    overflow: hidden;  
+    text-overflow: ellipsis;  
+    white-space: nowrap;  
+`  
 
 // 闪烁动画  
 const pulseAnimation = keyframes`  

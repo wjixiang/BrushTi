@@ -1,20 +1,17 @@
 import { Notice, Plugin, ItemView, WorkspaceLeaf ,Events,MarkdownView,TFile, App,PluginSettingTab,Setting} from "obsidian";
 import { btsettings,BtSettingTab,DEFAULT_SETTINGS } from "./setting";
-import PageContainer from './container/PageContainer';
-import quizDB from "./quizDB";
+import mongoose from "mongoose";
+import PageContainer from "./container/PageContainer";
 
 
 export default class brushtee extends Plugin {
   settings: btsettings;
-  quizDB = new quizDB();
   view = {
     practice: "pageview"
   }
 
   async init() {
     await this.loadSettings();
-    await this.quizDB.connectToDatabase(this.settings.mongodbURL)
-
   }
 
   async onload() {
@@ -24,8 +21,8 @@ export default class brushtee extends Plugin {
     this.addSettingTab(new BtSettingTab(this.app,this));  
 
     this.addRibbonIcon('crosshair', 'active target-test panel', () => {
-      new Notice('active setting panel');
-      this.activateQuiz();
+      new Notice('active OB quiz panel');
+      this.activateQuiz()
     });
 
   }
@@ -34,7 +31,7 @@ export default class brushtee extends Plugin {
   async activateQuiz() {
     this.registerView(
       "pageview",
-      (leaf) => new PageContainer(leaf,this.quizDB.quizes.slice(0,30)) 
+      (leaf) => new PageContainer(leaf) 
     );
 
     const { workspace } = this.app;

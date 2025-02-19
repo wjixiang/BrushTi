@@ -40,10 +40,12 @@
   "dependencies": {
     "@types/react": "^18.3.18",
     "@types/react-dom": "^19.0.3",
+    "axios": "^1.7.9",
     "esbuild-copy": "^0.0.2",
     "esbuild-plugin-copy": "^2.1.1",
     "lucide-react": "^0.471.2",
     "mongodb": "^6.13.0",
+    "mongoose": "^8.10.1",
     "nouislider": "^15.8.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

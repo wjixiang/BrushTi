@@ -1,200 +1,326 @@
-import * as React from "react";
-import SingleSelectQa from "./QA/SingleSelect";
-import styled from "styled-components";  
-import { useState } from "react";
-import { useEffect } from "react";
-import { FaChevronDown, FaChevronUp } from 'react-icons/fa';  
-import { QAState } from './QA/SingleSelect';
-import { OptionState } from "./Option";
+import  { useImperativeHandle, useState, forwardRef } from 'react';  
+import { quizType } from 'src/types/quizData.types';
+import styled from 'styled-components';  
+import * as React from 'react'
+import { CirclePlus } from 'lucide-react';
+import axios from 'axios';
+import { request } from 'obsidian';
 
-const QAType = {
-    "A1": SingleSelectQa,//单选题
-    //多选题
-}
+// 假设类型接口已经定义在 types.ts 文件中  
+// import { quizType, oid } from './types';  
 
-export interface quizData {
-    name: string,
-    cls: string,
-    unit: string,
-    mode: string,
-    test: string,
-    option: string[],
-    answer: string,
-    point: string,
-    discuss: string
-}
+//////////////////////////  
+// Styled Components  
+//////////////////////////  
 
-export interface QuizState {  
-    isPointOpen?: boolean;  
-    isDiscussOpen?: boolean;  
-    selectedAnswers?: [];
-    qaState: QAState;
+const Container = styled.div`  
+  border: 1px solid #ddd;  
+  padding: 16px;  
+  border-radius: 8px;  
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);  
+  margin: 16px 0;  
+`;  
+
+const QuestionTitle = styled.h2`  
+  font-size: 1.2rem;   
+  margin-bottom: 12px;  
+`;  
+
+const MainQuestion = styled.h2`  
+  font-size: 1.2rem;  
+  margin-bottom: 12px;  
+`;  
+
+const SubQuestion = styled.h3`  
+  font-size: 1rem;  
+  margin: 8px 0;  
+`;  
+
+const OptionsList = styled.ul`  
+  list-style: none;  
+  padding: 0;  
+`;  
+
+interface OptionItemProps {  
+  selected: boolean;  
 }  
 
-export interface QuizProps {
-    qdata: quizData;
-    noticeFn?:(notice:string)=>void;
-    state: QuizState;
-    onStateChange?: (name:string,newState: QuizState) => void; 
-}
+const OptionItem = styled.li<OptionItemProps>`  
+  padding: 8px;  
+  margin: 4px 0;  
+  border: 1px solid ${props => (props.selected ? '#1890ff' : '#ccc')};  
+  border-radius: 4px;   
+  cursor: pointer;  
+  &:hover {  
+    border: dashed ${props => (props.selected ? '#1890ff' : '#ccc')};
+  }  
+  transition: all;
+`;  
 
-const Quiz: React.FC<QuizProps> = (props) => {  
+const SubmitButton = styled.button`  
+  padding: 8px 16px;  
+  background: #1890ff;  
+  color: #fff;  
+  border: none;  
+  border-radius: 4px;  
+  cursor: pointer;  
+  margin-top: 16px;  
+`;  
 
-    const [quizState, setQuizState] = useState<QuizState>(() => {  
-        // 创建默认的 optionStates  
-        const defaultOptionStates: {[key: number]: OptionState} = {};  
-        props.qdata.option.forEach((_, index) => {  
-            defaultOptionStates[index] = {  
-                isCorrect: false,  
-                isSelected: false,  
-                isSubmitted: false,  
-            };  
-        });  
+const Result = styled.div`  
+  margin-top: 16px;  
+  font-weight: bold;  
+  color: ${props => (props.children === '正确' ? 'green' : 'red')};  
+`;  
 
-        return {  
-            isPointOpen: props.state.isPointOpen ?? true,  
-            isDiscussOpen: props.state.isDiscussOpen ?? true,  
-            selectedAnswers: [],   
-            qaState: {  
-                status: props.state.qaState.status,  
-                optionStates: props.state.qaState.optionStates || defaultOptionStates,  
-            }  
-        };  
-    }); 
+//////////////////////////  
+// QuizComponent  
+//////////////////////////  
 
-    // 当本地状态改变时，通知父组件  
-    useEffect(() => {  
-        if (props.onStateChange) {  
-            props.onStateChange(props.qdata.name,quizState);  
+// 定义组件属性  
+interface QuizComponentProps {  
+  quiz: quizType; // 实际项目中可以替换为 quizType  
+  appendLink:()=>Promise<null|string>
+}  
+
+export interface QuizImperativeHandle {  
+    getCurrentState: () => any;  
+}  
+
+const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ quiz,appendLink }, ref) => {  
+  // submitted：是否提交过答案  
+  // selected：记录选项的选中情况  
+  // 对于单选类型（A1、A2）：selected 为 string（oid）；  
+  // 对于多选题型（X）：selected 为 oid[] ；  
+  // 对于带子题的题型（A3、B）：selected 为一个对象，key 为子题ID  
+  const [submitted, setSubmitted] = useState(false);  
+  const [selected, setSelected] = useState<any>(  
+    quiz.type === 'X' ? [] : (quiz.type === 'A3' || quiz.type === 'B' ? {} : '')  
+  );  
+
+  //////////////////////////  
+  // 选项点击处理函数  
+  //////////////////////////  
+  const handleOptionSelect = (oid: string, questionKey?: number) => {  
+    if (submitted) return;  
+    if (quiz.type === 'A1' || quiz.type === 'A2') {  
+      setSelected(oid);  
+    } else if (quiz.type === 'X') {  
+      // 多选题  
+      if (Array.isArray(selected)) {  
+        if (selected.includes(oid)) {  
+          setSelected(selected.filter((item: string) => item !== oid));  
+        } else {  
+          setSelected([...selected, oid]);  
         }  
-    }, [quizState]); // 添加正确的依赖项  
-  
+      }  
+    } else if (quiz.type === 'A3' || quiz.type === 'B') {  
+      // 针对子题或拆分题，如 A3 或 B，questionKey 表示子题id  
+      setSelected({ ...selected, [questionKey as number]: oid });  
+    }  
+  };  
 
-    // 状态更新函数  
-    const updateState = (updates: Partial<QuizState>) => {  
-        setQuizState(prev => ({  
-            ...prev,  
-            ...updates  
-        }));  
-    };  
+  //////////////////////////  
+  // 提交答案处理函数  
+  //////////////////////////  
+  const handleSubmit = () => {  
+    setSubmitted(true);  
+    pushRecord()
+  };  
 
-    const changeStatus = (newQAState: QAState) => {  
-        console.log("input state",newQAState)
-        setQuizState(prev => {
-            const NewState = {
-                ...prev,
-                qaState: newQAState
-            }
-            props.onStateChange?.(props.qdata.name,quizState)
-            console.log(NewState)
-            return NewState
-        })
-        
-    };  
+  //////////////////////////  
+  // 答案判断逻辑  
+  //////////////////////////  
+  let isCorrect = false;  
+  if (submitted) {  
+    switch (quiz.type) {  
+      case 'A1':  
+      case 'A2':  
+        isCorrect = selected === quiz.answer;  
+        break;  
+      case 'X':  
+        if (Array.isArray(selected)) {  
+          // 排序后比较数组内容  
+          isCorrect =  
+            JSON.stringify(selected.sort()) ===  
+            JSON.stringify(quiz.answer.sort());  
+        }  
+        break;  
+      case 'A3':  
+        // 对于 A3，遍历每个子题  
+        isCorrect = quiz.subQuizs.every(  
+          (sub: any) => selected[sub.subQuizId] === sub.answer  
+        );  
+        break;  
+      case 'B':  
+        isCorrect = quiz.questions.every(  
+          (q: any) => selected[q.questionId] === q.answer  
+        );  
+        break;  
+      default:  
+        break;  
+    }  
+  }  
 
-    return <>  
-        <Info>  
-            {props.qdata.mode}  
-            {props.qdata.cls}  
-        </Info>  
-        {(()=>{  
-            switch(props.qdata.mode){  
-                case "A1":  
-                    return <SingleSelectQa   
-                        qdata={props.qdata}   
-                        state={quizState.qaState}  
-                        noticeFn={props.noticeFn}   
-                        onSubmitted={changeStatus}
-                    />  
-            }  
-        })()}  
+  // 对外暴露的试题状态  
+  const quizState = {  
+    submitted,  
+    isCorrect,  
+    selectedOptions: selected,  
+  };    
 
-        {quizState.qaState.status !== "todo" && props.qdata.point && (  
-            <ExpandableSection>  
-                <SectionHeader   
-                    onClick={() => updateState({   
-                        isPointOpen: !quizState.isPointOpen   
-                    })}  
+    // 使用 useImperativeHandle 将 getCurrentState 方法暴露给父组件调用  
+    useImperativeHandle(ref, () => ({  
+        getCurrentState: () => quizState,  
+    }), [submitted, selected]);  
+          
+    const API_URL = 'http://localhost:3000/api';  
+
+  const appendNewLink = () => {
+
+    appendLink()
+      .then(async(value)=>{
+        if(value){
+          //get past link
+          
+          const plresponse = await request({url:`${API_URL}/obcors/updatelink/${quiz._id}`,method:'GET'})
+          const res = JSON.parse(plresponse)
+          console.log(res)
+          if(res.success){
+            const newLinks = res.links
+            newLinks.push(value)
+            console.log(newLinks)
+            await request({  
+              url:`${API_URL}/obcors/updatelink/${quiz._id}`,  
+              contentType: "application/x-www-form-urlencoded",
+              body: JSON.stringify({ link: newLinks }),
+              method: "POST",
+              headers: {  
+                  'Content-Type': 'application/json',  
+              },  
+              }  
+            ); 
+          }
+
+
+        }else{
+
+        }
+      })
+  }
+
+  const userid = "wjixiang"
+
+  const pushRecord = async() => {
+    await request({  
+      url:`${API_URL}/obcors/addrecord/${userid}`,  
+      contentType: "application/x-www-form-urlencoded",
+      body: JSON.stringify({ link: quiz._id, selectrecord: selected, correct: isCorrect  }),
+      method: "POST",
+      headers: {  
+          'Content-Type': 'application/json',  
+      },  
+      }  
+    ); 
+  }
+
+  //////////////////////////  
+  // 渲染不同类型试题代码  
+  //////////////////////////  
+  const renderQuizContent = () => {  
+    if (quiz.type === 'A1' || quiz.type === 'A2' || quiz.type === 'X') {  
+      return (  
+        <>  
+          <QuestionTitle>{quiz.question}</QuestionTitle>  
+          <OptionsList>  
+            {quiz.options.map((item: any) => {  
+              // 判断选中状态：单选与多选处理不同  
+              let isSelected =  
+                quiz.type === 'X'  
+                  ? Array.isArray(selected) && selected.includes(item.oid)  
+                  : selected === item.oid;  
+              return (  
+                <OptionItem  
+                  key={item.oid}  
+                  selected={isSelected}  
+                  onClick={() => handleOptionSelect(item.oid)}  
                 >  
-                    <h3>知识要点</h3>  
-                    {quizState.isPointOpen ? <FaChevronUp /> : <FaChevronDown />}  
-                </SectionHeader>  
-                <PointContent $isOpen={quizState.isPointOpen}>  
-                    {props.qdata.point}  
-                </PointContent>  
-            </ExpandableSection>  
-        )}  
-
-        {quizState.qaState.status !== "todo" && props.qdata.discuss && (  
-            <ExpandableSection>  
-                <SectionHeader   
-                    onClick={() => updateState({   
-                        isDiscussOpen: !quizState.isDiscussOpen   
-                    })}  
-                >  
-                    <h3>解析</h3>  
-                    {quizState.isDiscussOpen ? <FaChevronUp /> : <FaChevronDown />}  
-                </SectionHeader>  
-                <DiscussContent $isOpen={quizState.isDiscussOpen}>  
-                    {props.qdata.discuss}  
-                </DiscussContent>  
-            </ExpandableSection>  
-        )}  
-    </>  
-} 
-
-export default Quiz  
-
-const Info = styled.div`  
-    color: grey;  
-    margin-bottom: 10px;  
-`  
-
-const ExpandableSection = styled.div`  
-    background-color: #f9f9f9;  
-    border-radius: 8px;  
-    margin: 10px 0;  
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);  
-`  
-
-const SectionHeader = styled.div`  
-    display: flex;  
-    justify-content: space-between;  
-    align-items: center;  
-    padding: 10px 15px;  
-    cursor: pointer;  
-    background-color: #f0f0f0;  
-    border-radius: 8px 8px 0 0;  
-
-    h3 {  
-        margin: 0;  
-        color: #333;  
-        font-size: 16px;  
+                  {item.oid}. {item.text}  
+                </OptionItem>  
+              );  
+            })}  
+          </OptionsList>  
+        </>  
+      );  
+    } 
+    // else if (quiz.type === 'A3') {  
+    //   return (  
+    //     <>  
+    //       <MainQuestion>{quiz.mainQuestion}</MainQuestion>  
+    //       {quiz.subQuizs.map((sub: any) => (  
+    //         <div key={sub.subQuizId}>  
+    //           <SubQuestion>{sub.question}</SubQuestion>  
+    //           <OptionsList>  
+    //             {quiz.options.map((item: any) => {  
+    //               const isSelected = selected[sub.subQuizId] === item.oid;  
+    //               return (  
+    //                 <OptionItem  
+    //                   key={item.oid}  
+    //                   selected={isSelected}  
+    //                   onClick={() => handleOptionSelect(item.oid, sub.subQuizId)}  
+    //                 >  
+    //                   {item.oid}. {item.text}  
+    //                 </OptionItem>  
+    //               );  
+    //             })}  
+    //           </OptionsList>  
+    //         </div>  
+    //       ))}  
+    //     </>  
+    //   );  
+    // } 
+    else if (quiz.type === 'B') {  
+      return (  
+        <>  
+          {quiz.questions.map((q: any) => (  
+            <div key={q.questionId}>  
+              <SubQuestion>{q.questionText}</SubQuestion>  
+              <OptionsList>  
+                {quiz.options.map((item: any) => {  
+                  const isSelected = selected[q.questionId] === item.oid;  
+                  return (  
+                    <OptionItem  
+                      key={item.oid}  
+                      selected={isSelected}  
+                      onClick={() => handleOptionSelect(item.oid, q.questionId)}  
+                    >  
+                      {item.oid}. {item.text}  
+                    </OptionItem>  
+                  );  
+                })}  
+              </OptionsList>  
+            </div>  
+          ))}  
+        </>  
+      );  
     }  
+    return null;  
+  };  
 
-    svg {  
-        color: #666;  
-    }  
+  return (  
+    <Container>  
+      {renderQuizContent()}  
+      {!submitted && (  
+        <SubmitButton onClick={handleSubmit}>提交答案</SubmitButton>  
+      )}  
+      {submitted && (  
+        <Result>{isCorrect ? '正确' : '错误'}</Result>  
+      )}  
+      <button onClick={appendNewLink}>
+        <CirclePlus/>
+      </button>
+    </Container>  
+  );  
+})
 
-    &:hover {  
-        background-color: #e9e9e9;  
-    }  
-`  
-
-const ContentBase = styled.div<{ $isOpen: boolean }>`  
-    max-height: ${props => props.$isOpen ? '1000px' : '0'};  
-    overflow: hidden;  
-    transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out;  
-    padding: ${props => props.$isOpen ? '10px 15px' : '0 15px'};  
-    background-color: #fff;  
-    color: #555;  
-`  
-
-const PointContent = styled(ContentBase)`  
-    border-top: 1px solid #e9e9e9;  
-`  
-
-const DiscussContent = styled(ContentBase)`  
-    border-top: 1px solid #e9e9e9; 
-`
-
+export default QuizComponent;

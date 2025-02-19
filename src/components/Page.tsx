@@ -1,129 +1,104 @@
 import * as React from "react"  
+import { useState, useRef, useEffect } from "react"  
 import styled from "styled-components"  
-import Quiz, { quizData } from "./Quiz"  
-import { useState, useMemo, useRef } from "react"  
+import Quiz, { QuizImperativeHandle } from "./Quiz"  
 import QuizPreview from "./QuizPreview"  
 import { FaArrowLeft } from 'react-icons/fa'  
-import { QuizState } from "./Quiz"
-import { OptionState } from "./Option"
+import { quizType } from "src/types/quizData.types"  
 
 interface PageProps {  
-    quizSet: quizData[]  
+    quizSet: quizType[];
+    appendLink: ()=>Promise<null|string>;
 }  
 
-const defaultQuiz:quizData = {
-    name: "",
-    cls: "",
-    unit: "",
-    mode: "",
-    test: "",
-    option: [],
-    answer: "",
-    point: "",
-    discuss: ""
-}
-
-const Page:React.FC<PageProps> = (props) => {  
-    const [currentPage, setCurrentPage] = useState("grid-view")  
-    const [currentQuizName, setCurrentQuizName] = useState<string>(props.quizSet[0].name)  
-    const [currentQuiz,setCurrentQuiz] = useState<quizData>(defaultQuiz)
-    // 使用初始化函数来设置 quizStates  
-    const [quizStates, setQuizStates] = useState<{[key: string]: QuizState}>(() => {  
-        const initialStates: {[key: string]: QuizState} = {};  
-        props.quizSet.forEach(quiz => { 
-            const initOptState: {[key:number]: OptionState} = {}
-            quiz.option.forEach((value:string,index:number)=>{
-                initOptState[index] =  {
-                            isCorrect:false,
-                            isSelected:false,
-                            isSubmitted:false,
-                        }
-                    }) 
-            initialStates[quiz.name] = {  
-                qaState: {
-                    status: "todo",
-                    optionStates: initOptState,
-                },  
-            };  
-        });  
-        return initialStates;  
-    });  
-
-    const updateQuizStates = (name:string,newState:QuizState) => {
-        // console.log(`change quiz state:${name}`,newState)
-
-        setQuizStates(quizStates=>({
-            ...quizStates,
-            [name]: newState
-        }))
-
-    }
-
-    React.useEffect(()=>{
-        const quiz = props.quizSet.find(quiz=>quiz.name === currentQuizName)
-        if(quiz) setCurrentQuiz(quiz)
-    },[currentQuizName])
+const Page: React.FC<PageProps> = (props) => {  
+    const [currentPage, setCurrentPage] = useState<"grid-view" | "quiz-view">("grid-view")  
+    const [currentQuizIndex, setCurrentQuizIndex] = useState(0)  
     
-    const renderedQuizzes = useMemo(() => {  
-        return props.quizSet.map((quiz) => (  
-            <div  
-                key={quiz.name}  
-                style={{  
-                    display: currentQuizName === quiz.name && currentPage === "quiz-view" ? 'block' : 'none'  
-                }}  
-            >  
-                <Quiz  
-                    qdata={quiz}  
-                    state={quizStates[quiz.name]}  
-                    onStateChange={updateQuizStates}
-                />  
-            </div>  
-        ));  
-    }, [currentQuizName,quizStates]);  
+    // 正确的 refs 类型定义  
+    const quizRefs = useRef<Array<React.RefObject<QuizImperativeHandle>>>([])  
 
+    // 初始化 refs  
+    useEffect(() => {  
+        quizRefs.current = Array(props.quizSet.length)  
+            .fill(null)  
+            .map(() => React.createRef<QuizImperativeHandle>())  
+    }, [props.quizSet.length])  
 
-    const gridToQuiz = (quizName:string)=>{  
-        setCurrentQuizName(quizName)  
+    // 切换到具体题目视图  
+    const handleQuizSelect = (index: number) => {  
+        setCurrentQuizIndex(index)  
         setCurrentPage("quiz-view")  
-        console.log(quizName,quizStates[quizName])
     }  
 
-    const backToGridView = () => {  
+    // 返回网格视图  
+    const handleBackToGrid = () => {  
         setCurrentPage("grid-view")  
+        // 可以在这里调用当前 Quiz 的保存或重置方法  
+        const currentRef = quizRefs.current[currentQuizIndex]  
+        if (currentRef.current) {  
+            // currentRef.current.saveState?.()  
+        }  
     }  
 
-    switch(currentPage){  
-        case "grid-view":  
-            return (  
+    return (  
+        <PageContainer>  
+            {/* 网格视图 */}  
+            <div style={{ display: currentPage === "grid-view" ? "block" : "none" }}>  
                 <GridContainer>  
                     {props.quizSet.map((quiz, index) => (  
                         <GridItem key={index}>  
-                            <QuizPreview   
-                                id={index}   
-                                name={quiz.name}   
-                                status={quizStates[quiz.name].qaState.status}   
-                                redirect={gridToQuiz}  
+                            <QuizPreview  
+                                id={index}  
+                                name={`Quiz ${index + 1}`}  
+                                status="todo"  
+                                redirect={() => handleQuizSelect(index)}  
                             />  
                         </GridItem>  
                     ))}  
                 </GridContainer>  
-            )  
-        case "quiz-view":  
-            return (  
-                <>  
-                    <TopBar>  
-                        <BackButton onClick={backToGridView}>  
-                            <FaArrowLeft />  
-                        </BackButton>  
-                        <QuizTitle>{currentQuizName}</QuizTitle>  
-                    </TopBar>  
-                    {renderedQuizzes}
-                </>  
-            )  
-        default:  
-            return null  
-    }  
+            </div>  
+
+            {/* Quiz 视图 */}  
+            <div style={{ display: currentPage === "quiz-view" ? "block" : "none" }}>  
+                <TopBar>  
+                    <BackButton onClick={handleBackToGrid}>  
+                        <FaArrowLeft />  
+                    </BackButton>  
+                    <QuizTitle>  
+                        Quiz {currentQuizIndex + 1}  
+                    </QuizTitle>  
+                </TopBar>  
+                
+                {/* Quiz 组件容器 */}  
+                <QuizContainer>  
+                    {props.quizSet.map((quiz, index) => (  
+                        <div   
+                            key={index}  
+                            style={{   
+                                display: index === currentQuizIndex ? "block" : "none",  
+                                height: "100%"  
+                            }}  
+                        >  
+                            <Quiz  
+                                quiz={quiz}  
+                                ref={quizRefs.current[index]}  
+                                appendLink={props.appendLink}
+                            />  
+                        </div>  
+                    ))}  
+                </QuizContainer>  
+            </div>  
+        </PageContainer>  
+    )  
 }  
+
+// 样式组件  
+const PageContainer = styled.div`  
+    width: 100%;  
+    height: 100%;  
+    overflow: hidden;  
+`  
 
 const TopBar = styled.div`  
     display: flex;  
@@ -157,21 +132,26 @@ const QuizTitle = styled.div`
     font-weight: 600;  
 `  
 
-// 网格容器  
 const GridContainer = styled.div`  
     display: grid;  
-    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));   
-    gap: 10px;   
+    grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));  
+    gap: 10px;  
     width: 100%;  
-    max-width: 1200px;   
-    margin: 0 auto;   
+    max-width: 1200px;  
+    margin: 0 auto;  
+    padding: 20px;  
 `  
 
-// 网格项目  
 const GridItem = styled.div`  
     display: flex;  
     justify-content: center;  
     align-items: center;  
+`  
+
+const QuizContainer = styled.div`  
+    height: calc(100vh - 60px); // 减去 TopBar 的高度  
+    overflow-y: auto;  
+    padding: 20px;  
 `  
 
 export default Page
