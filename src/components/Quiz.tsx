@@ -8,6 +8,7 @@ import { request } from 'obsidian';
 import { FaArrowLeft } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa';
 import { Grid } from 'lucide-react';
+import { oid } from '../types/quizData.types';
 //////////////////////////  
 // Styled Components  
 //////////////////////////  
@@ -42,12 +43,28 @@ const OptionsList = styled.ul`
 
 interface OptionItemProps {  
   selected: boolean;  
+  submitted: boolean;
+  correct: boolean;
 }  
+
 
 const OptionItem = styled.li<OptionItemProps>`  
   padding: 8px;  
   margin: 4px 0;  
-  border: 1px solid ${props => (props.selected ? '#1890ff' : '#ccc')};  
+  border: 1px solid ${props =>{
+    if(props.selected){
+      if(props.submitted){
+        return props.correct ? '#4FDC62' : '#FF0133'
+      }else{
+        return '#1890ff'
+      }
+    }else{
+      if(props.submitted){
+        return props.correct ? '#FBFF40' : '#ccc'
+      }else{
+        return '#ccc'
+      }
+    }} };  
   border-radius: 4px;   
   cursor: pointer;  
   &:hover {  
@@ -451,6 +468,8 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
                 <OptionItem  
                   key={item.oid}  
                   selected={isSelected}  
+                  correct={quiz.answer===item.oid}
+                  submitted={submitted}
                   onClick={() => handleOptionSelect(item.oid)}  
                 >  
                   {item.oid}. {item.text}  
