@@ -3,7 +3,6 @@ import { useState, useRef, useEffect } from "react"
 import styled from "styled-components"  
 import Quiz, { QuizImperativeHandle } from "./Quiz"  
 import QuizPreview from "./QuizPreview"  
-import { FaArrowLeft } from 'react-icons/fa'  
 import { quizType } from "src/types/quizData.types"  
 
 
@@ -23,6 +22,12 @@ const Page: React.FC<PageProps> = (props) => {
             .fill(null)
             .map(() => React.createRef<QuizImperativeHandle>());
     }, [props.quizSet.length]);
+
+    useEffect(() => {
+        // 当 quizSet 发生变化时，重置当前页面和当前测验索引
+        setCurrentPage("grid-view");
+        setCurrentQuizIndex(0);
+    }, [props.quizSet]);
 
     const handleQuizSelect = (index: number) => {
         setCurrentQuizIndex(index);

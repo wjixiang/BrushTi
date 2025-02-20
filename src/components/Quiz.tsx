@@ -54,7 +54,7 @@ const OptionItem = styled.li<OptionItemProps>`
   border: 1px solid ${props =>{
     if(props.selected){
       if(props.submitted){
-        return props.correct ? '#4FDC62' : '#FF0133'
+        return props.correct  ? '#4FDC62' : '#FF0133'
       }else{
         return '#1890ff'
       }
@@ -74,13 +74,10 @@ const OptionItem = styled.li<OptionItemProps>`
 `;  
 
 const SubmitButton = styled.button`  
-  padding: 8px 16px;  
-  background: #1890ff;  
-  color: #fff;  
+  padding: 8px 16px;   
   border: none;  
-  border-radius: 4px;  
+  border-radius: 4px solid #ccc;  
   cursor: pointer;  
-  margin-top: 16px;  
 `;  
 
 const Result = styled.div`  
@@ -127,7 +124,7 @@ const TopBar = styled.div`
     align-items: center;  
     justify-content: space-between; // 在元素之间添加相等的间距  
     padding: 3px 3px;  
-    position: sticky;  
+    /* position: sticky;   */
     top: 0;  
     z-index: 100;  
     width: 100%; // 确保容器占满父元素宽度  
@@ -187,6 +184,13 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
   const [selected, setSelected] = useState<any>(  
     quiz.type === 'X' ? [] : (quiz.type === 'A3' || quiz.type === 'B' ? {} : '')  
   );  
+
+  React.useEffect(() => {
+    setSubmitted(false);
+    setSelected(quiz.type === 'X' ? [] : (quiz.type === 'A3' || quiz.type === 'B' ? {} : ''));
+}, [quiz]);
+
+
 
   //////////////////////////  
   // 选项点击处理函数  
@@ -466,14 +470,21 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
                   : selected === item.oid;  
               return (  
                 <OptionItem  
-                  key={item.oid}  
-                  selected={isSelected}  
-                  correct={quiz.answer===item.oid}
-                  submitted={submitted}
-                  onClick={() => handleOptionSelect(item.oid)}  
-                >  
-                  {item.oid}. {item.text}  
-                </OptionItem>  
+                key={item.oid}  
+                selected={isSelected}  
+                correct={(()=>{
+                  if(quiz.type==="X"){ 
+                    return quiz.answer.includes(item.oid) ? 'true' : undefined
+                  }else{
+                    return quiz.answer === item.oid ? 'true' : undefined
+                  }
+                })()} // 修改为字符串形式
+                submitted={submitted}
+                onClick={() => handleOptionSelect(item.oid)}  
+              >  
+                {item.oid}. {item.text}  
+              </OptionItem>  
+
               );  
             })}  
           </OptionsList>  
@@ -569,13 +580,16 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
 
     {renderQuizContent()}  
 
-    <button onClick={appendNewLink}>  
-      <CirclePlus/>  
-    </button>  
+    <TopBar>
+      <ToolButton onClick={appendNewLink}>  
+        <CirclePlus/>  
+      </ToolButton>  
 
-    {!submitted && (  
+      {!submitted && (  
       <SubmitButton onClick={handleSubmit}>提交答案</SubmitButton>  
     )}  
+    </TopBar>
+    
 
     {submitted && (  
       <>  
