@@ -3,8 +3,6 @@ import { quizType } from 'src/types/quizData.types';
 import styled from 'styled-components';  
 import * as React from 'react'
 import { CirclePlus } from 'lucide-react';
-import axios from 'axios';
-import { request } from 'obsidian';
 import { FaArrowLeft } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa';
 import { Grid } from 'lucide-react';
@@ -19,6 +17,7 @@ const Container = styled.div`
   border-radius: 8px;  
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);  
   margin: 16px 0;  
+  max-width: 800px;
 `;  
 
 const QuestionTitle = styled.h2`  
@@ -164,6 +163,10 @@ interface QuizComponentProps {
   currentQuizIndex: number;
   back:()=>void;
   forward: ()=>void;
+  apiReqest: {
+    POST: (requestURL:string, reqestData: object)=>Promise<string>;
+    GET: (url:string)=>Promise<string>
+  }
 }  
 
 export interface QuizImperativeHandle {  
@@ -174,7 +177,7 @@ export interface QuizImperativeHandle {
     };
 }  
 
-const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ quiz, appendLink, handleBackToGrid, currentQuizIndex, back, forward }, ref) => {  
+const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ quiz, appendLink, handleBackToGrid, currentQuizIndex, back, forward, apiReqest }, ref) => {  
   // submitted：是否提交过答案  
   // selected：记录选项的选中情况  
   // 对于单选类型（A1、A2）：selected 为 string（oid）；  
@@ -278,23 +281,19 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
         if(value){
           //get past link
           
-          const plresponse = await request({url:`${API_URL}/obcors/updatelink/${quiz._id}`,method:'GET'})
+          const plresponse = await apiReqest.GET(`${API_URL}/obcors/updatelink/${quiz._id}`)
+          console.log(quiz._id)
           const res = JSON.parse(plresponse)
 
           if(res.success){
             const newLinks = res.links
+            console.log(`past link: ${newLinks}`)
             newLinks.push(value)
             setLinks(newLinks)
-            console.log(newLinks)
-            await request({  
-              url:`${API_URL}/obcors/updatelink/${quiz._id}`,  
-              contentType: "application/x-www-form-urlencoded",
-              body: JSON.stringify({ link: newLinks }),
-              method: "POST",
-              headers: {  
-                  'Content-Type': 'application/json',  
-              },  
-              }  
+            console.log(`links after instertion: ${newLinks}`)
+            await apiReqest.POST(  
+              `${API_URL}/obcors/updatelink/${quiz._id}`,  
+              { link: newLinks }
             ); 
           }
 
@@ -308,15 +307,9 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
   const userid = "wjixiang"
 
   const pushRecord = async() => {
-    await request({  
-      url:`${API_URL}/obcors/addrecord/${userid}`,  
-      contentType: "application/x-www-form-urlencoded",
-      body: JSON.stringify({ quizid: quiz._id, selectrecord: selected, correct: isCorrect  }),
-      method: "POST",
-      headers: {  
-          'Content-Type': 'application/json',  
-      },  
-      }  
+    await apiReqest.POST( 
+      `${API_URL}/obcors/addrecord/${userid}`,  
+      { quizid: quiz._id, selectrecord: selected, correct: isCorrect  }, 
     ); 
   }
 
@@ -399,7 +392,6 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
             )}  
             {quiz.analysis.link && quiz.analysis.link.length > 0 && (  
               <>  
-                <AnswerTitle>相关链接：</AnswerTitle>  
                 <LinksList>  
                   {quiz.analysis.link.map((link, index) => (  
                     <LinkItem key={index}>  
@@ -550,7 +542,7 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
   const [links,setLinks] = useState<string[]>([])
 
   const fetchLinks = async() => {
-    const plresponse = await request({url:`${API_URL}/obcors/updatelink/${quiz._id}`,method:'GET'})
+    const plresponse = await apiReqest.GET(`${API_URL}/obcors/updatelink/${quiz._id}`)
     const res = JSON.parse(plresponse)
     console.log(res)
 
@@ -573,10 +565,17 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
         <QuizTitle>  
             Quiz {currentQuizIndex + 1}  
         </QuizTitle>  
+          
+        <QuizTitle>  
+          {quiz.type}型题
+        </QuizTitle>  
+
         <ToolButton onClick={forward}>  
             <FaArrowRight/>
         </ToolButton>  
       </TopBar>  
+      
+
 
     {renderQuizContent()}  
 
@@ -594,9 +593,9 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
     {submitted && (  
       <>  
         <Result>{isCorrect ? '正确' : '错误'}</Result>  
-
-        <>{links.map(link=><li>{link}</li>)}</>
-
+        <div>
+          <>{links.map(link=><li>{link}</li>)}</>
+        </div>
         {renderAnswer()}
       </>  
     )}  

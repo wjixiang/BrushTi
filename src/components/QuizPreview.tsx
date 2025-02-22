@@ -1,7 +1,6 @@
 import * as React from "react";  
 import styled, { keyframes } from "styled-components";  
 import { FaCheck, FaTimes } from 'react-icons/fa';  
-import { QuizImperativeHandle } from "./Quiz";
 
 type status = "todo"|"correct"|"wrong"  
 

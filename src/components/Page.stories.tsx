@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import Page from './Page';
 import { A1 } from 'src/types/quizData.types';
+import axios from 'axios';
 
 const meta = {
   component: Page,
@@ -70,7 +71,22 @@ const testQuizList = [
 
 export const Default: Story = {
   args: {
-    quizSet: testQuizList
+    quizSet: testQuizList,
+    appendLink: async()=>{return null},
+    apiReqest: {
+      POST:(requestURL: string, requestData: object): Promise<string>=>{
+        return new Promise(async(solve)=>{
+          const response = await axios.post(requestURL, requestData);
+          solve(response.data); // 返回响应数据
+        })
+      },
+      GET:(url: string): Promise<string>=>{
+        return new Promise(async(solve)=>{
+          const response = await axios.get(url);
+          solve(response.data); // 返回响应数据
+        })
+      }
+    }
   }
 };
 

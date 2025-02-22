@@ -9,6 +9,10 @@ import { quizType } from "src/types/quizData.types"
 interface PageProps {  
     quizSet: quizType[];
     appendLink: ()=>Promise<null|string>;
+    apiReqest: {
+        POST: (requestURL:string, reqestData: object)=>Promise<string>;
+        GET: (url:string)=>Promise<string>
+    }
 }  
 
 const Page: React.FC<PageProps> = (props) => {
@@ -119,6 +123,7 @@ const Page: React.FC<PageProps> = (props) => {
                                 currentQuizIndex={currentQuizIndex}
                                 forward={forward}
                                 back={back}
+                                apiReqest={props.apiReqest}
                             />
                         </div>
                     ))}

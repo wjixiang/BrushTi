@@ -1,12 +1,7 @@
 import { ItemView, WorkspaceLeaf, App } from 'obsidian';
 import { createRoot } from 'react-dom/client';
-import Page from '../components/Page';
-import { useState } from 'react';
-import QuizFilterPanel from 'src/components/QuizFilterPanel';
-import { quizType } from 'src/types/quizData.types';
-
-
-
+import { QuizApp } from 'src/components/QuizApp';
+import apiReqest from 'src/lib/obpostreq';
 
 export default class PageContainer extends ItemView {
     
@@ -28,7 +23,7 @@ export default class PageContainer extends ItemView {
         const container = this.containerEl.children[1]
         container.empty()
         const root = createRoot(container)
-        root.render(<QuizApp appendLink={this.appendLink}/>)
+        root.render(<QuizApp appendLink={this.appendLink} apiReqest={apiReqest}/>)
 
     }
 
@@ -53,21 +48,3 @@ export default class PageContainer extends ItemView {
 
 }}
 
-type Props = {
-    appendLink: ()=>Promise<null|string>
-}
-export const QuizApp = ({appendLink}: Props) => {
-    const [quizzes,setQuizzes] = useState<quizType[]>([])
-  
-    return (
-      <div>
-        <div>
-          <QuizFilterPanel setQuizzes={setQuizzes}/>
-        </div>
-        
-        <div>
-          <Page quizSet={quizzes} appendLink={appendLink}/>
-        </div>
-      </div>
-    );
-}
