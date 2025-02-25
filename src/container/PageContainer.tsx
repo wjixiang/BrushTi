@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf, App } from 'obsidian';
+import { ItemView, WorkspaceLeaf, App, MetadataCache } from 'obsidian';
 import { createRoot } from 'react-dom/client';
 import { QuizApp } from 'src/components/QuizApp';
 import apiReqest from 'src/lib/obpostreq';
@@ -19,11 +19,33 @@ export default class PageContainer extends ItemView {
         return this.dispalytext
     }
 
+    retriveFileName = (fileId: string):string|null => {
+        const files = this.app.vault.getFiles()
+            for( const file of files) {
+                const frontmatter = this.app.metadataCache.getFileCache(file)
+                if(frontmatter?.frontmatter && frontmatter.frontmatter["oid"] && frontmatter.frontmatter["oid"]===fileId){
+                    return file.basename
+                }
+            }
+
+            return null
+    }
+
+    redirect =  (fileId: string) => {
+        const files = this.app.vault.getFiles()
+        for( const file of files) {
+            const frontmatter = this.app.metadataCache.getFileCache(file)
+            if(frontmatter?.frontmatter && frontmatter.frontmatter["oid"] && frontmatter.frontmatter["oid"]===fileId){
+                this.app.workspace.openLinkText("",file.path)
+            }
+        }
+    }
+
     protected async onOpen(): Promise<void> {
         const container = this.containerEl.children[1]
         container.empty()
         const root = createRoot(container)
-        root.render(<QuizApp appendLink={this.appendLink} apiReqest={apiReqest}/>)
+        root.render(<QuizApp appendLink={this.appendLink} apiReqest={apiReqest} retriveFileName={this.retriveFileName} redirect={this.redirect}/>)
 
     }
 

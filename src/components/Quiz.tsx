@@ -6,7 +6,7 @@ import { CirclePlus } from 'lucide-react';
 import { FaArrowLeft } from 'react-icons/fa';
 import { FaArrowRight } from 'react-icons/fa';
 import { Grid } from 'lucide-react';
-import { oid } from '../types/quizData.types';
+import { LinkBox } from './LinkBox';
 //////////////////////////  
 // Styled Components  
 //////////////////////////  
@@ -166,7 +166,9 @@ interface QuizComponentProps {
   apiReqest: {
     POST: (requestURL:string, reqestData: object)=>Promise<string>;
     GET: (url:string)=>Promise<string>
-  }
+  };
+  retriveFileName: (fileId: string)=>string|null;
+  redirect: (fileId: string)=>void;
 }  
 
 export interface QuizImperativeHandle {  
@@ -177,7 +179,7 @@ export interface QuizImperativeHandle {
     };
 }  
 
-const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ quiz, appendLink, handleBackToGrid, currentQuizIndex, back, forward, apiReqest }, ref) => {  
+const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ quiz, appendLink, handleBackToGrid, currentQuizIndex, back, forward, apiReqest, redirect, retriveFileName }, ref) => {  
   // submitted：是否提交过答案  
   // selected：记录选项的选中情况  
   // 对于单选类型（A1、A2）：selected 为 string（oid）；  
@@ -295,6 +297,8 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
               `${API_URL}/obcors/updatelink/${quiz._id}`,  
               { link: newLinks }
             ); 
+
+            fetchLinks()
           }
 
 
@@ -483,32 +487,32 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
         </>  
       );  
     } 
-    // else if (quiz.type === 'A3') {  
-    //   return (  
-    //     <>  
-    //       <MainQuestion>{quiz.mainQuestion}</MainQuestion>  
-    //       {quiz.subQuizs.map((sub: any) => (  
-    //         <div key={sub.subQuizId}>  
-    //           <SubQuestion>{sub.question}</SubQuestion>  
-    //           <OptionsList>  
-    //             {quiz.options.map((item: any) => {  
-    //               const isSelected = selected[sub.subQuizId] === item.oid;  
-    //               return (  
-    //                 <OptionItem  
-    //                   key={item.oid}  
-    //                   selected={isSelected}  
-    //                   onClick={() => handleOptionSelect(item.oid, sub.subQuizId)}  
-    //                 >  
-    //                   {item.oid}. {item.text}  
-    //                 </OptionItem>  
-    //               );  
-    //             })}  
-    //           </OptionsList>  
-    //         </div>  
-    //       ))}  
-    //     </>  
-    //   );  
-    // } 
+    else if (quiz.type === 'A3') {  
+      return (  
+        <>  
+          <MainQuestion>{quiz.mainQuestion}</MainQuestion>  
+          {quiz.subQuizs.map((sub: any) => (  
+            <div key={sub.subQuizId}>  
+              <SubQuestion>{sub.question}</SubQuestion>  
+              <OptionsList>  
+                {sub.options.map((item: any) => {  
+                  const isSelected = selected[sub.subQuizId] === item.oid;  
+                  return (  
+                    <OptionItem  
+                      key={item.oid}  
+                      selected={isSelected}  
+                      onClick={() => handleOptionSelect(item.oid, sub.subQuizId)}  
+                    >  
+                      {item.oid}. {item.text}  
+                    </OptionItem>  
+                  );  
+                })}  
+              </OptionsList>  
+            </div>  
+          ))}  
+        </>  
+      );  
+    } 
     else if (quiz.type === 'B') {  
       return (  
         <>  
@@ -540,16 +544,45 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
 
 
   const [links,setLinks] = useState<string[]>([])
+  const [isLinkLoading,setIsLinkLoading] = useState<boolean>(false)
+  const [connection, setConnection] = useState<{ linkId: string; linkName: string; }[]>([])
+
 
   const fetchLinks = async() => {
+    setIsLinkLoading(true)
     const plresponse = await apiReqest.GET(`${API_URL}/obcors/updatelink/${quiz._id}`)
     const res = JSON.parse(plresponse)
-    console.log(res)
 
     if(res.success){
       setLinks(res.links as string[])
+
+      
+      const theLinks = res.links as string[]
+      const newConnections:{
+        linkId: string;
+        linkName: string;
+      }[] = [] 
+
+      for(const link of theLinks) {
+        const linkName = retriveFileName(link)
+        if(linkName) {
+          newConnections.push({
+            linkId: link,
+            linkName:linkName
+          })
+        }
+      }
+
+      setConnection(newConnections)
+      console.log(newConnections)
     }
+
+    setIsLinkLoading(false)
   }
+
+  React.useEffect(()=>{
+    fetchLinks()
+  },[])
 
 
 
@@ -574,11 +607,7 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
             <FaArrowRight/>
         </ToolButton>  
       </TopBar>  
-      
-
-
     {renderQuizContent()}  
-
     <TopBar>
       <ToolButton onClick={appendNewLink}>  
         <CirclePlus/>  
@@ -594,7 +623,7 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
       <>  
         <Result>{isCorrect ? '正确' : '错误'}</Result>  
         <div>
-          <>{links.map(link=><li>{link}</li>)}</>
+          <LinkBox isloading={isLinkLoading} links={connection} redirect={redirect}/>
         </div>
         {renderAnswer()}
       </>  

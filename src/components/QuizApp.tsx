@@ -1,6 +1,6 @@
 import Page from '../components/Page';
 import { useState } from 'react';
-import QuizFilterPanel from './QuizFilterPanel';
+import QuizFilterPanel from './filter/QuizFilterPanel';
 import { quizType } from 'src/types/quizData.types';
 import * as React from 'react';
 
@@ -10,9 +10,11 @@ type Props = {
     apiReqest: {
         POST: (requestURL:string, reqestData: object)=>Promise<string>;
         GET: (url:string)=>Promise<string>
-    }
+    };
+    retriveFileName: (fileId: string)=>string|null;
+    redirect: (fileId: string)=>void;
 }
-export const QuizApp = ({appendLink, apiReqest}: Props) => {
+export const QuizApp = ({appendLink, apiReqest, retriveFileName, redirect}: Props) => {
     const [quizzes,setQuizzes] = useState<quizType[]>([])
   
     return (
@@ -22,7 +24,7 @@ export const QuizApp = ({appendLink, apiReqest}: Props) => {
         </div>
         
         <div>
-          <Page quizSet={quizzes} appendLink={appendLink} apiReqest={apiReqest}/>
+          <Page quizSet={quizzes} appendLink={appendLink} apiReqest={apiReqest} retriveFileName={retriveFileName} redirect={redirect}/>
         </div>
       </div>
     );

@@ -12,7 +12,9 @@ interface PageProps {
     apiReqest: {
         POST: (requestURL:string, reqestData: object)=>Promise<string>;
         GET: (url:string)=>Promise<string>
-    }
+    };
+    retriveFileName: (fileId: string)=>string|null;
+    redirect: (fileId: string)=>void;
 }  
 
 const Page: React.FC<PageProps> = (props) => {
@@ -124,6 +126,8 @@ const Page: React.FC<PageProps> = (props) => {
                                 forward={forward}
                                 back={back}
                                 apiReqest={props.apiReqest}
+                                redirect={props.redirect}
+                                retriveFileName={props.retriveFileName}
                             />
                         </div>
                     ))}
