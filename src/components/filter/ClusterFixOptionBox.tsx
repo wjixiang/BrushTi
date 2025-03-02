@@ -1,7 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { SingleValue } from "react-select";
 import { OptionType, SelectComponent } from "../SelectBox";
-import { quizSelector } from "./QuizFilterPanel";
 import styled from "styled-components";
 
 const Tag = styled.div`  
@@ -38,62 +37,21 @@ const InputContainer = styled.div`
     margin-top: 10px;  
 `;  
 
-interface ClusterBoxProps {  
+interface FixedClusterBoxProps {  
     boxName: string;  
     cluster: string[] | null;  
-    setCluster: (cluster: string[]) => void;  
-    apiRequest: {  
-        POST: (requestURL: string, requestData: object) => Promise<string>;  
-    };  
-    selector: quizSelector;  
-    fetchLink: string;
+    setCluster: (cluster: string[]) => void;   
+    options: string[]
 }  
 
-export const ClusterBox = ({  
+export const FixedClusterBox = ({  
     cluster,   
-    setCluster,   
     boxName,   
-    apiRequest,  
-    selector,
-    fetchLink
-}: ClusterBoxProps) => {  
+    setCluster,
+    options
+}: FixedClusterBoxProps) => {  
     const [content, setContent] = useState("");  
-    const [options, setOptions] = useState<OptionType[]>([]);  
     const [isLoadingOptions, setIsLoadingOptions] = useState(false);  
-
-    // 使用 useMemo 记忆化 selector  
-    const memoizedSelector = useMemo(() => {  
-        return JSON.stringify(selector);  
-    }, [selector]);  
-
-
-    const fetchOptions = async () => {  
-        try {  
-            setIsLoadingOptions(true);  
-            const unitList: { _id: string; unit: string; }[] = JSON.parse(  
-                await apiRequest.POST(fetchLink, selector)  
-            );  
-            
-            return unitList.map(value => ({  
-                value: value.unit,  
-                label: value.unit  
-            }));  
-        } catch (error) {  
-            console.error('Error fetching options:', error);  
-            return [];  
-        } finally {  
-            setIsLoadingOptions(false);  
-        }  
-    };  
-
-    useEffect(() => {  
-        const updateOptions = async () => {  
-            const newOptions = await fetchOptions();  
-            setOptions(newOptions);  
-        };  
-
-        updateOptions();  
-    }, [memoizedSelector]);  
 
     const handleSelectChange = (selected: SingleValue<OptionType>) => {  
         if (selected && selected.value) {  
@@ -101,9 +59,7 @@ export const ClusterBox = ({
         }  
     };  
 
-    // const handleInput = (event: ChangeEvent<HTMLInputElement>) => {  
-    //     setContent(event.target.value);  
-    // }  
+    
 
     const appendCluster = () => {  
         if (content.trim() !== "") {  
@@ -144,7 +100,7 @@ export const ClusterBox = ({
                 ))}  
             </TagContainer>  
             <SelectComponent   
-                options={options}  
+                options={options.map(e=>{return {label: e, value: e}})}  
                 onChange={handleSelectChange}  
                 placeholder={`选择${boxName}`}  
             />  

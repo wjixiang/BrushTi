@@ -16,6 +16,7 @@ export interface A1 {
     options: {oid: oid, text: string}[];
     answer: oid;
     analysis: analysis;
+    source: string;
 }
 
 export interface A2 {
@@ -28,6 +29,7 @@ export interface A2 {
     options: {oid: oid, text: string}[];
     answer: oid;
     analysis: analysis;
+    source: string;
 }
 export interface A3 {
     _id: string;
@@ -43,6 +45,7 @@ export interface A3 {
         answer: oid
     }[]
     analysis: analysis;
+    source: string;
 }
 
 export interface X {
@@ -55,6 +58,7 @@ export interface X {
     options: {oid: oid, text: string}[];
     answer: oid[];
     analysis: analysis;
+    source: string;
 }
 
 export interface B {
@@ -70,6 +74,7 @@ export interface B {
     }[];
     options: {oid: oid, text: string}[];
     analysis: analysis;
+    source: string;
 }
 
 export type quizType = A1|A2|A3|B|X

@@ -1,6 +1,7 @@
 import  { useState } from 'react';  
 import styled from 'styled-components';  
 import * as React from 'react';
+import { ChevronsDownUp, ChevronsUpDown } from 'lucide-react';
 
 // 定义props接口  
 interface CollapsibleProps {  
@@ -19,6 +20,7 @@ const Container = styled.div`
   width: 100%;  
   overflow: hidden;  
   border-radius: 5px;
+  border: 1px #CCC solid;
 `;  
 
 // 创建可折叠的内容区域  
@@ -56,7 +58,7 @@ const Collapsible: React.FC<CollapsibleProps> = ({
       <Trigger onClick={toggleCollapse}>  
         {trigger}  
         <span style={{ float: 'right' }}>  
-          {isOpen ? '▼' : '▶'}  
+          {isOpen ? <ChevronsUpDown/>: <ChevronsDownUp/>}  
         </span>  
       </Trigger>  
       <CollapsibleContent isOpen={isOpen}>  

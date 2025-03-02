@@ -11,6 +11,7 @@ import {
 import { ClusterBox } from "./ClusterBox"
 import Collapsible from "./FloatingContainer"
 import { Filter } from "lucide-react"
+import { FixedClusterBox } from "./ClusterFixOptionBox"
 
 
 const FilterContainer = styled.div`  
@@ -175,6 +176,9 @@ const QuizFilterPanel = ({ setQuizzes, apiReqest }: Props) => {
         }  
     }  
 
+
+    
+
     return ( 
         <Collapsible trigger={"题目筛选"}  >
         <FilterContainer>  
@@ -205,9 +209,20 @@ const QuizFilterPanel = ({ setQuizzes, apiReqest }: Props) => {
               cluster={unit}  
               setCluster={setUnit}  
               apiRequest={apiReqest}  
-              selector={selector}  
+              selector={selector} 
+              fetchLink="http://localhost:3000/api/obcors/unit" 
             />  
           </FilterRow>  
+
+          <FilterRow>  
+            <FilterLabel>题型</FilterLabel>  
+            <FixedClusterBox 
+              boxName="题型"
+              cluster={mode}
+              setCluster={setMode}
+              options={['A1', 'A2', "A3", 'X', 'B']}
+            />
+          </FilterRow> 
     
           <SubmitButton  
             onClick={submitSelector}  

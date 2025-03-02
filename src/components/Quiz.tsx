@@ -40,6 +40,7 @@ const OptionsList = styled.ul`
   padding: 0;  
 `;  
 
+
 interface OptionItemProps {  
   selected: boolean;  
   submitted: boolean;
@@ -128,6 +129,23 @@ const TopBar = styled.div`
     z-index: 100;  
     width: 100%; // 确保容器占满父元素宽度  
 `  
+
+const InfoBar = styled.div`  
+    display: flex;  
+    align-items: center;  
+    /* justify-content: space-between; // 在元素之间添加相等的间距   */
+    padding: 3px 3px;  
+    color: #6b6b63;
+    /* position: sticky;   */
+    top: 0;  
+    
+    z-index: 100;  
+    width: 100%; // 确保容器占满父元素宽度  
+`  
+
+// const QuizInfoDisplay = styled.div`
+  
+// `
 
 const ToolButton = styled.div`  
     cursor: pointer;  
@@ -598,15 +616,21 @@ const QuizComponent = forwardRef<QuizImperativeHandle, QuizComponentProps>(({ qu
         <QuizTitle>  
             Quiz {currentQuizIndex + 1}  
         </QuizTitle>  
-          
-        <QuizTitle>  
-          {quiz.type}型题
-        </QuizTitle>  
+           
 
         <ToolButton onClick={forward}>  
             <FaArrowRight/>
         </ToolButton>  
       </TopBar>  
+      <InfoBar>
+         
+          {quiz.type}型题
+          |
+          {quiz.class}
+          |
+          {quiz.source}
+
+      </InfoBar>
     {renderQuizContent()}  
     <TopBar>
       <ToolButton onClick={appendNewLink}>  
