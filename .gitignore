@@ -5,3 +5,4 @@ test_vault
 node_modules
 *storybook.log
 tests_json_vault
+.env

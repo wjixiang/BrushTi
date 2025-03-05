@@ -223,6 +223,18 @@ const QuizFilterPanel = ({ setQuizzes, apiReqest }: Props) => {
               options={['A1', 'A2', "A3", 'X', 'B']}
             />
           </FilterRow> 
+
+          <FilterRow>  
+            <FilterLabel>题源</FilterLabel>  
+            <ClusterBox  
+              boxName="题源"  
+              cluster={source}  
+              setCluster={setSource}  
+              apiRequest={apiReqest}  
+              selector={selector} 
+              fetchLink="http://localhost:3000/api/obcors/source" 
+            />  
+          </FilterRow>  
     
           <SubmitButton  
             onClick={submitSelector}  

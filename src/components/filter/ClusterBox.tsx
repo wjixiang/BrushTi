@@ -5,13 +5,14 @@ import { quizSelector } from "./QuizFilterPanel";
 import styled from "styled-components";
 
 const Tag = styled.div`  
-    background-color: #f0f0f0;  
+    /* background-color: #f0f0f0;   */
     border-radius: 16px;  
     padding: 4px 10px;  
     display: flex;  
     align-items: center;  
     gap: 6px;  
     font-size: 14px;  
+    border: 1px solid #CCC;
 `;  
 
 const TagContainer = styled.div`  
@@ -70,13 +71,13 @@ export const ClusterBox = ({
     const fetchOptions = async () => {  
         try {  
             setIsLoadingOptions(true);  
-            const unitList: { _id: string; unit: string; }[] = JSON.parse(  
+            const unitList: string[] = JSON.parse(  
                 await apiRequest.POST(fetchLink, selector)  
             );  
             
             return unitList.map(value => ({  
-                value: value.unit,  
-                label: value.unit  
+                value: value,  
+                label: value  
             }));  
         } catch (error) {  
             console.error('Error fetching options:', error);  
